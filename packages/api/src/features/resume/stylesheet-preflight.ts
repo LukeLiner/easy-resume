@@ -4,6 +4,7 @@ import type { ResumeData } from "@reactive-resume/schema/resume/data";
 import type { SemanticStylesheet, StylesheetSource } from "@reactive-resume/schema/resume/stylesheet";
 import type { StylesheetSnapshot } from "./stylesheet-service";
 import { ORPCError } from "@orpc/client";
+import { convertLegacyStyleRules } from "@reactive-resume/pdf/semantic/legacy-converter";
 import { compileStylesheet } from "@reactive-resume/resume/stylesheet";
 import { EMPTY_SEMANTIC_CSS_SOURCE } from "@reactive-resume/schema/resume/stylesheet";
 import { templateSchema } from "@reactive-resume/schema/templates";
@@ -160,7 +161,6 @@ export async function validateHistoricalStylesheet(
 export async function convertLegacyStylesheet(snapshot: StylesheetSnapshot): Promise<StylesheetSource> {
 	const startedAt = performance.now();
 	try {
-		const { convertLegacyStyleRules } = await import("@reactive-resume/pdf/semantic");
 		const source = convertLegacyStyleRules(snapshot.data).source;
 		recordSemanticCssEvent({
 			name: "semantic_css.convert_legacy",

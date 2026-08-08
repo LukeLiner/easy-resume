@@ -4,21 +4,14 @@ import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
 import {
 	BrainIcon,
-	BriefcaseIcon,
 	ChatCircleDotsIcon,
 	GearSixIcon,
-	KeyIcon,
-	MagnifyingGlassIcon,
 	ReadCvLogoIcon,
-	ShieldCheckIcon,
-	UserCircleIcon,
-	WarningIcon,
 } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, m } from "motion/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@reactive-resume/ui/components/avatar";
 import { BrandIcon } from "@reactive-resume/ui/components/brand-icon";
-import { Kbd } from "@reactive-resume/ui/components/kbd";
 import {
 	Sidebar,
 	SidebarContent,
@@ -36,7 +29,6 @@ import {
 } from "@reactive-resume/ui/components/sidebar";
 import { getInitials } from "@reactive-resume/utils/string";
 import { Copyright } from "@/components/ui/copyright";
-import { useCommandPaletteStore } from "@/features/command-palette/store";
 import { UserDropdownMenu } from "@/features/user/dropdown-menu";
 
 type SidebarItem = {
@@ -52,11 +44,6 @@ const appSidebarItems = [
 		href: "/dashboard/resumes",
 	},
 	{
-		icon: <BriefcaseIcon />,
-		label: msg`Applications`,
-		href: "/dashboard/applications",
-	},
-	{
 		icon: <ChatCircleDotsIcon />,
 		label: msg`Agents`,
 		href: "/agent",
@@ -65,34 +52,14 @@ const appSidebarItems = [
 
 const settingsSidebarItems = [
 	{
-		icon: <UserCircleIcon />,
-		label: msg`Profile`,
-		href: "/dashboard/settings/profile",
-	},
-	{
 		icon: <GearSixIcon />,
 		label: msg`Preferences`,
 		href: "/dashboard/settings/preferences",
 	},
 	{
-		icon: <ShieldCheckIcon />,
-		label: msg`Authentication`,
-		href: "/dashboard/settings/authentication",
-	},
-	{
-		icon: <KeyIcon />,
-		label: msg`API Keys`,
-		href: "/dashboard/settings/api-keys",
-	},
-	{
 		icon: <BrainIcon />,
 		label: msg`Integrations`,
 		href: "/dashboard/settings/integrations",
-	},
-	{
-		icon: <WarningIcon />,
-		label: msg`Danger Zone`,
-		href: "/dashboard/settings/danger-zone",
 	},
 ] as const satisfies SidebarItem[];
 
@@ -124,25 +91,6 @@ function SidebarItemList({ items }: SidebarItemListProps) {
 	);
 }
 
-function SidebarSearchButton() {
-	const { i18n } = useLingui();
-	const setOpen = useCommandPaletteStore((state) => state.setOpen);
-
-	const label = i18n.t(msg`Search`);
-
-	return (
-		<SidebarMenuItem>
-			<SidebarMenuButton title={label} tooltip={label} onClick={() => setOpen(true)}>
-				<MagnifyingGlassIcon />
-				<span className="flex-1 text-start transition-[margin,opacity] duration-200 ease-in-out group-data-[collapsible=icon]:-ms-8 group-data-[collapsible=icon]:opacity-0">
-					{label}
-				</span>
-				<Kbd className="transition-opacity duration-200 ease-in-out group-data-[collapsible=icon]:opacity-0">⌘K</Kbd>
-			</SidebarMenuButton>
-		</SidebarMenuItem>
-	);
-}
-
 export function DashboardSidebar() {
 	const { i18n } = useLingui();
 	const { state } = useSidebarState();
@@ -163,7 +111,6 @@ export function DashboardSidebar() {
 						/>
 					</SidebarMenuItem>
 
-					<SidebarSearchButton />
 				</SidebarMenu>
 			</SidebarHeader>
 

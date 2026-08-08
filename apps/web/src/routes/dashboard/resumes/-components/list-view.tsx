@@ -3,10 +3,12 @@ import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
 import { DotsThreeIcon, DownloadSimpleIcon, PlusIcon } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, m } from "motion/react";
-import { useMemo } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Button } from "@reactive-resume/ui/components/button";
 import { useDialogStore } from "@/dialogs/store";
+import { orpc } from "@/libs/orpc/client";
 import { ResumeDropdownMenu } from "./menus/dropdown-menu";
 
 type Resume = RouterOutput["resume"]["list"][number];
@@ -14,14 +16,28 @@ type Resume = RouterOutput["resume"]["list"][number];
 type ListViewProps = {
 	resumes: Resume[];
 	hasResumes: boolean;
+	ownerName: string;
 };
 
 type ResumeListItemProps = {
 	resume: Resume;
+	ownerName: string;
+	isEditing: boolean;
+	onEditStart: (id: string) => void;
+	onEditEnd: () => void;
 };
 
-export function ListView({ resumes, hasResumes }: ListViewProps) {
+export function ListView({ resumes, hasResumes, ownerName }: ListViewProps) {
 	const { openDialog } = useDialogStore();
+	const [editingId, setEditingId] = useState<string>();
+
+	const handleEditStart = useCallback((id: string) => {
+		setEditingId(id);
+	}, []);
+
+	const handleEditEnd = useCallback(() => {
+		setEditingId(undefined);
+	}, []);
 
 	if (resumes.length === 0 && hasResumes) {
 		return (
@@ -95,57 +111,130 @@ export function ListView({ resumes, hasResumes }: ListViewProps) {
 	}
 
 	return (
-		<div className="flex flex-col gap-y-1">
-			<AnimatePresence initial={false} mode="popLayout">
-				{resumes.map((resume, index) => (
-					<m.div
-						layout
-						key={resume.id}
-						className="will-change-[transform,opacity]"
-						initial={{ opacity: 0, y: -20 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: -20 }}
-						transition={{ duration: 0.18, delay: Math.min(0.12, index * 0.02), ease: "easeOut" }}
-					>
-						<ResumeListItem resume={resume} />
-					</m.div>
-				))}
-			</AnimatePresence>
+		<div className="overflow-x-auto">
+			<table className="w-full table-auto">
+				<thead>
+					<tr className="border-b">
+						<th className="px-4 py-3 text-start font-medium text-muted-foreground text-sm">
+							<Trans>Title</Trans>
+						</th>
+						<th className="px-4 py-3 text-start font-medium text-muted-foreground text-sm">
+							<Trans>Owner</Trans>
+						</th>
+						<th className="px-4 py-3 text-start font-medium text-muted-foreground text-sm">
+							<Trans>Created</Trans>
+						</th>
+						<th className="px-4 py-3 text-start font-medium text-muted-foreground text-sm">
+							<Trans>Updated</Trans>
+						</th>
+						<th className="px-4 py-3 text-end font-medium text-muted-foreground text-sm">
+							<Trans>Actions</Trans>
+						</th>
+					</tr>
+				</thead>
+				<AnimatePresence initial={false} mode="popLayout">
+					{resumes.map((resume, index) => (
+						<m.tr
+							layout
+							key={resume.id}
+							className="border-b last:border-b-0 will-change-[transform,opacity]"
+							initial={{ opacity: 0, y: -20 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: -20 }}
+							transition={{ duration: 0.18, delay: Math.min(0.12, index * 0.02), ease: "easeOut" }}
+						>
+							<ResumeListItem
+								resume={resume}
+								ownerName={ownerName}
+								isEditing={editingId === resume.id}
+								onEditStart={handleEditStart}
+								onEditEnd={handleEditEnd}
+							/>
+						</m.tr>
+					))}
+				</AnimatePresence>
+			</table>
 		</div>
 	);
 }
 
-function ResumeListItem({ resume }: ResumeListItemProps) {
+function ResumeListItem({ resume, ownerName, isEditing, onEditStart, onEditEnd }: ResumeListItemProps) {
 	const { i18n } = useLingui();
+	const inputRef = useRef<HTMLInputElement>(null);
+	const { mutate: updateResume } = useMutation(orpc.resume.update.mutationOptions());
+
+	const createdAt = useMemo(() => {
+		return Intl.DateTimeFormat(i18n.locale, { dateStyle: "medium", timeStyle: "medium" }).format(
+			new Date(resume.createdAt),
+		);
+	}, [i18n.locale, resume.createdAt]);
 
 	const updatedAt = useMemo(() => {
-		return Intl.DateTimeFormat(i18n.locale, { dateStyle: "long", timeStyle: "short" }).format(resume.updatedAt);
+		return Intl.DateTimeFormat(i18n.locale, { dateStyle: "medium", timeStyle: "medium" }).format(
+			new Date(resume.updatedAt),
+		);
 	}, [i18n.locale, resume.updatedAt]);
 
+	const handleSave = (value: string) => {
+		const trimmed = value.trim();
+		if (trimmed && trimmed !== resume.name) {
+			updateResume({ id: resume.id, name: trimmed });
+		}
+		onEditEnd();
+	};
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			handleSave(e.currentTarget.value);
+		} else if (e.key === "Escape") {
+			onEditEnd();
+		}
+	};
+
 	return (
-		<div className="flex items-center gap-x-2">
-			<Button
-				size="lg"
-				variant="ghost"
-				nativeButton={false}
-				className="h-12 w-full flex-1 justify-start gap-x-4 text-start"
-				render={
-					<Link to="/builder/$resumeId" params={{ resumeId: resume.id }}>
-						<div className="size-3" />
-						<div className="min-w-0 flex-1 truncate">{resume.name}</div>
-
-						<p className="hidden text-xs opacity-60 sm:block">
-							<Trans>Last updated on {updatedAt}</Trans>
-						</p>
+		<>
+			<td className="px-4 py-3">
+				{isEditing ? (
+					<input
+						ref={inputRef}
+						defaultValue={resume.name}
+						className="w-full rounded border bg-background px-1 py-0.5 text-sm font-medium outline-none ring-1 ring-primary"
+						onBlur={(e) => handleSave(e.target.value)}
+						onKeyDown={handleKeyDown}
+						// eslint-disable-next-line jsx-a11y/no-autofocus
+						autoFocus
+					/>
+				) : (
+					<Link
+						to="/builder/$resumeId"
+						params={{ resumeId: resume.id }}
+						className="cursor-pointer font-medium hover:underline"
+						onDoubleClick={(e) => {
+							e.preventDefault();
+							onEditStart(resume.id);
+						}}
+						title="Double-click to rename"
+					>
+						{resume.name}
 					</Link>
-				}
-			/>
-
-			<ResumeDropdownMenu resume={resume} align="end">
-				<Button size="icon" variant="ghost" className="size-12">
-					<DotsThreeIcon />
-				</Button>
-			</ResumeDropdownMenu>
-		</div>
+				)}
+			</td>
+			<td className="px-4 py-3 text-muted-foreground text-sm">
+				{ownerName}
+			</td>
+			<td className="px-4 py-3 whitespace-nowrap text-muted-foreground text-sm">
+				{createdAt}
+			</td>
+			<td className="px-4 py-3 whitespace-nowrap text-muted-foreground text-sm">
+				{updatedAt}
+			</td>
+			<td className="px-4 py-3 text-end">
+				<ResumeDropdownMenu resume={resume} align="end">
+					<Button size="icon" variant="ghost" className="size-9">
+						<DotsThreeIcon />
+					</Button>
+				</ResumeDropdownMenu>
+			</td>
+		</>
 	);
 }

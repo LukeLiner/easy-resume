@@ -52,6 +52,7 @@ function RouteComponent() {
 	const { search, tags, sort, view } = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 	const { openDialog } = useDialogStore();
+	const { session } = Route.useRouteContext();
 
 	const { data: allTags } = useQuery(orpc.resume.tags.list.queryOptions());
 	const { data: resumes } = useQuery(orpc.resume.list.queryOptions({ input: { tags, sort } }));
@@ -178,7 +179,11 @@ function RouteComponent() {
 			</div>
 
 			{view === "list" ? (
-				<ListView resumes={filteredResumes} hasResumes={(resumes?.length ?? 0) > 0} />
+				<ListView
+					resumes={filteredResumes}
+					hasResumes={(resumes?.length ?? 0) > 0}
+					ownerName={session?.user?.name ?? ""}
+				/>
 			) : (
 				<GridView resumes={filteredResumes} hasResumes={(resumes?.length ?? 0) > 0} />
 			)}

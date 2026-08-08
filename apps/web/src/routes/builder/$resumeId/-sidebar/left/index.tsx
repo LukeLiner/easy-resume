@@ -3,13 +3,14 @@ import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { LockSimpleIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
-import { Fragment, useCallback, useRef } from "react";
+import { Fragment, lazy, Suspense, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { Avatar, AvatarFallback, AvatarImage } from "@reactive-resume/ui/components/avatar";
 import { Button } from "@reactive-resume/ui/components/button";
 import { ScrollArea } from "@reactive-resume/ui/components/scroll-area";
 import { Separator } from "@reactive-resume/ui/components/separator";
+import { Skeleton } from "@reactive-resume/ui/components/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@reactive-resume/ui/components/tooltip";
 import { getInitials } from "@reactive-resume/utils/string";
 import { useCurrentResume, useIsResumeLocked, usePatchResume } from "@/features/resume/builder/draft";
@@ -19,22 +20,55 @@ import { orpc } from "@/libs/orpc/client";
 import { getSectionIcon, getSectionTitle, leftSidebarSections } from "@/libs/resume/section";
 import { BuilderSidebarEdge } from "../../-components/edge";
 import { useBuilderSidebar } from "../../-store/sidebar";
-import { AwardsSectionBuilder } from "./sections/awards";
-import { BasicsSectionBuilder } from "./sections/basics";
-import { CertificationsSectionBuilder } from "./sections/certifications";
-import { CustomSectionBuilder } from "./sections/custom";
-import { EducationSectionBuilder } from "./sections/education";
-import { ExperienceSectionBuilder } from "./sections/experience";
-import { InterestsSectionBuilder } from "./sections/interests";
-import { LanguagesSectionBuilder } from "./sections/languages";
-import { PictureSectionBuilder } from "./sections/picture";
-import { ProfilesSectionBuilder } from "./sections/profiles";
-import { ProjectsSectionBuilder } from "./sections/projects";
-import { PublicationsSectionBuilder } from "./sections/publications";
-import { ReferencesSectionBuilder } from "./sections/references";
-import { SkillsSectionBuilder } from "./sections/skills";
-import { SummarySectionBuilder } from "./sections/summary";
-import { VolunteerSectionBuilder } from "./sections/volunteer";
+
+const AwardsSectionBuilder = lazy(() =>
+	import("./sections/awards").then((m) => ({ default: m.AwardsSectionBuilder })),
+);
+const BasicsSectionBuilder = lazy(() =>
+	import("./sections/basics").then((m) => ({ default: m.BasicsSectionBuilder })),
+);
+const CertificationsSectionBuilder = lazy(() =>
+	import("./sections/certifications").then((m) => ({ default: m.CertificationsSectionBuilder })),
+);
+const CustomSectionBuilder = lazy(() =>
+	import("./sections/custom").then((m) => ({ default: m.CustomSectionBuilder })),
+);
+const EducationSectionBuilder = lazy(() =>
+	import("./sections/education").then((m) => ({ default: m.EducationSectionBuilder })),
+);
+const ExperienceSectionBuilder = lazy(() =>
+	import("./sections/experience").then((m) => ({ default: m.ExperienceSectionBuilder })),
+);
+const InterestsSectionBuilder = lazy(() =>
+	import("./sections/interests").then((m) => ({ default: m.InterestsSectionBuilder })),
+);
+const LanguagesSectionBuilder = lazy(() =>
+	import("./sections/languages").then((m) => ({ default: m.LanguagesSectionBuilder })),
+);
+const PictureSectionBuilder = lazy(() =>
+	import("./sections/picture").then((m) => ({ default: m.PictureSectionBuilder })),
+);
+const ProfilesSectionBuilder = lazy(() =>
+	import("./sections/profiles").then((m) => ({ default: m.ProfilesSectionBuilder })),
+);
+const ProjectsSectionBuilder = lazy(() =>
+	import("./sections/projects").then((m) => ({ default: m.ProjectsSectionBuilder })),
+);
+const PublicationsSectionBuilder = lazy(() =>
+	import("./sections/publications").then((m) => ({ default: m.PublicationsSectionBuilder })),
+);
+const ReferencesSectionBuilder = lazy(() =>
+	import("./sections/references").then((m) => ({ default: m.ReferencesSectionBuilder })),
+);
+const SkillsSectionBuilder = lazy(() =>
+	import("./sections/skills").then((m) => ({ default: m.SkillsSectionBuilder })),
+);
+const SummarySectionBuilder = lazy(() =>
+	import("./sections/summary").then((m) => ({ default: m.SummarySectionBuilder })),
+);
+const VolunteerSectionBuilder = lazy(() =>
+	import("./sections/volunteer").then((m) => ({ default: m.VolunteerSectionBuilder })),
+);
 
 function getSectionComponent(type: LeftSidebarSection) {
 	return match(type)
@@ -72,7 +106,9 @@ export function BuilderSidebarLeft() {
 					<fieldset disabled={isLocked} className="m-0 min-w-0 space-y-4 border-0 p-0">
 						{leftSidebarSections.map((section) => (
 							<Fragment key={section}>
-								{getSectionComponent(section)}
+								<Suspense fallback={<SectionSkeleton />}>
+									{getSectionComponent(section)}
+								</Suspense>
 								<Separator />
 							</Fragment>
 						))}
@@ -118,6 +154,15 @@ function LockBanner() {
 			<Button size="sm" variant="secondary" disabled={isPending} onClick={handleUnlock}>
 				<Trans>Enable editing</Trans>
 			</Button>
+		</div>
+	);
+}
+
+function SectionSkeleton() {
+	return (
+		<div className="space-y-3">
+			<Skeleton className="h-5 w-24" />
+			<Skeleton className="h-10 w-full" />
 		</div>
 	);
 }

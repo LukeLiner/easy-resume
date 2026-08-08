@@ -1,26 +1,52 @@
 import type { RightSidebarSection } from "@/libs/resume/section";
-import { Fragment, useCallback, useRef } from "react";
+import { Fragment, lazy, Suspense, useCallback, useRef } from "react";
 import { match } from "ts-pattern";
 import { Button } from "@reactive-resume/ui/components/button";
 import { ScrollArea } from "@reactive-resume/ui/components/scroll-area";
 import { Separator } from "@reactive-resume/ui/components/separator";
+import { Skeleton } from "@reactive-resume/ui/components/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@reactive-resume/ui/components/tooltip";
 import { Copyright } from "@/components/ui/copyright";
 import { getSectionIcon, getSectionTitle, rightSidebarSections } from "@/libs/resume/section";
 import { BuilderSidebarEdge } from "../../-components/edge";
 import { useBuilderSidebar } from "../../-store/sidebar";
-import { CustomStylesSectionBuilder } from "./sections/custom-styles";
-import { DesignSectionBuilder } from "./sections/design";
-import { ExportSectionBuilder } from "./sections/export";
-import { InformationSectionBuilder } from "./sections/information";
-import { LayoutSectionBuilder } from "./sections/layout";
-import { NotesSectionBuilder } from "./sections/notes";
-import { PageSectionBuilder } from "./sections/page";
-import { ResumeAnalysisSectionBuilder } from "./sections/resume-analysis";
-import { SharingSectionBuilder } from "./sections/sharing";
-import { StatisticsSectionBuilder } from "./sections/statistics";
-import { TemplateSectionBuilder } from "./sections/template";
-import { TypographySectionBuilder } from "./sections/typography";
+
+const CustomStylesSectionBuilder = lazy(() =>
+	import("./sections/custom-styles").then((m) => ({ default: m.CustomStylesSectionBuilder })),
+);
+const DesignSectionBuilder = lazy(() =>
+	import("./sections/design").then((m) => ({ default: m.DesignSectionBuilder })),
+);
+const ExportSectionBuilder = lazy(() =>
+	import("./sections/export").then((m) => ({ default: m.ExportSectionBuilder })),
+);
+const InformationSectionBuilder = lazy(() =>
+	import("./sections/information").then((m) => ({ default: m.InformationSectionBuilder })),
+);
+const LayoutSectionBuilder = lazy(() =>
+	import("./sections/layout").then((m) => ({ default: m.LayoutSectionBuilder })),
+);
+const NotesSectionBuilder = lazy(() =>
+	import("./sections/notes").then((m) => ({ default: m.NotesSectionBuilder })),
+);
+const PageSectionBuilder = lazy(() =>
+	import("./sections/page").then((m) => ({ default: m.PageSectionBuilder })),
+);
+const ResumeAnalysisSectionBuilder = lazy(() =>
+	import("./sections/resume-analysis").then((m) => ({ default: m.ResumeAnalysisSectionBuilder })),
+);
+const SharingSectionBuilder = lazy(() =>
+	import("./sections/sharing").then((m) => ({ default: m.SharingSectionBuilder })),
+);
+const StatisticsSectionBuilder = lazy(() =>
+	import("./sections/statistics").then((m) => ({ default: m.StatisticsSectionBuilder })),
+);
+const TemplateSectionBuilder = lazy(() =>
+	import("./sections/template").then((m) => ({ default: m.TemplateSectionBuilder })),
+);
+const TypographySectionBuilder = lazy(() =>
+	import("./sections/typography").then((m) => ({ default: m.TypographySectionBuilder })),
+);
 
 function getSectionComponent(type: RightSidebarSection) {
 	return match(type)
@@ -53,7 +79,9 @@ export function BuilderSidebarRight() {
 				<div className="space-y-4 p-4">
 					{rightSidebarSections.map((section) => (
 						<Fragment key={section}>
-							{getSectionComponent(section)}
+							<Suspense fallback={<SectionSkeleton />}>
+								{getSectionComponent(section)}
+							</Suspense>
 							<Separator />
 						</Fragment>
 					))}
@@ -62,6 +90,15 @@ export function BuilderSidebarRight() {
 				</div>
 			</ScrollArea>
 		</>
+	);
+}
+
+function SectionSkeleton() {
+	return (
+		<div className="space-y-3">
+			<Skeleton className="h-5 w-24" />
+			<Skeleton className="h-10 w-full" />
+		</div>
 	);
 }
 

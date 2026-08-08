@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@reactive-resume/ui/components/button";
 import { Sheet, SheetContent, SheetTitle } from "@reactive-resume/ui/components/sheet";
 import { Spinner } from "@reactive-resume/ui/components/spinner";
-import { useHasUsableAiProvider } from "@/features/settings/integrations/hooks/use-has-usable-ai-provider";
+import { useHasUsableAiProvider } from "@/libs/hooks/use-has-usable-ai-provider";
 import { getOrpcErrorMessage } from "@/libs/error-message";
 import { orpc } from "@/libs/orpc/client";
 import { AgentChat } from "@/routes/agent/-components/agent-chat";
