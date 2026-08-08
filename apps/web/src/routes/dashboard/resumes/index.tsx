@@ -32,12 +32,12 @@ const searchSchema = z.object({
 	search: z.string().default(""),
 	tags: z.array(z.string()).default([]),
 	sort: z.enum(["lastUpdatedAt", "createdAt", "name"]).default("lastUpdatedAt"),
-	view: z.enum(["grid", "list"]).default("grid"),
+	view: z.enum(["grid", "list"]).default("list"),
 });
 
 type Search = z.output<typeof searchSchema>;
 
-const defaultSearch: Search = { search: "", tags: [], sort: "lastUpdatedAt", view: "grid" };
+const defaultSearch: Search = { search: "", tags: [], sort: "lastUpdatedAt", view: "list" };
 
 export const Route = createFileRoute("/dashboard/resumes/")({
 	component: RouteComponent,
