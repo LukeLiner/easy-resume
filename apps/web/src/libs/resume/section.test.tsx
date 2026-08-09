@@ -54,7 +54,6 @@ describe("sidebar section collections", () => {
 	it("expose the documented right-sidebar set", () => {
 		expect(rightSidebarSections).toContain("template");
 		expect(rightSidebarSections).toContain("design");
-		expect(rightSidebarSections).toContain("export");
 	});
 
 	it("do not overlap (every section belongs to exactly one sidebar)", () => {
