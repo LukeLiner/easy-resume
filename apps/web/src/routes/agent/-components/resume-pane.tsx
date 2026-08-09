@@ -22,11 +22,11 @@ export type ResumePaneProps = {
 	resume: AgentThreadDetail["resume"];
 };
 
-const AGENT_PREVIEW_ZOOM_STORAGE_KEY = "reactive-resume:agent-preview-zoom:v3";
+const AGENT_PREVIEW_ZOOM_STORAGE_KEY = "reactive-resume:agent-preview-zoom:v4";
 const MIN_PREVIEW_ZOOM = 0.4;
 const MAX_PREVIEW_ZOOM = 1.5;
 const PREVIEW_ZOOM_STEP = 0.05;
-const DEFAULT_PREVIEW_ZOOM = 1;
+const DEFAULT_PREVIEW_ZOOM = 1.3;
 
 function clampPreviewZoom(value: number) {
 	return Math.min(MAX_PREVIEW_ZOOM, Math.max(MIN_PREVIEW_ZOOM, value));
@@ -61,6 +61,8 @@ function ToolbarButton({ label, children, ...props }: ToolbarButtonProps) {
 export function ResumePane({ resume }: ResumePaneProps) {
 	const [zoom, setZoom] = useState(getInitialPreviewZoom);
 	const [isPrinting, setIsPrinting] = useState(false);
+	const [isZoomEditing, setIsZoomEditing] = useState(false);
+	const [zoomDraft, setZoomDraft] = useState("");
 
 	useEffect(() => {
 		window.localStorage.setItem(AGENT_PREVIEW_ZOOM_STORAGE_KEY, String(zoom));
@@ -69,6 +71,12 @@ export function ResumePane({ resume }: ResumePaneProps) {
 	const setClampedZoom = useCallback((value: number) => {
 		setZoom(clampPreviewZoom(Number(value.toFixed(2))));
 	}, []);
+
+	const commitZoomDraft = useCallback(() => {
+		setIsZoomEditing(false);
+		const nextValue = Number(zoomDraft);
+		if (Number.isFinite(nextValue)) setClampedZoom(nextValue / 100);
+	}, [zoomDraft, setClampedZoom]);
 
 	const onDownloadPDF = useCallback(async () => {
 		if (!resume) return;
@@ -118,13 +126,18 @@ export function ResumePane({ resume }: ResumePaneProps) {
 									<input
 										type="text"
 										inputMode="numeric"
-										value={`${zoomPercent}%`}
+										value={isZoomEditing ? zoomDraft : `${zoomPercent}%`}
 										disabled={!resume}
 										aria-label={t`Zoom level`}
 										className="h-8 w-14 rounded-md border bg-background px-1 text-center text-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50"
-										onChange={(event) => {
-											const nextValue = Number(event.target.value.replace(/[^0-9.]/g, ""));
-											if (Number.isFinite(nextValue)) setClampedZoom(nextValue / 100);
+										onFocus={() => {
+											setIsZoomEditing(true);
+											setZoomDraft(String(zoomPercent));
+										}}
+										onChange={(event) => setZoomDraft(event.target.value.replace(/[^0-9.]/g, ""))}
+										onBlur={commitZoomDraft}
+										onKeyDown={(event) => {
+											if (event.key === "Enter") commitZoomDraft();
 										}}
 									/>
 								}

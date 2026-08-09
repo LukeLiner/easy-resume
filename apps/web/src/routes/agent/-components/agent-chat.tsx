@@ -969,11 +969,9 @@ function AgentChatHeader({
 			</div>
 			<div className="flex items-center gap-1">
 				{onToggleResume ? (
-					<Button size="icon-sm" variant="ghost" onClick={onToggleResume}>
+					<Button size="sm" variant="outline" onClick={onToggleResume}>
 						<SquaresFourIcon />
-						<span className="sr-only">
-							<Trans>Toggle resume preview</Trans>
-						</span>
+						<Trans>Toggle resume preview</Trans>
 					</Button>
 				) : null}
 				<DropdownMenu>
