@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
+import type { RightSidebarSection, SidebarSection } from "@/libs/resume/section";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@reactive-resume/ui/components/avatar";
 import { Button } from "@reactive-resume/ui/components/button";
 import { ScrollArea } from "@reactive-resume/ui/components/scroll-area";
@@ -11,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@reactive-resume/ui/com
 import { getInitials } from "@reactive-resume/utils/string";
 import { usePreviewRenderStore } from "@/features/resume/builder/draft";
 import { UserDropdownMenu } from "@/features/user/dropdown-menu";
-import { getSectionIcon, getSectionTitle, leftSidebarSections, rightSidebarSections, type RightSidebarSection, type SidebarSection } from "@/libs/resume/section";
+import { getSectionIcon, getSectionTitle, leftSidebarSections, rightSidebarSections } from "@/libs/resume/section";
 import { BuilderSidebarLeftContent } from "../-sidebar/left";
 import { BuilderSidebarRightContent } from "../-sidebar/right";
 import { useBuilderSidebar } from "../-store/sidebar";
@@ -27,29 +29,38 @@ const leftSectionSet = new Set<string>(leftSidebarSections);
 
 const PREVIEW_RENDER_TIMEOUT_MS = 15_000;
 
-function PreviewRenderGate({ children }: { children: ReactNode }) {
+type PreviewRenderGateProps = {
+	children: ReactNode;
+};
+
+function PreviewRenderGate({ children }: PreviewRenderGateProps) {
 	const status = usePreviewRenderStore((state) => state.status);
 	const setReady = usePreviewRenderStore((state) => state.setReady);
+	const isPending = status === "pending";
 
 	useEffect(() => {
-		if (status === "ready") return;
+		if (!isPending) return;
 
 		// Fallback: never let a stuck preview lock the editor forever.
 		const timeoutId = window.setTimeout(() => setReady(), PREVIEW_RENDER_TIMEOUT_MS);
 		return () => window.clearTimeout(timeoutId);
-	}, [setReady, status]);
-
-	if (status === "ready") return children;
+	}, [isPending, setReady]);
 
 	return (
 		<div className="relative min-h-48">
-			<div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2" aria-live="polite">
-				<Spinner className="size-7 text-muted-foreground" />
-				<p className="font-medium text-sm text-muted-foreground">{t`Rendering resume preview…`}</p>
-				<p className="text-xs text-muted-foreground/70">{t`Editing unlocks once the preview is ready.`}</p>
-			</div>
-			{/* Keep the fields mounted (draft state and scroll position preserved) but visually dimmed and inert. */}
-			<div className="pointer-events-none opacity-40" aria-hidden="true">
+			{isPending && (
+				<div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2" aria-live="polite">
+					<Spinner className="size-7 text-muted-foreground" />
+					<p className="font-medium text-muted-foreground text-sm">{t`Rendering resume preview…`}</p>
+					<p className="text-muted-foreground/70 text-xs">{t`Editing unlocks once the preview is ready.`}</p>
+				</div>
+			)}
+			{/* Keep the fields mounted (draft state and scroll position preserved) but inert and dimmed while rendering. */}
+			<div
+				className={isPending ? "pointer-events-none opacity-40" : undefined}
+				inert={isPending}
+				aria-hidden={isPending}
+			>
 				{children}
 			</div>
 		</div>
