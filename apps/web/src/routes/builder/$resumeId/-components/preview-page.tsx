@@ -1,9 +1,9 @@
+import type { ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
 import { t } from "@lingui/core/macro";
 import { FloppyDiskIcon } from "@phosphor-icons/react";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { Suspense, useCallback, useState } from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
-import type { ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
 import { toast } from "sonner";
 import { LoadingScreen } from "@/components/layout/loading-screen";
 import { ResumePreview } from "@/features/resume/preview/preview";
@@ -53,10 +53,10 @@ export function PreviewPage() {
 					minScale={0.5}
 					initialScale={2}
 					limitToBounds={false}
-					wheel={{ step: 0.001 }}
+					wheel={{ step: 0.001, disabled: true }}
 					onInit={handleTransformWrapperInit}
 				>
-					<TransformComponent wrapperClass="h-full! w-full!">
+					<TransformComponent wrapperClass="h-full! w-full!" wrapperStyle={{ overflowY: "auto", overflowX: "hidden" }}>
 						<ResumePreview showPageNumbers pageLayout={pageLayout} />
 					</TransformComponent>
 
