@@ -260,7 +260,7 @@ msgstr "添加标签并按 Enter…"
 
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Add and test a provider before starting an agent thread."
-msgstr "在启动代理线程之前，添加并测试提供程序。"
+msgstr "开始对话之前，请先添加并测试提供商。"
 
 #: src/features/applications/components/application-form-sheet.tsx
 #: src/features/command-palette/pages/navigation.tsx
@@ -320,7 +320,7 @@ msgstr "南非语"
 #: src/features/command-palette/pages/navigation.tsx
 #: src/features/command-palette/pages/resumes.tsx
 msgid "Agent"
-msgstr "代理人"
+msgstr "AI生成"
 
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Agent ready"
@@ -328,7 +328,7 @@ msgstr "代理已准备就绪"
 
 #: src/routes/dashboard/-components/sidebar.tsx
 msgid "Agents"
-msgstr "代理人"
+msgstr "AI生成"
 
 #: src/dialogs/resume/import.tsx
 msgid "AI"
@@ -841,7 +841,7 @@ msgstr "选择一份简历"
 
 #: src/routes/agent/index.tsx
 msgid "Choose an existing conversation from the sidebar, or start a new draft-focused thread."
-msgstr "从侧边栏选择现有对话，或发起新的以草稿为中心的讨论串。"
+msgstr "从侧边栏选择现有对话，或发起新的以草稿为重点的对话。"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
 msgid "Choose PDF, DOCX, Markdown, or JSON. Export your resume and cover letter separately when available."
@@ -1374,7 +1374,7 @@ msgstr "删除提供商"
 #: src/routes/agent/-components/agent-chat.tsx
 #: src/routes/agent/-components/thread-sidebar.tsx
 msgid "Delete this agent thread?"
-msgstr "删除此代理主题帖？"
+msgstr "删除此对话？"
 
 #: src/features/applications/components/application-actions-menu.tsx
 #: src/features/applications/components/application-detail-sheet.tsx
@@ -1552,7 +1552,7 @@ msgstr "荷兰语"
 
 #: src/routes/builder/$resumeId/-components/version-history.tsx
 msgid "Earlier versions are kept; the builder's undo history is reset."
-msgstr "保留早期版本；重置构建器的撤销历史记录。"
+msgstr "保留早期版本；重置简历编辑器的撤销历史记录。"
 
 #: src/components/input/chip-input.tsx
 #: src/features/applications/components/application-actions-menu.tsx
@@ -1778,7 +1778,7 @@ msgstr "简历分析失败。"
 #: src/routes/agent/-components/agent-chat.tsx
 #: src/routes/agent/-components/thread-sidebar.tsx
 msgid "Failed to archive thread."
-msgstr "帖子归档失败。"
+msgstr "对话归档失败。"
 
 #. Fallback toast when creating an API key fails
 #: src/dialogs/api-key/create.tsx
@@ -1807,7 +1807,7 @@ msgstr "删除 API 密钥失败。请重试。"
 #: src/routes/agent/-components/agent-chat.tsx
 #: src/routes/agent/-components/thread-sidebar.tsx
 msgid "Failed to delete thread."
-msgstr "删除线程失败。"
+msgstr "删除对话失败。"
 
 #. Fallback toast when account deletion fails
 #: src/features/settings/pages/danger-zone.tsx
@@ -1886,7 +1886,7 @@ msgstr "退出登录失败。请重试。"
 
 #: src/routes/agent/-components/new-thread-setup.tsx
 msgid "Failed to start agent thread."
-msgstr "启动代理线程失败。"
+msgstr "启动对话失败。"
 
 #: src/routes/builder/$resumeId/-components/ai-assistant.tsx
 msgid "Failed to start the AI assistant."
@@ -2697,7 +2697,7 @@ msgstr "正在恢复加载…"
 #: src/features/command-palette/pages/resumes.tsx
 #: src/routes/agent/-components/thread-sidebar.tsx
 msgid "Loading threads…"
-msgstr "正在加载线程…"
+msgstr "正在加载对话…"
 
 #: src/routes/builder/$resumeId/-components/version-history.tsx
 msgid "Loading…"
@@ -2889,12 +2889,12 @@ msgstr "新标签…"
 #: src/features/command-palette/pages/resumes.tsx
 #: src/routes/agent/-components/thread-sidebar.tsx
 msgid "New thread"
-msgstr "新帖"
+msgstr "新对话"
 
 #: src/features/command-palette/pages/navigation.tsx
 #: src/features/command-palette/pages/resumes.tsx
 msgid "New Thread"
-msgstr "新帖"
+msgstr "新对话"
 
 #: src/routes/_home/-sections/features.tsx
 msgid "No Advertising, No Tracking"
@@ -2956,7 +2956,7 @@ msgstr "没有经过测试的提供商"
 
 #: src/routes/agent/-components/thread-sidebar.tsx
 msgid "No threads yet."
-msgstr "暂无主题。"
+msgstr "暂无对话。"
 
 #: src/libs/locale.ts
 msgid "Norwegian"
@@ -3026,7 +3026,7 @@ msgstr "打开对焦模式"
 
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "Open in builder"
-msgstr "在构建器中打开"
+msgstr "在简历编辑器中打开"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Open Integrations Settings"
@@ -3846,7 +3846,7 @@ msgstr "选择一份简历"
 
 #: src/routes/agent/index.tsx
 msgid "Select a thread"
-msgstr "选择一个线程"
+msgstr "选择对话"
 
 #: src/features/applications/components/table-view.tsx
 msgid "Select all"
@@ -3916,7 +3916,7 @@ msgstr "建立人工智能提供商"
 
 #: src/routes/agent/-components/new-thread-setup.tsx
 msgid "Set up an AI provider before starting a thread."
-msgstr "在发起讨论之前，请先设置好人工智能提供商。"
+msgstr "开始对话之前，请先设置好 AI 提供商。"
 
 #: src/routes/builder/$resumeId/-components/ai-assistant.tsx
 msgid "Set up an AI provider to chat about this resume and apply edits automatically."
@@ -4189,11 +4189,11 @@ msgstr "在 GitHub 上为我们加星，目前有 {0} 颗星（在新标签页�
 
 #: src/routes/agent/$threadId.tsx
 msgid "Start a new thread"
-msgstr "另开一个帖子"
+msgstr "开始新对话"
 
 #: src/routes/agent/-components/new-thread-setup.tsx
 msgid "Start a thread"
-msgstr "发起一个话题"
+msgstr "开始对话"
 
 #: src/dialogs/resume/index.tsx
 msgid "Start building your resume by giving it a name."
@@ -4206,7 +4206,7 @@ msgstr "从头开始构建你的简历"
 
 #: src/routes/agent/index.tsx
 msgid "Start new thread"
-msgstr "另开新帖"
+msgstr "开始新对话"
 
 #. Layout editor toggle that forces a section to begin on a new page
 #: src/routes/builder/$resumeId/-sidebar/right/sections/layout/pages.tsx
@@ -4215,7 +4215,7 @@ msgstr "在新页面开始"
 
 #: src/routes/agent/-components/new-thread-setup.tsx
 msgid "Start Thread"
-msgstr "发起讨论"
+msgstr "开始对话"
 
 #: src/libs/resume/section.tsx
 msgid "Statistics"
@@ -4419,7 +4419,7 @@ msgstr "你输入的 URL 无效。"
 
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "The working resume was deleted. This thread is read-only."
-msgstr "工作简历已被删除。此帖为只读模式。"
+msgstr "工作简历已被删除。此对话为只读。"
 
 #. Menu item that opens appearance theme selection submenu
 #: src/features/command-palette/pages/preferences/theme.tsx
@@ -4468,7 +4468,7 @@ msgstr "此操作无法撤销。消息和对话附件将被删除。"
 
 #: src/routes/agent/$threadId.tsx
 msgid "This agent thread could not be opened."
-msgstr "此代理线程无法打开。"
+msgstr "此对话无法打开。"
 
 #: src/routes/builder/$resumeId/-components/ai-assistant.tsx
 msgid "This assistant could not be opened."
@@ -4520,15 +4520,15 @@ msgstr "此步骤可选，但推荐完成。"
 
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "This thread is archived. New messages cannot be sent."
-msgstr "此帖已存档，无法发送新消息。"
+msgstr "此对话已归档，无法发送新消息。"
 
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "This thread is read-only"
-msgstr "此帖为只读帖。"
+msgstr "此对话为只读。"
 
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "This thread is read-only because the working resume or AI provider is unavailable."
-msgstr "由于简历撰写或人工智能服务提供商不可用，此帖为只读模式。"
+msgstr "由于工作简历或 AI 提供商不可用，此对话为只读。"
 
 #: src/dialogs/api-key/create.tsx
 msgid "This will generate a new API key to access the Reactive Resume API to allow machines to interact with your resume data."
@@ -4545,22 +4545,22 @@ msgstr "这将删除该部分的所有项目。"
 #: src/routes/agent/-components/agent-chat.tsx
 #: src/routes/agent/-components/thread-sidebar.tsx
 msgid "Thread actions"
-msgstr "线程操作"
+msgstr "对话操作"
 
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Thread archived."
-msgstr "帖子已存档。"
+msgstr "对话已归档。"
 
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Thread deleted."
-msgstr "帖子已删除。"
+msgstr "对话已删除。"
 
 #: src/features/command-palette/pages/navigation.tsx
 #: src/features/command-palette/pages/resumes.tsx
 #: src/routes/agent/-components/thread-sidebar.tsx
 #: src/routes/agent/$threadId.tsx
 msgid "Threads"
-msgstr "线程"
+msgstr "对话"
 
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Tighten the skills section so it supports the target role instead of reading like a keyword dump."
@@ -4622,7 +4622,7 @@ msgstr "切换右侧边栏"
 
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Toggle threads"
-msgstr "切换线程"
+msgstr "切换对话"
 
 #: src/features/applications/components/application-form-sheet.tsx
 msgid "Track a job you're applying to and link the resume you sent."
