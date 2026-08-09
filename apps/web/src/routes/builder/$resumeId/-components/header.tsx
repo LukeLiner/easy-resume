@@ -16,6 +16,7 @@ import {
 } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { Button } from "@reactive-resume/ui/components/button";
@@ -81,7 +82,7 @@ export function BuilderHeader() {
 					}
 				/>
 				<span className="me-2.5 text-muted-foreground">/</span>
-				<h2 className="min-w-0 truncate font-medium">{name}</h2>
+				<BuilderTitle name={name} isLocked={isLocked} resumeId={resumeId} />
 				{isLocked && <LockSimpleIcon className="ms-2 text-muted-foreground" />}
 				<SaveStatusIndicator />
 				<BuilderAiAssistant resumeId={resumeId} />
@@ -102,6 +103,83 @@ export function BuilderHeader() {
 				</Button>
 			</div>
 		</div>
+	);
+}
+
+type BuilderTitleProps = {
+	name: string;
+	isLocked: boolean;
+	resumeId: string;
+};
+
+function BuilderTitle({ name, isLocked, resumeId }: BuilderTitleProps) {
+	const patchResume = usePatchResume();
+	const [isEditing, setIsEditing] = useState(false);
+	const inputRef = useRef<HTMLInputElement>(null);
+	// Tracks the last name persisted to the server; guards against Enter→blur double-submits.
+	const savedNameRef = useRef(name);
+
+	const { mutateAsync: updateResume } = useMutation(orpc.resume.update.mutationOptions());
+
+	useEffect(() => {
+		savedNameRef.current = name;
+	}, [name]);
+
+	const handleSave = async (value: string) => {
+		const trimmed = value.trim();
+		if (trimmed && trimmed !== savedNameRef.current) {
+			const previousName = savedNameRef.current;
+			savedNameRef.current = trimmed;
+			patchResume((draft) => {
+				draft.name = trimmed;
+			});
+			try {
+				await updateResume({ id: resumeId, name: trimmed });
+			} catch (error) {
+				savedNameRef.current = previousName;
+				patchResume((draft) => {
+					draft.name = previousName;
+				});
+				toast.error(getResumeErrorMessage(error));
+			}
+		}
+		setIsEditing(false);
+	};
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			void handleSave(e.currentTarget.value);
+		} else if (e.key === "Escape") {
+			setIsEditing(false);
+		}
+	};
+
+	if (isEditing) {
+		return (
+			<input
+				ref={inputRef}
+				defaultValue={name}
+				aria-label={t`Resume title`}
+				className="min-w-0 w-full max-w-72 rounded border bg-background px-1.5 py-0.5 font-medium outline-none ring-1 ring-primary"
+				onBlur={(e) => void handleSave(e.target.value)}
+				onFocus={(e) => e.target.select()}
+				onKeyDown={handleKeyDown}
+				// eslint-disable-next-line jsx-a11y/no-autofocus
+				autoFocus
+			/>
+		);
+	}
+
+	return (
+		<h2
+			title={isLocked ? t`Locked` : t`Double-click to rename`}
+			className={isLocked ? "min-w-0 truncate font-medium" : "min-w-0 cursor-text truncate font-medium"}
+			onDoubleClick={() => {
+				if (!isLocked) setIsEditing(true);
+			}}
+		>
+			{name}
+		</h2>
 	);
 }
 
