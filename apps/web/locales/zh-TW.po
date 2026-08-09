@@ -3605,7 +3605,7 @@ msgstr "恢復此版本？"
 #: src/routes/agent/-components/resume-pane.tsx
 #: src/routes/agent/$threadId.tsx
 msgid "Resume"
-msgstr "恢復"
+msgstr "簡歷預覽"
 
 #: src/libs/resume/section.tsx
 msgid "Resume Analysis"
