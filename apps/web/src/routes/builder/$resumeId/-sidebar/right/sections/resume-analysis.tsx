@@ -1,8 +1,10 @@
+import type { ResumeAnalysis } from "@reactive-resume/schema/resume/analysis";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { ArrowRightIcon, InfoIcon, LightningIcon, SparkleIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, ChartPolarIcon, InfoIcon, LightningIcon, SparkleIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { Alert, AlertDescription } from "@reactive-resume/ui/components/alert";
@@ -170,6 +172,14 @@ export function ResumeAnalysisSectionBuilder() {
 						<div className="space-y-4">
 							<div className="space-y-3 rounded-md border p-3">
 								<h5 className="flex items-center gap-2 font-semibold text-sm">
+									<ChartPolarIcon className="text-primary" />
+									<Trans>Score Distribution</Trans>
+								</h5>
+								<ScorecardRadar items={analysis.scorecard} />
+							</div>
+
+							<div className="space-y-3 rounded-md border p-3">
+								<h5 className="flex items-center gap-2 font-semibold text-sm">
 									<LightningIcon className="text-primary" />
 									<Trans>Scorecard</Trans>
 								</h5>
@@ -239,6 +249,109 @@ export function ResumeAnalysisSectionBuilder() {
 				</div>
 			)}
 		</SectionBase>
+	);
+}
+
+type ScorecardRadarProps = {
+	items: ResumeAnalysis["scorecard"];
+};
+
+function ScorecardRadar({ items }: ScorecardRadarProps) {
+	const [selectedIndex, setSelectedIndex] = useState(0);
+	const selectedItem = items[selectedIndex] ?? items[0];
+
+	const size = 240;
+	const center = size / 2;
+	const radius = 88;
+	const angleFor = (index: number) => -Math.PI / 2 + (index * 2 * Math.PI) / items.length;
+	const pointFor = (index: number, value: number) => ({
+		x: center + Math.cos(angleFor(index)) * radius * (value / 100),
+		y: center + Math.sin(angleFor(index)) * radius * (value / 100),
+	});
+	const polygonPoints = (value: number) =>
+		items
+			.map((_, index) => pointFor(index, value))
+			.map((point) => `${point.x},${point.y}`)
+			.join(" ");
+	const dataPoints = items
+		.map((item, index) => pointFor(index, item.score))
+		.map((point) => `${point.x},${point.y}`)
+		.join(" ");
+
+	return (
+		<div className="space-y-3">
+			<div className="mx-auto w-full max-w-52">
+				<svg
+					viewBox={`0 0 ${size} ${size}`}
+					className="size-full"
+					role="img"
+					aria-label={t`Radar chart of resume scorecard dimensions`}
+				>
+					{[25, 50, 75, 100].map((level) => (
+						<polygon key={level} points={polygonPoints(level)} className="fill-none stroke-border" />
+					))}
+					{items.map((_, index) => {
+						const tip = pointFor(index, 100);
+						return (
+							<line key={`axis-${index}`} x1={center} y1={center} x2={tip.x} y2={tip.y} className="stroke-border" />
+						);
+					})}
+					<polygon
+						points={dataPoints}
+						className="fill-primary/15 stroke-primary"
+						strokeLinejoin="round"
+						strokeWidth={2}
+					/>
+					{items.map((item, index) => {
+						const point = pointFor(index, item.score);
+						const active = index === selectedIndex;
+						return (
+							// biome-ignore lint/a11y/noStaticElementInteractions: SVG vertex dot; keyboard access via the dimension chips below
+							<circle
+								key={item.dimension}
+								cx={point.x}
+								cy={point.y}
+								r={active ? 6 : 4}
+								fill="var(--color-primary)"
+								fillOpacity={active ? 1 : 0.5}
+								className="cursor-pointer stroke-background"
+								strokeWidth={2}
+								onClick={() => setSelectedIndex(index)}
+							/>
+						);
+					})}
+				</svg>
+			</div>
+
+			<div className="flex flex-wrap gap-1.5">
+				{items.map((item, index) => (
+					<button
+						key={item.dimension}
+						type="button"
+						onClick={() => setSelectedIndex(index)}
+						className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium text-xs transition-colors ${
+							index === selectedIndex
+								? "border-primary bg-primary text-primary-foreground"
+								: "border-border bg-card text-muted-foreground hover:bg-muted"
+						}`}
+					>
+						<span
+							aria-hidden="true"
+							className={`size-1.5 rounded-full ${index === selectedIndex ? "bg-primary-foreground" : "bg-primary"}`}
+						/>
+						{item.dimension}
+					</button>
+				))}
+			</div>
+
+			<div className="space-y-3 rounded-md border bg-card p-3">
+				<div className="flex items-center justify-between gap-2">
+					<div className="font-medium text-sm">{selectedItem.dimension}</div>
+					<Badge variant="secondary">{selectedItem.score}/100</Badge>
+				</div>
+				<p className="text-muted-foreground text-xs">{selectedItem.rationale}</p>
+			</div>
+		</div>
 	);
 }
 
