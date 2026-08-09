@@ -11,7 +11,7 @@ describe("LoadingScreen", () => {
 
 		const icons = screen.getAllByAltText("Reactive Resume");
 		expect(icons).toHaveLength(2);
-		expect(icons.map((icon) => icon.getAttribute("src"))).toEqual(["/icon/dark.svg", "/icon/light.svg"]);
+		expect(icons.map((icon) => icon.getAttribute("src"))).toEqual(["/icon/dark.jpg", "/icon/light.jpg"]);
 		expect(screen.getByLabelText("Loading")).toBeInTheDocument();
 	});
 
