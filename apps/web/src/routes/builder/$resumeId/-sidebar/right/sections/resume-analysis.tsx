@@ -252,7 +252,7 @@ type ScorecardRadarProps = {
 
 function splitLabel(label: string): string[] {
 	const words = label.split(" ");
-	if (label.length <= 12 || words.length < 2) return [label];
+	if (label.length <= 10 || words.length < 2) return [label];
 
 	let bestIndex = 1;
 	let bestDiff = Number.POSITIVE_INFINITY;
@@ -271,9 +271,9 @@ function ScorecardRadar({ items }: ScorecardRadarProps) {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const selectedItem = items[selectedIndex] ?? items[0];
 
-	const size = 300;
+	const size = 360;
 	const center = size / 2;
-	const radius = 80;
+	const radius = 100;
 	const angleFor = (index: number) => -Math.PI / 2 + (index * 2 * Math.PI) / items.length;
 	const pointFor = (index: number, value: number) => ({
 		x: center + Math.cos(angleFor(index)) * radius * (value / 100),
@@ -291,7 +291,7 @@ function ScorecardRadar({ items }: ScorecardRadarProps) {
 
 	return (
 		<div className="space-y-3">
-			<div className="mx-auto w-full max-w-52">
+			<div className="mx-auto w-full max-w-80">
 				<svg
 					viewBox={`0 0 ${size} ${size}`}
 					className="size-full"
@@ -309,7 +309,7 @@ function ScorecardRadar({ items }: ScorecardRadarProps) {
 					})}
 					<polygon
 						points={dataPoints}
-						className="fill-primary/15 stroke-primary"
+						className="fill-amber-600/25 stroke-amber-600"
 						strokeLinejoin="round"
 						strokeWidth={2}
 					/>
@@ -339,14 +339,14 @@ function ScorecardRadar({ items }: ScorecardRadarProps) {
 						const anchor = cos > 0.35 ? "start" : cos < -0.35 ? "end" : "middle";
 						const dx = cos > 0.35 ? 8 : cos < -0.35 ? -8 : 0;
 						const lines = splitLabel(scorecardDimensionLabel(item.dimension));
-						const dy = sin <= -0.5 ? -(lines.length - 1) * 10 - 8 : sin >= 0.5 ? 20 : 4;
+						const dy = sin <= -0.5 ? -(lines.length - 1) * 12 - 10 : sin >= 0.5 ? 24 : 4;
 						return (
 							<text
 								key={`label-${item.dimension}`}
 								x={tip.x + dx}
 								y={tip.y + dy}
 								textAnchor={anchor}
-								className="fill-muted-foreground font-medium text-[9px]"
+								className="fill-muted-foreground font-medium text-[11px]"
 							>
 								{lines.map((line, lineIndex) => (
 									<tspan key={line} x={tip.x + dx} dy={lineIndex === 0 ? 0 : 10}>
