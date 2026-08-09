@@ -52,9 +52,4 @@ describe("Footer", () => {
 		expect(hrefs.some((h) => h.includes("x.com/KingOKings"))).toBe(true);
 	});
 
-	it("includes Reactive Resume version copy via Copyright", () => {
-		renderFooter();
-		// The version is wrapped in <bdi> for RTL isolation, so it is its own text node.
-		expect(screen.getByText("9.9.9")).toBeInTheDocument();
-	});
 });

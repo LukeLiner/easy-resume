@@ -27,7 +27,6 @@ import { useBuilderSidebarStore } from "@/routes/builder/$resumeId/-store/sideba
 import { compositionAwareDocumentListener, createSemanticCssEditorExtensions } from "./editor-extensions";
 import { enterStylesheetFocusMode } from "./focus-mode";
 import { formatEditorDocument } from "./formatter";
-import { LegacyStylesheetBanner } from "./legacy-banner";
 import { StylesheetStatus } from "./status";
 import { useStylesheetStore } from "./store";
 import { StylesheetToolbar } from "./toolbar";
@@ -331,13 +330,10 @@ function StylesheetEditorShell({ readOnly = false }: StylesheetEditorShellProps)
 	const canRedo = useStylesheetStore((state) => state.canRedo);
 	const setSourceText = useStylesheetStore((state) => state.setSourceText);
 	const setFocused = useStylesheetStore((state) => state.setFocused);
-	const activate = useStylesheetStore((state) => state.activate);
 	const undo = useStylesheetStore((state) => state.undo);
 	const redo = useStylesheetStore((state) => state.redo);
 	const refreshIntelligence = useStylesheetStore((state) => state.refreshIntelligence);
 	const editorViewRef = useRef<EditorView | null>(null);
-	const hasErrors = status === "error" || diagnostics.some(({ severity }) => severity === "error");
-	const isChecking = status === "compiling" || status === "preflighting" || status === "saving";
 
 	useEffect(
 		() => () => {
@@ -392,10 +388,6 @@ function StylesheetEditorShell({ readOnly = false }: StylesheetEditorShellProps)
 	);
 	const editorChrome = (
 		<div className="space-y-3">
-			{mode === "legacy" && (
-				<LegacyStylesheetBanner disabled={restoreLocked || hasErrors || isChecking} onActivate={activate} />
-			)}
-
 			<StylesheetToolbar
 				source={source}
 				canUndo={canUndo}

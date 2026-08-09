@@ -6,7 +6,6 @@ import { ScrollArea } from "@reactive-resume/ui/components/scroll-area";
 import { Separator } from "@reactive-resume/ui/components/separator";
 import { Skeleton } from "@reactive-resume/ui/components/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@reactive-resume/ui/components/tooltip";
-import { Copyright } from "@/components/ui/copyright";
 import { getSectionIcon, getSectionTitle, rightSidebarSections } from "@/libs/resume/section";
 import { BuilderSidebarEdge } from "../../-components/edge";
 import { useBuilderSidebar } from "../../-store/sidebar";
@@ -19,9 +18,6 @@ const DesignSectionBuilder = lazy(() =>
 );
 const ExportSectionBuilder = lazy(() =>
 	import("./sections/export").then((m) => ({ default: m.ExportSectionBuilder })),
-);
-const InformationSectionBuilder = lazy(() =>
-	import("./sections/information").then((m) => ({ default: m.InformationSectionBuilder })),
 );
 const LayoutSectionBuilder = lazy(() =>
 	import("./sections/layout").then((m) => ({ default: m.LayoutSectionBuilder })),
@@ -61,7 +57,6 @@ function getSectionComponent(type: RightSidebarSection) {
 		.with("statistics", () => <StatisticsSectionBuilder />)
 		.with("analysis", () => <ResumeAnalysisSectionBuilder />)
 		.with("export", () => <ExportSectionBuilder />)
-		.with("information", () => <InformationSectionBuilder />)
 		.exhaustive();
 }
 
@@ -86,8 +81,7 @@ export function BuilderSidebarRight() {
 						</Fragment>
 					))}
 
-					<Copyright className="mx-auto py-2 text-center" />
-				</div>
+					</div>
 			</ScrollArea>
 		</>
 	);

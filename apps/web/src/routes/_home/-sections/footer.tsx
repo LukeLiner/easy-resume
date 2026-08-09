@@ -6,7 +6,6 @@ import { m } from "motion/react";
 import { useState } from "react";
 import { BrandIcon } from "@reactive-resume/ui/components/brand-icon";
 import { Button } from "@reactive-resume/ui/components/button";
-import { Copyright } from "@/components/ui/copyright";
 
 type FooterLinkItem = {
 	url: string;
@@ -54,7 +53,7 @@ export function Footer() {
 			viewport={{ once: true }}
 			transition={{ duration: 0.45 }}
 		>
-			<div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+			<div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
 				{/* Brand Column */}
 				<div className="space-y-4 sm:col-span-2 lg:col-span-1">
 					<BrandIcon variant="logo" className="size-10" />
@@ -98,11 +97,7 @@ export function Footer() {
 				{/* Community Column */}
 				<FooterLinkGroup title={t`Community`} links={getCommunityLinks()} />
 
-				{/* Copyright Column */}
-				<div className="space-y-4 sm:col-span-2 lg:col-span-1">
-					<Copyright />
 				</div>
-			</div>
 		</m.footer>
 	);
 }

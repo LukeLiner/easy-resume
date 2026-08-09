@@ -198,7 +198,6 @@ describe("StylesheetEditorShell", () => {
 			"contenteditable",
 			"false",
 		);
-		expect(screen.getByRole("button", { name: "Activate Semantic CSS" })).toBeDisabled();
 		expect(screen.getByRole("button", { name: "Undo stylesheet edit" })).toBeDisabled();
 		expect(screen.getByRole("button", { name: "Redo stylesheet edit" })).toBeDisabled();
 		expect(screen.getByRole("button", { name: "Format stylesheet" })).toBeDisabled();
@@ -229,7 +228,6 @@ describe("StylesheetEditorShell", () => {
 
 		const sheet = await screen.findByRole("dialog");
 		expect(within(sheet).getByRole("heading", { name: "Semantic CSS stylesheet" })).toBeInTheDocument();
-		expect(within(sheet).getByRole("button", { name: "Activate Semantic CSS" })).toBeInTheDocument();
 		expect(within(sheet).getByRole("toolbar", { name: "Stylesheet editor" })).toBeInTheDocument();
 		expect(within(sheet).getByText("Ready to activate with warnings")).toBeInTheDocument();
 		expect(within(sheet).getByText("Unknown property")).toBeInTheDocument();

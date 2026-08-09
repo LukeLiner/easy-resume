@@ -1,3 +1,4 @@
+import { t } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import { SwapIcon } from "@phosphor-icons/react";
 import { Badge } from "@reactive-resume/ui/components/badge";
@@ -29,19 +30,22 @@ function TemplateSectionForm() {
 
 	return (
 		<div className="flex @md:flex-row flex-col items-stretch gap-x-4 gap-y-2">
-			<Button
-				variant="ghost"
-				onClick={onOpenTemplateGallery}
-				className="group/preview relative h-auto w-40 shrink-0 cursor-pointer p-0"
-			>
-				<div className="relative z-10 aspect-page size-full overflow-hidden rounded-md opacity-100 transition-opacity group-hover/preview:opacity-50">
-					<img src={metadata.imageUrl} alt={metadata.name} className="size-full object-cover" />
-				</div>
+			<div className="flex flex-col items-center gap-y-1.5">
+				<Button
+					variant="ghost"
+					onClick={onOpenTemplateGallery}
+					className="group/preview relative h-auto w-40 shrink-0 cursor-pointer p-0"
+				>
+					<div className="relative z-10 aspect-page size-full overflow-hidden rounded-md opacity-100 transition-opacity group-hover/preview:opacity-50">
+						<img src={metadata.imageUrl} alt={metadata.name} className="size-full object-cover" />
+					</div>
 
-				<div className="absolute inset-0 flex items-center justify-center">
-					<SwapIcon size={48} weight="thin" className="size-12" />
-				</div>
-			</Button>
+					<div className="absolute inset-0 flex items-center justify-center">
+						<SwapIcon size={48} weight="thin" className="size-12" />
+					</div>
+				</Button>
+				<p className="text-muted-foreground text-center text-xs">{t`Click the preview to switch templates`}</p>
+			</div>
 
 			<div className="flex flex-1 flex-col gap-y-4 @md:pt-1 @md:pb-3">
 				<div className="space-y-1">
