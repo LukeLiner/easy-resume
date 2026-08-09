@@ -26,7 +26,18 @@ export type WebFont = {
 	files: Record<FontFileWeight, string>;
 };
 
-type FontRecord = StandardFont | WebFont;
+// System fonts ship with the user's operating system and have no web font
+// files to register with @react-pdf/renderer. In the browser preview they
+// render with the locally installed font; PDF rendering maps them to a
+// metric-compatible web font via `legacyFontAliases` (see below).
+export type SystemFont = {
+	type: "system";
+	category: FontCategory;
+	family: string;
+	weights: FontWeight[];
+};
+
+type FontRecord = StandardFont | SystemFont | WebFont;
 
 const preferredChineseFontFamilies = [
 	"Noto Sans SC",
@@ -48,6 +59,13 @@ const standardPdfFontList = [
 	{ type: "standard", category: "monospace", family: "Courier", weights: ["400", "700"] },
 	{ type: "standard", category: "serif", family: "Times-Roman", weights: ["400", "700"] },
 ] satisfies StandardFont[];
+
+// Fonts that are only available as locally installed OS fonts (proprietary,
+// no redistributable web files). They must stay out of the PDF registration
+// path; `legacyFontAliases` maps them to a web font at render time.
+export const systemFontList = [
+	{ type: "system", category: "sans-serif", family: "Microsoft YaHei", weights: ["400", "500", "700"] },
+] satisfies SystemFont[];
 
 const fontDisplayNames: Partial<Record<string, string>> = {
 	FangSong: "仿宋",
@@ -91,7 +109,7 @@ export const standardFontList = standardPdfFontList.filter((font) => !webFontMap
 const fontMap = new Map<string, FontRecord>();
 const chinesePrioritySet = new Set<string>(preferredChineseFontFamilies);
 
-export const fontList = [...standardFontList, ...webFontList].sort((a, b) =>
+export const fontList = [...standardFontList, ...systemFontList, ...webFontList].sort((a, b) =>
 	a.family.localeCompare(b.family, undefined, { sensitivity: "base" }),
 );
 
@@ -109,6 +127,10 @@ const legacyFontAliases: Record<string, string> = {
 	Calibri: "Carlito",
 	Garamond: "EB Garamond",
 	"Times New Roman": "Times-Roman",
+	// Microsoft YaHei is proprietary and has no web font files, so PDF rendering
+	// maps it to Noto Sans SC — like YaHei, a sans-serif font covering both
+	// Latin and Simplified Chinese glyphs. The browser preview uses the OS font.
+	"Microsoft YaHei": "Noto Sans SC",
 };
 
 export function resolveLegacyFontAlias(family: string): string | null {

@@ -1,0 +1,32 @@
+/*
+ * PDF.js 文本层样式。
+ * 在 canvas 位图上方叠加透明文本，使预览中的文字可选中、可复制。
+ * 定位约定：容器尺寸 = --total-scale-factor * PDF 尺寸，与 canvas 的 CSS 尺寸一致；
+ * --total-scale-factor 由 PdfCanvasPage 按 pageScale 动态设置。
+ * 交互约定：容器 pointer-events 为 none（空白区域可拖拽平移），仅文本 span 可选中。
+ */
+.resume-text-layer {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	overflow: clip;
+	line-height: 1;
+	pointer-events: none;
+	user-select: text;
+
+	--min-font-size: 1;
+	--min-font-size-inv: calc(1 / var(--min-font-size));
+	--text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+}
+
+.resume-text-layer span {
+	position: absolute;
+	white-space: pre;
+	cursor: text;
+	color: transparent;
+	pointer-events: auto;
+	user-select: text;
+	transform-origin: 0% 0%;
+	font-size: calc(var(--text-scale-factor) * var(--font-height));
+	transform: rotate(var(--rotate, 0deg)) scaleX(var(--scale-x, 1)) scale(var(--min-font-size-inv));
+}

@@ -7,6 +7,7 @@ const pdfjsMock = vi.hoisted(() => {
 		cleanup: vi.fn(),
 		getViewport: vi.fn(({ scale }: { scale: number }) => ({ height: 200 * scale, width: 100 * scale })),
 		render: vi.fn(() => ({ promise: Promise.resolve() })),
+		streamTextContent: vi.fn(() => new ReadableStream({ start: (controller) => controller.close() })),
 	};
 
 	const pdfDocument = {
@@ -27,6 +28,10 @@ const pdfjsMock = vi.hoisted(() => {
 			getDocument: vi.fn(() => loadingTask),
 			GlobalWorkerOptions: {} as { workerSrc?: string },
 			RenderingCancelledException: class RenderingCancelledException extends Error {},
+			TextLayer: class TextLayer {
+				cancel = vi.fn();
+				render = vi.fn(async () => {});
+			},
 		},
 		loadingTask,
 		page,

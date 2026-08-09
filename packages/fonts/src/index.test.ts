@@ -10,6 +10,7 @@ import {
 	isStandardPdfFontFamily,
 	resolveLegacyFontAlias,
 	standardFontList,
+	systemFontList,
 	webFontList,
 	webFontMap,
 } from "./index";
@@ -31,8 +32,8 @@ describe("fontList", () => {
 		expect(families).toContain("Times-Roman");
 	});
 
-	it("merges standardFontList and webFontList without duplicates", () => {
-		const expectedSize = standardFontList.length + webFontList.length;
+	it("merges standardFontList, systemFontList and webFontList without duplicates", () => {
+		const expectedSize = standardFontList.length + systemFontList.length + webFontList.length;
 		expect(fontList).toHaveLength(expectedSize);
 	});
 });
@@ -48,6 +49,37 @@ describe("standardFontList", () => {
 		for (const font of standardFontList) {
 			expect(font.type).toBe("standard");
 		}
+	});
+});
+
+describe("systemFontList", () => {
+	it("includes Microsoft YaHei as a system font", () => {
+		const font = fontList.find((entry) => entry.family === "Microsoft YaHei");
+		expect(font).toBeDefined();
+		expect(font?.type).toBe("system");
+		expect(font?.category).toBe("sans-serif");
+	});
+
+	it("system fonts are not treated as standard PDF fonts", () => {
+		expect(isStandardPdfFontFamily("Microsoft YaHei")).toBe(false);
+		expect(getWebFont("Microsoft YaHei")).toBeUndefined();
+	});
+
+	it("getFont returns the direct system font record", () => {
+		const font = getFont("Microsoft YaHei");
+		expect(font).toBeDefined();
+		expect(font?.family).toBe("Microsoft YaHei");
+		expect(font?.type).toBe("system");
+	});
+
+	it("maps Microsoft YaHei to Noto Sans SC for PDF rendering", () => {
+		expect(resolveLegacyFontAlias("Microsoft YaHei")).toBe("Noto Sans SC");
+	});
+
+	it("includes the localized name and 中文 marker for search", () => {
+		const keywords = getFontSearchKeywords("Microsoft YaHei");
+		expect(keywords).toContain("微软雅黑");
+		expect(keywords).toContain("中文");
 	});
 });
 
@@ -223,6 +255,7 @@ describe("legacy font compatibility (#2989)", () => {
 		["Garamond", "EB Garamond"],
 		["Calibri", "Carlito"],
 		["Cambria", "Tinos"],
+		["Microsoft YaHei", "Noto Sans SC"],
 	])("aliases %s → %s", (legacy, target) => {
 		expect(resolveLegacyFontAlias(legacy)).toBe(target);
 	});
@@ -234,7 +267,7 @@ describe("legacy font compatibility (#2989)", () => {
 	});
 
 	it("every alias target is actually registered as a known font", () => {
-		const aliasTargets = ["Times-Roman", "Tinos", "Arimo", "EB Garamond", "Carlito"];
+		const aliasTargets = ["Times-Roman", "Tinos", "Arimo", "EB Garamond", "Carlito", "Noto Sans SC"];
 		for (const target of aliasTargets) {
 			expect(getFont(target), `alias target ${target} must be a known font`).toBeDefined();
 		}

@@ -5,17 +5,19 @@ import { cn } from "@reactive-resume/utils/style";
 interface FontDisplayProps {
 	family: string;
 	label: string;
-	type: "standard" | "web";
+	type: "standard" | "system" | "web";
 	url?: string;
 }
 
 const loadedFonts = new Set<string>();
 
 export function FontDisplay({ family, label, type, url }: FontDisplayProps) {
-	const previewName = type === "standard" ? family : `${family} Preview`;
+	const previewName = type === "standard" || type === "system" ? family : `${family} Preview`;
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [isLoaded, setIsLoaded] = useState(() => type === "standard" || loadedFonts.has(previewName));
+	const [isLoaded, setIsLoaded] = useState(
+		() => type === "standard" || type === "system" || loadedFonts.has(previewName),
+	);
 	const isInView = useInView(containerRef, { once: true, amount: 0.1, margin: "50px" });
 
 	useEffect(() => {

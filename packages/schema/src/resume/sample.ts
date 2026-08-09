@@ -614,14 +614,14 @@ export const sampleResumeData: ResumeData = {
 		},
 		typography: {
 			body: {
-				fontFamily: "IBM Plex Serif",
-				fontWeights: ["400", "600"],
+				fontFamily: "Microsoft YaHei",
+				fontWeights: ["400", "700"],
 				fontSize: 10,
 				lineHeight: 1.5,
 			},
 			heading: {
-				fontFamily: "Fira Sans Condensed",
-				fontWeights: ["500"],
+				fontFamily: "Microsoft YaHei",
+				fontWeights: ["700"],
 				fontSize: 12,
 				lineHeight: 1.5,
 			},

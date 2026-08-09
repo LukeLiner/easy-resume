@@ -93,14 +93,14 @@ export const defaultResumeData: ResumeData = {
 		},
 		typography: {
 			body: {
-				fontFamily: "IBM Plex Serif",
+				fontFamily: "Microsoft YaHei",
 				fontWeights: ["400", "500"],
 				fontSize: 10,
 				lineHeight: 1.5,
 			},
 			heading: {
-				fontFamily: "IBM Plex Serif",
-				fontWeights: ["600"],
+				fontFamily: "Microsoft YaHei",
+				fontWeights: ["700"],
 				fontSize: 14,
 				lineHeight: 1.5,
 			},

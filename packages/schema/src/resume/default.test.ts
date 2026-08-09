@@ -44,8 +44,8 @@ describe("defaultResumeData", () => {
 		expect(page?.sidebar).toContain("skills");
 	});
 
-	it("uses serif font family for body", () => {
-		expect(defaultResumeData.metadata.typography.body.fontFamily).toBe("IBM Plex Serif");
+	it("uses Microsoft YaHei as the default body font", () => {
+		expect(defaultResumeData.metadata.typography.body.fontFamily).toBe("Microsoft YaHei");
 	});
 
 	it("default sidebar width is 35%", () => {

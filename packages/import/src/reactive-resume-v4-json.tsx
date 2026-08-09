@@ -617,13 +617,13 @@ export function parseReactiveResumeV4JSON(json: string): ResumeData {
 				},
 				typography: {
 					body: {
-						fontFamily: v4Data.metadata.typography?.font?.family ?? "IBM Plex Serif",
+						fontFamily: v4Data.metadata.typography?.font?.family ?? "Microsoft YaHei",
 						fontWeights: convertFontVariants(v4Data.metadata.typography?.font?.variants),
 						fontSize: clamp((v4Data.metadata.typography?.font?.size ?? 14.67) * 0.75, 6, 24),
 						lineHeight: clamp(v4Data.metadata.typography?.lineHeight ?? 1.5, 0.5, 4),
 					},
 					heading: {
-						fontFamily: v4Data.metadata.typography?.font?.family ?? "IBM Plex Serif",
+						fontFamily: v4Data.metadata.typography?.font?.family ?? "Microsoft YaHei",
 						fontWeights: convertFontVariantsForHeading(v4Data.metadata.typography?.font?.variants),
 						fontSize: clamp(clamp((v4Data.metadata.typography?.font?.size ?? 14.67) * 0.75, 6, 24) + 3, 6, 24),
 						lineHeight: clamp(v4Data.metadata.typography?.lineHeight ?? 1.5, 0.5, 4),

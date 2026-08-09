@@ -6,10 +6,12 @@ import {
 	GlobalWorkerOptions,
 	getDocument,
 	RenderingCancelledException,
+	TextLayer,
 } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@reactive-resume/utils/style";
 import { DEFAULT_PDF_PAGE_SIZE, getPreviewCanvasScale, getScaledPreviewPageSize } from "./preview.shared.utils";
+import "./pdf-canvas.css";
 
 GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/legacy/build/pdf.worker.min.mjs", import.meta.url).toString();
 
@@ -95,6 +97,7 @@ export function PdfCanvasPage({
 	totalPages,
 }: PdfCanvasPageProps) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const textLayerRef = useRef<HTMLDivElement>(null);
 	const onLoadSuccessRef = useRef(onLoadSuccess);
 	const onRenderSuccessRef = useRef(onRenderSuccess);
 	const scaledPageSize = getScaledPreviewPageSize(pageSize, pageScale);
@@ -103,6 +106,64 @@ export function PdfCanvasPage({
 		onLoadSuccessRef.current = onLoadSuccess;
 		onRenderSuccessRef.current = onRenderSuccess;
 	}, [onLoadSuccess, onRenderSuccess]);
+
+	useEffect(() => {
+		let isCancelled = false;
+		let textLayer: TextLayer | undefined;
+
+		const renderTextLayer = async () => {
+			const container = textLayerRef.current;
+			if (!container) return;
+
+			const page = await document.getPage(pageNumber);
+
+			try {
+				if (isCancelled) return;
+
+				container.replaceChildren();
+				container.style.setProperty("--total-scale-factor", `${pageScale}`);
+				container.style.setProperty("--scale-round-x", "0.01px");
+				container.style.setProperty("--scale-round-y", "0.01px");
+
+				textLayer = new TextLayer({
+					container,
+					textContentSource: page.streamTextContent(),
+					viewport: page.getViewport({ scale: 1 }),
+				});
+
+				await textLayer.render();
+			} finally {
+				page.cleanup();
+			}
+		};
+
+		void renderTextLayer().catch((error: unknown) => {
+			if (isCancelled) return;
+
+			console.error(`Failed to render PDF text layer for page ${pageNumber}`, error);
+		});
+
+		return () => {
+			isCancelled = true;
+			textLayer?.cancel();
+		};
+	}, [document, pageNumber, pageScale]);
+
+	useEffect(() => {
+		const container = textLayerRef.current;
+		if (!container) return;
+
+		const handleMouseDown = (event: MouseEvent) => {
+			// 阻止文本 span 上的 mousedown 冒泡到 react-zoom-pan-pinch，避免拖拽平移抢占文本选择
+			if ((event.target as HTMLElement | null)?.closest("span")) {
+				event.stopPropagation();
+			}
+		};
+
+		container.addEventListener("mousedown", handleMouseDown);
+
+		return () => container.removeEventListener("mousedown", handleMouseDown);
+	}, []);
 
 	useEffect(() => {
 		let isCancelled = false;
@@ -183,8 +244,9 @@ export function PdfCanvasPage({
 				</figcaption>
 			) : null}
 
-			<div style={scaledPageSize} className={cn("aspect-page overflow-hidden rounded-md", className)}>
+			<div style={scaledPageSize} className={cn("relative aspect-page overflow-hidden rounded-md", className)}>
 				<canvas ref={canvasRef} aria-label={`Resume page ${pageNumber} of ${totalPages}`} />
+				<div ref={textLayerRef} className="resume-text-layer" aria-hidden="true" />
 			</div>
 		</figure>
 	);
