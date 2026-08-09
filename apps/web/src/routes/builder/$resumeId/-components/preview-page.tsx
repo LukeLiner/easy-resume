@@ -23,7 +23,7 @@ export function PreviewPage() {
 					centerOnInit
 					maxScale={5}
 					minScale={0.5}
-					initialScale={1}
+					initialScale={2}
 					limitToBounds={false}
 					wheel={{ step: 0.001 }}
 				>
