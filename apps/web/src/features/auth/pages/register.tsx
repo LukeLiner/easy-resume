@@ -252,27 +252,29 @@ function PostSignupScreen() {
 		<>
 			<div className="space-y-1 text-center">
 				<h1 className="font-semibold text-2xl tracking-tight">
-					<Trans>You've got mail!</Trans>
+					<Trans>Account created</Trans>
 				</h1>
 				<p className="text-muted-foreground">
-					<Trans>Check your email for a link to verify your account.</Trans>
+					<Trans>Your account has been created and is pending approval. You will be notified once an admin reviews your account.</Trans>
 				</p>
 			</div>
 
 			<Alert>
 				<AlertTitle>
-					<Trans>This step is optional, but recommended.</Trans>
+					<Trans>What's next?</Trans>
 				</AlertTitle>
 				<AlertDescription>
-					<Trans>Verifying your email is required when resetting your password.</Trans>
+					<Trans>
+						An admin will review your account shortly. You can try signing in once your account is approved.
+					</Trans>
 				</AlertDescription>
 			</Alert>
 
 			<Button
 				nativeButton={false}
 				render={
-					<Link to="/dashboard">
-						<Trans comment="Button label to continue to dashboard after successful registration">Continue</Trans>{" "}
+					<Link to="/auth/login">
+						<Trans comment="Button label to go to sign in page after registration">Sign in</Trans>{" "}
 						<ArrowRightIcon />
 					</Link>
 				}

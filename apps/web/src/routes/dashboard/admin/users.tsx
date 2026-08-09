@@ -4,6 +4,7 @@ import { Trans } from "@lingui/react/macro";
 import {
 	CaretLeftIcon,
 	CaretRightIcon,
+	CheckCircleIcon,
 	DotsThreeIcon,
 	KeyIcon,
 	ListNumbersIcon,
@@ -112,6 +113,18 @@ function RouteComponent() {
 		orpc.admin.users.delete.mutationOptions({
 			onSuccess: () => {
 				toast.success(i18n.t("User deleted successfully"));
+				void queryClient.invalidateQueries({ queryKey: orpc.admin.users.list.key() });
+			},
+			onError: (error) => {
+				toast.error(error.message);
+			},
+		}),
+	);
+
+	const approveMutation = useMutation(
+		orpc.admin.users.approve.mutationOptions({
+			onSuccess: () => {
+				toast.success(i18n.t("User approved successfully"));
 				void queryClient.invalidateQueries({ queryKey: orpc.admin.users.list.key() });
 			},
 			onError: (error) => {
@@ -233,9 +246,19 @@ function RouteComponent() {
 												</Badge>
 											</td>
 											<td className="px-4 py-3">
-												<Badge variant={user.banned ? "destructive" : "secondary"}>
-													{user.banned ? (
+												<Badge
+													variant={
+														user.status === "banned" || user.banned
+															? "destructive"
+															: user.status === "pending"
+																? "secondary"
+																: "default"
+													}
+												>
+													{user.status === "banned" || user.banned ? (
 														<Trans>Banned</Trans>
+													) : user.status === "pending" ? (
+														<Trans>Pending</Trans>
 													) : (
 														<Trans>Active</Trans>
 													)}
@@ -259,6 +282,20 @@ function RouteComponent() {
 														}
 													/>
 													<DropdownMenuContent align="end">
+														{user.status === "pending" && (
+															<>
+																<DropdownMenuItem
+																	onClick={() =>
+																		approveMutation.mutate({ userId: user.id })
+																	}
+																	disabled={approveMutation.isPending}
+																>
+																	<CheckCircleIcon />
+																	<Trans>Approve</Trans>
+																</DropdownMenuItem>
+																<DropdownMenuSeparator />
+															</>
+														)}
 														<DropdownMenuItem onClick={() => handleBanToggle(user)}>
 															{user.banned ? (
 																<>

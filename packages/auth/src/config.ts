@@ -14,6 +14,7 @@ import { genericOAuth } from "better-auth/plugins/generic-oauth";
 import { twoFactor } from "better-auth/plugins/two-factor";
 import { username } from "better-auth/plugins/username";
 import { createElement } from "react";
+import { eq } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import * as schema from "@reactive-resume/db/schema";
 import { ResetPasswordEmail, VerifyEmail, VerifyEmailChange } from "@reactive-resume/email/templates/auth";
@@ -107,10 +108,36 @@ const getAuthConfig = () => {
 		hooks: {
 			// biome-ignore lint/suspicious/useAwait: Better Auth requires middleware callbacks to return a Promise.
 			before: createAuthMiddleware(async (ctx) => {
+				// Block sign-in for pending or banned users
+				if (ctx.path === "/sign-in/email") {
+					const body = ctx.body as { email?: string } | undefined;
+					const email = body?.email;
+					if (email) {
+						const [user] = await db
+							.select({ status: schema.user.status, role: schema.user.role })
+							.from(schema.user)
+							.where(eq(schema.user.email, email));
+						if (user && user.role !== "admin") {
+							if (user.status === "pending") {
+								throw new APIError("FORBIDDEN", {
+									message: "Your account is pending approval. Please wait for an admin to review your account.",
+								});
+							}
+							if (user.status === "banned") {
+								throw new APIError("FORBIDDEN", {
+									message: "Your account has been suspended. Please contact support for more information.",
+								});
+							}
+						}
+					}
+					return;
+				}
+
+				// OAuth2 dynamic client registration redirect_uri policy
 				if (!ctx.path.includes("/oauth2/register")) return;
 
-				const body = ctx.body as { redirect_uris?: unknown } | undefined;
-				const redirectUris = Array.isArray(body?.redirect_uris) ? body.redirect_uris : [];
+				const oauthBody = ctx.body as { redirect_uris?: unknown } | undefined;
+				const redirectUris = Array.isArray(oauthBody?.redirect_uris) ? oauthBody.redirect_uris : [];
 
 				for (const uri of redirectUris) {
 					if (typeof uri !== "string") {
@@ -137,7 +164,7 @@ const getAuthConfig = () => {
 
 		emailAndPassword: {
 			enabled: !env.FLAG_DISABLE_EMAIL_AUTH,
-			autoSignIn: true,
+			autoSignIn: false,
 			minPasswordLength: 8,
 			maxPasswordLength: 64,
 			requireEmailVerification: false,
@@ -182,6 +209,11 @@ const getAuthConfig = () => {
 				username: {
 					type: "string",
 					required: true,
+				},
+				status: {
+					type: "string",
+					required: false,
+					defaultValue: "pending",
 				},
 			},
 		},
