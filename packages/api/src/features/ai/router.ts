@@ -195,6 +195,7 @@ export const aiRouter = {
 			z.object({
 				aiProviderId: z.string().optional(),
 				resumeId: z.string(),
+				locale: z.string().optional(),
 			}),
 		)
 		.use(aiRequestRateLimit)
@@ -215,6 +216,7 @@ export const aiRouter = {
 					apiKey: provider.apiKey,
 					baseURL: provider.baseURL ?? "",
 					resumeData: resume.data,
+					...(input.locale ? { locale: input.locale } : {}),
 				});
 
 				return await resumeService.analysis.upsert({

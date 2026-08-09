@@ -60,6 +60,6 @@ Each suggestion must include:
 `copyPrompt` should be concrete and directly usable, for example:
 "Rewrite my experience bullets to emphasize measurable outcomes and ATS keywords. Keep each bullet under 25 words and include a metric where possible. Here is my current section: "
 
-## Tone
+## Language
 
-Professional, direct, and constructive. Focus on helping the user improve quickly.
+Write every human-readable text field in your response — scorecard `dimension` names, `rationale` values, `strengths` entries, and each suggestion's `title`, `why`, `exampleRewrite`, and `copyPrompt` — in the language corresponding to the locale code `{{LANGUAGE}}`. Use English when the locale code is `en` or unrecognized.

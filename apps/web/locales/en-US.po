@@ -571,6 +571,10 @@ msgstr "Aspect Ratio"
 msgid "Atlas Cloud supports Reactive Resume as a project sponsor. If your company would like to sponsor the project, email <0>{sponsorshipEmail}</0>."
 msgstr "Atlas Cloud supports Reactive Resume as a project sponsor. If your company would like to sponsor the project, email <0>{sponsorshipEmail}</0>."
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "ATS Compatibility"
+msgstr "ATS Compatibility"
+
 #: src/features/applications/components/application-detail-sheet.tsx
 #: src/features/applications/components/application-form-sheet.tsx
 msgid "Attach a cover letter (PDF)"
@@ -841,6 +845,10 @@ msgstr "Choose an existing conversation from the sidebar, or start a new draft-f
 #: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
 msgid "Choose PDF, DOCX, Markdown, or JSON. Export your resume and cover letter separately when available."
 msgstr "Choose PDF, DOCX, Markdown, or JSON. Export your resume and cover letter separately when available."
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Clarity & Specificity"
+msgstr "Clarity & Specificity"
 
 #: src/components/level/combobox.tsx
 msgid "Circle"
@@ -2316,6 +2324,10 @@ msgstr "Icon"
 msgid "Identify gaps for an applicant tracking system and apply only high-confidence keyword improvements."
 msgstr "Identify gaps for an applicant tracking system and apply only high-confidence keyword improvements."
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Impact & Quantification"
+msgstr "Impact & Quantification"
+
 #: src/dialogs/resume/import.tsx
 #: src/routes/dashboard/resumes/index.tsx
 msgid "Import"
@@ -2536,6 +2548,10 @@ msgid "Language"
 msgstr "Language"
 
 #: src/dialogs/resume/sections/custom.tsx
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Language & Relevance"
+msgstr "Language & Relevance"
+
 #: src/libs/resume/section-title.ts
 #: src/libs/resume/section.tsx
 msgid "Languages"
@@ -4231,6 +4247,10 @@ msgstr "Stop generation"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Strengths"
 msgstr "Strengths"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Structure & Completeness"
+msgstr "Structure & Completeness"
 
 #: src/components/input/rich-input.tsx
 msgid "Strike"

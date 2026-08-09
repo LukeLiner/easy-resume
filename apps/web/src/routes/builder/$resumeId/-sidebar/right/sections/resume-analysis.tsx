@@ -1,7 +1,8 @@
 import type { ResumeAnalysis } from "@reactive-resume/schema/resume/analysis";
 import { t } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
-import { ArrowRightIcon, ChartPolarIcon, InfoIcon, LightningIcon, SparkleIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, ChartPolarIcon, InfoIcon, SparkleIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -46,8 +47,19 @@ function impactLabel(impact: "high" | "medium" | "low") {
 		.exhaustive();
 }
 
+function scorecardDimensionLabel(dimension: string) {
+	return match(dimension)
+		.with("Clarity & Specificity", () => t`Clarity & Specificity`)
+		.with("Impact & Quantification", () => t`Impact & Quantification`)
+		.with("ATS Compatibility", () => t`ATS Compatibility`)
+		.with("Structure & Completeness", () => t`Structure & Completeness`)
+		.with("Language & Relevance", () => t`Language & Relevance`)
+		.otherwise(() => dimension);
+}
+
 export function ResumeAnalysisSectionBuilder() {
 	const queryClient = useQueryClient();
+	const { i18n } = useLingui();
 
 	const resume = useResume();
 
@@ -102,6 +114,7 @@ export function ResumeAnalysisSectionBuilder() {
 
 		analyzeResume({
 			resumeId: resume.id,
+			locale: i18n.locale,
 		});
 	};
 
@@ -178,25 +191,6 @@ export function ResumeAnalysisSectionBuilder() {
 								<ScorecardRadar items={analysis.scorecard} />
 							</div>
 
-							<div className="space-y-3 rounded-md border p-3">
-								<h5 className="flex items-center gap-2 font-semibold text-sm">
-									<LightningIcon className="text-primary" />
-									<Trans>Scorecard</Trans>
-								</h5>
-
-								<div className="space-y-3">
-									{analysis.scorecard.map((item) => (
-										<div key={item.dimension} className="space-y-3 rounded-md border bg-card p-3">
-											<div className="flex items-center justify-between gap-2">
-												<div className="font-medium text-sm">{item.dimension}</div>
-												<Badge variant="secondary">{item.score}/100</Badge>
-											</div>
-											<p className="text-muted-foreground text-xs">{item.rationale}</p>
-										</div>
-									))}
-								</div>
-							</div>
-
 							{analysis.strengths.length > 0 && (
 								<div className="space-y-3 rounded-md border p-3">
 									<h5 className="font-semibold text-sm">
@@ -256,13 +250,30 @@ type ScorecardRadarProps = {
 	items: ResumeAnalysis["scorecard"];
 };
 
+function splitLabel(label: string): string[] {
+	const words = label.split(" ");
+	if (label.length <= 12 || words.length < 2) return [label];
+
+	let bestIndex = 1;
+	let bestDiff = Number.POSITIVE_INFINITY;
+	for (let i = 1; i < words.length; i += 1) {
+		const firstLength = words.slice(0, i).join(" ").length;
+		const diff = Math.abs(firstLength - label.length / 2);
+		if (diff < bestDiff) {
+			bestDiff = diff;
+			bestIndex = i;
+		}
+	}
+	return [words.slice(0, bestIndex).join(" "), words.slice(bestIndex).join(" ")];
+}
+
 function ScorecardRadar({ items }: ScorecardRadarProps) {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const selectedItem = items[selectedIndex] ?? items[0];
 
-	const size = 240;
+	const size = 300;
 	const center = size / 2;
-	const radius = 88;
+	const radius = 80;
 	const angleFor = (index: number) => -Math.PI / 2 + (index * 2 * Math.PI) / items.length;
 	const pointFor = (index: number, value: number) => ({
 		x: center + Math.cos(angleFor(index)) * radius * (value / 100),
@@ -320,6 +331,31 @@ function ScorecardRadar({ items }: ScorecardRadarProps) {
 							/>
 						);
 					})}
+					{items.map((item, index) => {
+						const tip = pointFor(index, 100);
+						const angle = angleFor(index);
+						const cos = Math.cos(angle);
+						const sin = Math.sin(angle);
+						const anchor = cos > 0.35 ? "start" : cos < -0.35 ? "end" : "middle";
+						const dx = cos > 0.35 ? 8 : cos < -0.35 ? -8 : 0;
+						const lines = splitLabel(scorecardDimensionLabel(item.dimension));
+						const dy = sin <= -0.5 ? -(lines.length - 1) * 10 - 8 : sin >= 0.5 ? 20 : 4;
+						return (
+							<text
+								key={`label-${item.dimension}`}
+								x={tip.x + dx}
+								y={tip.y + dy}
+								textAnchor={anchor}
+								className="fill-muted-foreground font-medium text-[9px]"
+							>
+								{lines.map((line, lineIndex) => (
+									<tspan key={line} x={tip.x + dx} dy={lineIndex === 0 ? 0 : 10}>
+										{line}
+									</tspan>
+								))}
+							</text>
+						);
+					})}
 				</svg>
 			</div>
 
@@ -339,14 +375,14 @@ function ScorecardRadar({ items }: ScorecardRadarProps) {
 							aria-hidden="true"
 							className={`size-1.5 rounded-full ${index === selectedIndex ? "bg-primary-foreground" : "bg-primary"}`}
 						/>
-						{item.dimension}
+						{scorecardDimensionLabel(item.dimension)}
 					</button>
 				))}
 			</div>
 
 			<div className="space-y-3 rounded-md border bg-card p-3">
 				<div className="flex items-center justify-between gap-2">
-					<div className="font-medium text-sm">{selectedItem.dimension}</div>
+					<div className="font-medium text-sm">{scorecardDimensionLabel(selectedItem.dimension)}</div>
 					<Badge variant="secondary">{selectedItem.score}/100</Badge>
 				</div>
 				<p className="text-muted-foreground text-xs">{selectedItem.rationale}</p>

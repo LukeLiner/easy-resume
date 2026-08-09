@@ -576,6 +576,10 @@ msgstr "宽高比"
 msgid "Atlas Cloud supports Reactive Resume as a project sponsor. If your company would like to sponsor the project, email <0>{sponsorshipEmail}</0>."
 msgstr "Atlas Cloud 以项目赞助商的身份支持 Reactive Resume 项目。如果贵公司有意赞助该项目，请发送电子邮件至 <0>{sponsorshipEmail}</0> 。"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "ATS Compatibility"
+msgstr "ATS 兼容性"
+
 #: src/features/applications/components/application-detail-sheet.tsx
 #: src/features/applications/components/application-form-sheet.tsx
 msgid "Attach a cover letter (PDF)"
@@ -846,6 +850,10 @@ msgstr "从侧边栏选择现有对话，或发起新的以草稿为重点的对
 #: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
 msgid "Choose PDF, DOCX, Markdown, or JSON. Export your resume and cover letter separately when available."
 msgstr "选择 PDF、DOCX、Markdown 或 JSON 格式。如有简历和求职信，请分别导出。"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Clarity & Specificity"
+msgstr "清晰度与具体性"
 
 #: src/components/level/combobox.tsx
 msgid "Circle"
@@ -2321,6 +2329,10 @@ msgstr "图标"
 msgid "Identify gaps for an applicant tracking system and apply only high-confidence keyword improvements."
 msgstr "找出应聘者追踪系统中的不足之处，并仅应用高置信度的关键词改进。"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Impact & Quantification"
+msgstr "影响力与量化程度"
+
 #: src/dialogs/resume/import.tsx
 #: src/routes/dashboard/resumes/index.tsx
 msgid "Import"
@@ -2541,6 +2553,10 @@ msgid "Language"
 msgstr "语言"
 
 #: src/dialogs/resume/sections/custom.tsx
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Language & Relevance"
+msgstr "语言与相关性"
+
 #: src/libs/resume/section-title.ts
 #: src/libs/resume/section.tsx
 msgid "Languages"
@@ -4236,6 +4252,10 @@ msgstr "停止生成"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Strengths"
 msgstr "优势"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Structure & Completeness"
+msgstr "结构与完整性"
 
 #: src/components/input/rich-input.tsx
 msgid "Strike"

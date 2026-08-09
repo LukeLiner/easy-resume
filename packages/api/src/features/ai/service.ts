@@ -380,16 +380,19 @@ async function chat(input: ChatInput) {
 
 type AnalyzeResumeInput = z.infer<typeof aiCredentialsSchema> & {
 	resumeData: ResumeData;
+	locale?: string;
 };
 
-function buildAnalyzeResumeSystemPrompt(resumeData: ResumeData): string {
-	return `${analyzeResumeSystemPromptTemplate}\n\n## Resume Data\n\n${JSON.stringify(resumeData, null, 2)}`;
+function buildAnalyzeResumeSystemPrompt(resumeData: ResumeData, locale?: string): string {
+	const language = locale?.trim() || "en";
+	const prompt = analyzeResumeSystemPromptTemplate.replace("{{LANGUAGE}}", () => language);
+	return `${prompt}\n\n## Resume Data\n\n${JSON.stringify(resumeData, null, 2)}`;
 }
 
 /** Sends resume data to the AI provider and returns a structured analysis, parsing raw JSON from the response text. */
 async function analyzeResume(input: AnalyzeResumeInput): Promise<ResumeAnalysis> {
 	const model = getModel(input);
-	const systemPrompt = buildAnalyzeResumeSystemPrompt(input.resumeData);
+	const systemPrompt = buildAnalyzeResumeSystemPrompt(input.resumeData, input.locale);
 
 	const result = await generateText({
 		model,
