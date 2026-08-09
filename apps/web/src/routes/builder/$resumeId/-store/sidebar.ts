@@ -15,9 +15,9 @@ export type BuilderLayout = {
 };
 
 export const DEFAULT_BUILDER_LAYOUT: BuilderLayout = {
-	left: 22,
-	artboard: 56,
-	right: 22,
+	left: 40,
+	artboard: 60,
+	right: 0,
 };
 
 export const DESKTOP_BUILDER_SIDEBAR_COLLAPSED_SIZE = 48;
@@ -41,10 +41,9 @@ export const mapPanelLayoutToBuilderLayout = (layout: Layout): BuilderLayout => 
 	const artboard = layout.artboard;
 	const right = layout.right;
 
-	if (typeof left !== "number" || typeof artboard !== "number" || typeof right !== "number")
-		return DEFAULT_BUILDER_LAYOUT;
+	if (typeof left !== "number" || typeof artboard !== "number") return DEFAULT_BUILDER_LAYOUT;
 
-	return { left, artboard, right };
+	return { left, artboard, right: typeof right === "number" ? right : 0 };
 };
 
 export const parseBuilderLayoutCookie = (value?: string | null): BuilderLayout => {
@@ -60,10 +59,9 @@ export const parseBuilderLayoutCookie = (value?: string | null): BuilderLayout =
 		const artboard = (parsed as { artboard?: unknown }).artboard;
 		const right = (parsed as { right?: unknown }).right;
 
-		if (typeof left !== "number" || typeof artboard !== "number" || typeof right !== "number")
-			return DEFAULT_BUILDER_LAYOUT;
+		if (typeof left !== "number" || typeof artboard !== "number") return DEFAULT_BUILDER_LAYOUT;
 
-		return { left, artboard, right };
+		return { left, artboard, right: typeof right === "number" ? right : 0 };
 	} catch {
 		return DEFAULT_BUILDER_LAYOUT;
 	}

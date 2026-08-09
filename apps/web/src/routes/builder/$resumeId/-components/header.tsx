@@ -82,15 +82,6 @@ export function BuilderHeader() {
 
 			<div className="flex min-w-0 flex-1 items-center justify-end gap-x-1">
 				<ResumeDownloadButton />
-
-				<Button size="icon" variant="ghost" className="hidden md:flex" onClick={() => toggleSidebar("right")}>
-					<SidebarSimpleIcon className="-scale-x-100" />
-					<span className="sr-only">
-						<Trans comment="Screen-reader label for opening or closing the right sidebar in resume builder">
-							Toggle right sidebar
-						</Trans>
-					</span>
-				</Button>
 			</div>
 		</div>
 	);

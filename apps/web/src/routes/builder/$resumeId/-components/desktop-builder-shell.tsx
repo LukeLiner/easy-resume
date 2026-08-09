@@ -5,14 +5,13 @@ import { Outlet } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { usePanelRef } from "react-resizable-panels";
 import { ResizableGroup, ResizablePanel, ResizableSeparator } from "@reactive-resume/ui/components/resizable";
-import { BuilderSidebarLeft } from "../-sidebar/left";
-import { BuilderSidebarRight } from "../-sidebar/right";
 import {
 	mapPanelLayoutToBuilderLayout,
 	setBuilderLayout,
 	useBuilderSidebar,
 	useBuilderSidebarStore,
 } from "../-store/sidebar";
+import { BuilderSidebarCombined } from "./combined-sidebar";
 import { BuilderHeader } from "./header";
 
 export type BuilderLayoutShellProps = {
@@ -24,10 +23,8 @@ export function DesktopBuilderShell({ initialLayout }: BuilderLayoutShellProps) 
 	const canPersistLayoutRef = useRef(false);
 
 	const leftSidebarRef = usePanelRef();
-	const rightSidebarRef = usePanelRef();
 
 	const setLeftSidebar = useBuilderSidebarStore((state) => state.setLeftSidebar);
-	const setRightSidebar = useBuilderSidebarStore((state) => state.setRightSidebar);
 	const setLayout = useBuilderSidebarStore((state) => state.setLayout);
 
 	const { maxSidebarSize, minSidebarSize, collapsedSidebarSize, groupResizeBehavior } = useBuilderSidebar();
@@ -45,16 +42,14 @@ export function DesktopBuilderShell({ initialLayout }: BuilderLayoutShellProps) 
 	};
 
 	useEffect(() => {
-		if (!leftSidebarRef || !rightSidebarRef) return;
+		if (!leftSidebarRef) return;
 
 		setLeftSidebar(leftSidebarRef);
-		setRightSidebar(rightSidebarRef);
-	}, [leftSidebarRef, rightSidebarRef, setLeftSidebar, setRightSidebar]);
+	}, [leftSidebarRef, setLeftSidebar]);
 
 	const sidebarMinSize = `${minSidebarSize}px`;
 	const sidebarCollapsedSize = `${collapsedSidebarSize}px`;
 	const leftSidebarSize = `${initialLayout.left}%`;
-	const rightSidebarSize = `${initialLayout.right}%`;
 	const artboardSize = `${initialLayout.artboard}%`;
 
 	return (
@@ -80,27 +75,13 @@ export function DesktopBuilderShell({ initialLayout }: BuilderLayoutShellProps) 
 					defaultSize={leftSidebarSize}
 					className="z-20 h-[calc(100svh-3.5rem)]"
 				>
-					<BuilderSidebarLeft />
+					<BuilderSidebarCombined />
 				</ResizablePanel>
 				<ResizableSeparator withHandle className="z-50 border-s" />
 				<ResizablePanel id="artboard" defaultSize={artboardSize} className="h-[calc(100svh-3.5rem)]">
 					<main id="main-content" className="h-full">
 						<Outlet />
 					</main>
-				</ResizablePanel>
-				<ResizableSeparator withHandle className="z-50 border-e" />
-				<ResizablePanel
-					collapsible
-					id="right"
-					panelRef={rightSidebarRef}
-					groupResizeBehavior={groupResizeBehavior}
-					maxSize={maxSidebarSize}
-					minSize={sidebarMinSize}
-					collapsedSize={sidebarCollapsedSize}
-					defaultSize={rightSidebarSize}
-					className="z-20 h-[calc(100svh-3.5rem)]"
-				>
-					<BuilderSidebarRight />
 				</ResizablePanel>
 			</ResizableGroup>
 		</div>

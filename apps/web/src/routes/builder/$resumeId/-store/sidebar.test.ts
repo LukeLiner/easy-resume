@@ -44,9 +44,13 @@ describe("parseBuilderLayoutCookie", () => {
 		expect(parseBuilderLayoutCookie('"string"')).toEqual(DEFAULT_BUILDER_LAYOUT);
 	});
 
-	it("returns the default layout when any field is missing or not a number", () => {
-		expect(parseBuilderLayoutCookie('{"left":10,"artboard":50}')).toEqual(DEFAULT_BUILDER_LAYOUT);
+	it("returns the default layout when a required field is missing or not a number", () => {
 		expect(parseBuilderLayoutCookie('{"left":"10","artboard":50,"right":40}')).toEqual(DEFAULT_BUILDER_LAYOUT);
+		expect(parseBuilderLayoutCookie('{"artboard":50,"right":40}')).toEqual(DEFAULT_BUILDER_LAYOUT);
+	});
+
+	it("treats a missing right size as zero for the two-panel layout", () => {
+		expect(parseBuilderLayoutCookie('{"left":10,"artboard":50}')).toEqual({ left: 10, artboard: 50, right: 0 });
 	});
 
 	it("returns the parsed layout when all fields are numeric", () => {
@@ -56,9 +60,17 @@ describe("parseBuilderLayoutCookie", () => {
 });
 
 describe("mapPanelLayoutToBuilderLayout", () => {
-	it("returns the default layout if any panel size is missing", () => {
+	it("returns the default layout if a required panel size is missing", () => {
 		expect(mapPanelLayoutToBuilderLayout({} as never)).toEqual(DEFAULT_BUILDER_LAYOUT);
-		expect(mapPanelLayoutToBuilderLayout({ left: 10, artboard: 60 } as never)).toEqual(DEFAULT_BUILDER_LAYOUT);
+		expect(mapPanelLayoutToBuilderLayout({ artboard: 60 } as never)).toEqual(DEFAULT_BUILDER_LAYOUT);
+	});
+
+	it("treats a missing right panel size as zero", () => {
+		expect(mapPanelLayoutToBuilderLayout({ left: 10, artboard: 60 } as never)).toEqual({
+			left: 10,
+			artboard: 60,
+			right: 0,
+		});
 	});
 
 	it("returns the layout when all panel sizes are numeric", () => {

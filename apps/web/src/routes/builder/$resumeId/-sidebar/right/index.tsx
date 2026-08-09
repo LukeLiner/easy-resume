@@ -71,19 +71,24 @@ export function BuilderSidebarRight() {
 				ref={scrollAreaRef}
 				className="@container h-[calc(100svh-3.5rem)] overflow-hidden bg-background sm:me-12"
 			>
-				<div className="space-y-4 p-4">
-					{rightSidebarSections.map((section) => (
-						<Fragment key={section}>
-							<Suspense fallback={<SectionSkeleton />}>
-								{getSectionComponent(section)}
-							</Suspense>
-							<Separator />
-						</Fragment>
-					))}
-
-					</div>
+				<BuilderSidebarRightContent />
 			</ScrollArea>
 		</>
+	);
+}
+
+export function BuilderSidebarRightContent() {
+	return (
+		<div className="space-y-4 p-4">
+			{rightSidebarSections.map((section) => (
+				<Fragment key={section}>
+					<Suspense fallback={<SectionSkeleton />}>
+						{getSectionComponent(section)}
+					</Suspense>
+					<Separator />
+				</Fragment>
+			))}
+		</div>
 	);
 }
 

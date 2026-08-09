@@ -93,29 +93,36 @@ function getSectionComponent(type: LeftSidebarSection) {
 
 export function BuilderSidebarLeft() {
 	const scrollAreaRef = useRef<HTMLDivElement | null>(null);
-	const isLocked = useIsResumeLocked();
 
 	return (
 		<>
 			<SidebarEdge />
 
 			<ScrollArea ref={scrollAreaRef} className="@container h-[calc(100svh-3.5rem)] bg-background sm:ms-12">
-				<div className="space-y-4 p-4">
-					{isLocked && <LockBanner />}
-
-					<fieldset disabled={isLocked} className="m-0 min-w-0 space-y-4 border-0 p-0">
-						{leftSidebarSections.map((section) => (
-							<Fragment key={section}>
-								<Suspense fallback={<SectionSkeleton />}>
-									{getSectionComponent(section)}
-								</Suspense>
-								<Separator />
-							</Fragment>
-						))}
-					</fieldset>
-				</div>
+				<BuilderSidebarLeftContent />
 			</ScrollArea>
 		</>
+	);
+}
+
+export function BuilderSidebarLeftContent() {
+	const isLocked = useIsResumeLocked();
+
+	return (
+		<div className="space-y-4 p-4">
+			{isLocked && <LockBanner />}
+
+			<fieldset disabled={isLocked} className="m-0 min-w-0 space-y-4 border-0 p-0">
+				{leftSidebarSections.map((section) => (
+					<Fragment key={section}>
+						<Suspense fallback={<SectionSkeleton />}>
+							{getSectionComponent(section)}
+						</Suspense>
+						<Separator />
+					</Fragment>
+				))}
+			</fieldset>
+		</div>
 	);
 }
 
