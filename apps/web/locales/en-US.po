@@ -864,6 +864,7 @@ msgstr "Clear selection"
 #: src/dialogs/resume/import.tsx
 msgid "Click here to select a file to import"
 msgstr "Click here to select a file to import"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/template.tsx
 msgid "Click the preview to switch templates"
 msgstr "Click the preview to switch templates"

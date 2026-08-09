@@ -869,6 +869,7 @@ msgstr "清除选择"
 #: src/dialogs/resume/import.tsx
 msgid "Click here to select a file to import"
 msgstr "点击此处选择要导入的文件"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/template.tsx
 msgid "Click the preview to switch templates"
 msgstr "点击预览以切换模板"
