@@ -33,7 +33,6 @@ export type AiProviderResponse = {
 };
 
 type CreateAiProviderInput = {
-	userId: string;
 	label: string;
 	provider: AIProvider;
 	model: string;
@@ -43,7 +42,6 @@ type CreateAiProviderInput = {
 
 type UpdateAiProviderInput = {
 	id: string;
-	userId: string;
 	label?: string;
 	provider?: AIProvider;
 	model?: string;
@@ -86,12 +84,8 @@ function normalizeBaseUrl(input: { provider: AIProvider; baseURL?: string | null
 	return resolveAiBaseUrl({ provider: input.provider, baseURL: trimmed });
 }
 
-async function getOwnedProvider(input: { id: string; userId: string }) {
-	const [provider] = await db
-		.select()
-		.from(schema.aiProvider)
-		.where(and(eq(schema.aiProvider.id, input.id), eq(schema.aiProvider.userId, input.userId)))
-		.limit(1);
+async function getProviderById(id: string) {
+	const [provider] = await db.select().from(schema.aiProvider).where(eq(schema.aiProvider.id, id)).limit(1);
 
 	if (!provider) throw new ORPCError("NOT_FOUND");
 
@@ -99,13 +93,12 @@ async function getOwnedProvider(input: { id: string; userId: string }) {
 }
 
 export const aiProvidersService = {
-	list: async (input: { userId: string }) => {
+	list: async () => {
 		assertCredentialEncryptionConfigured();
 
 		const providers = await db
 			.select()
 			.from(schema.aiProvider)
-			.where(eq(schema.aiProvider.userId, input.userId))
 			.orderBy(
 				desc(sql<Date>`coalesce(${schema.aiProvider.lastUsedAt}, '1970-01-01T00:00:00.000Z'::timestamptz)`),
 				asc(schema.aiProvider.createdAt),
@@ -114,10 +107,10 @@ export const aiProvidersService = {
 		return providers.map(toResponse);
 	},
 
-	getRunnableById: async (input: { id: string; userId: string }) => {
+	getRunnableById: async (input: { id: string }) => {
 		assertCredentialEncryptionConfigured();
 
-		const provider = await getOwnedProvider(input);
+		const provider = await getProviderById(input.id);
 		if (!provider.enabled || provider.testStatus !== "success") {
 			throw new ORPCError("BAD_REQUEST", { message: "AI provider must be tested and enabled before use." });
 		}
@@ -129,19 +122,13 @@ export const aiProvidersService = {
 		};
 	},
 
-	getDefaultRunnable: async (input: { userId: string }) => {
+	getDefaultRunnable: async () => {
 		assertCredentialEncryptionConfigured();
 
 		const [provider] = await db
 			.select()
 			.from(schema.aiProvider)
-			.where(
-				and(
-					eq(schema.aiProvider.userId, input.userId),
-					eq(schema.aiProvider.enabled, true),
-					eq(schema.aiProvider.testStatus, "success"),
-				),
-			)
+			.where(and(eq(schema.aiProvider.enabled, true), eq(schema.aiProvider.testStatus, "success")))
 			.orderBy(asc(schema.aiProvider.createdAt))
 			.limit(1);
 
@@ -161,7 +148,6 @@ export const aiProvidersService = {
 		const [provider] = await db
 			.insert(schema.aiProvider)
 			.values({
-				userId: input.userId,
 				label: input.label.trim(),
 				provider: input.provider,
 				model: input.model.trim(),
@@ -178,7 +164,7 @@ export const aiProvidersService = {
 	update: async (input: UpdateAiProviderInput) => {
 		assertCredentialEncryptionConfigured();
 
-		const existing = await getOwnedProvider(input);
+		const existing = await getProviderById(input.id);
 		const provider = input.provider ?? aiProviderSchema.parse(existing.provider);
 		const nextApiKey = input.apiKey?.trim();
 		const encrypted = nextApiKey ? encryptCredential(nextApiKey) : {};
@@ -205,25 +191,23 @@ export const aiProvidersService = {
 				...(runtimeChanged ? { enabled: false, testStatus: "untested", lastTestedAt: null, testError: null } : {}),
 				...encrypted,
 			})
-			.where(and(eq(schema.aiProvider.id, input.id), eq(schema.aiProvider.userId, input.userId)))
+			.where(eq(schema.aiProvider.id, input.id))
 			.returning();
 
 		if (!updated) throw new ORPCError("NOT_FOUND");
 		return toResponse(updated);
 	},
 
-	delete: async (input: { id: string; userId: string }) => {
+	delete: async (input: { id: string }) => {
 		assertCredentialEncryptionConfigured();
 
-		await db
-			.delete(schema.aiProvider)
-			.where(and(eq(schema.aiProvider.id, input.id), eq(schema.aiProvider.userId, input.userId)));
+		await db.delete(schema.aiProvider).where(eq(schema.aiProvider.id, input.id));
 	},
 
-	test: async (input: { id: string; userId: string }) => {
+	test: async (input: { id: string }) => {
 		assertCredentialEncryptionConfigured();
 
-		const provider = await getOwnedProvider(input);
+		const provider = await getProviderById(input.id);
 		const parsedProvider = aiProviderSchema.parse(provider.provider);
 		const apiKey = decryptCredential(provider.encryptedApiKey);
 
@@ -243,7 +227,7 @@ export const aiProvidersService = {
 					testError: ok ? null : "The provider test returned an unexpected response.",
 					lastTestedAt: new Date(),
 				})
-				.where(and(eq(schema.aiProvider.id, input.id), eq(schema.aiProvider.userId, input.userId)))
+				.where(eq(schema.aiProvider.id, input.id))
 				.returning();
 
 			if (!updated) throw new ORPCError("NOT_FOUND");
@@ -257,16 +241,16 @@ export const aiProvidersService = {
 					testError: error instanceof Error ? error.message : "Failed to test provider.",
 					lastTestedAt: new Date(),
 				})
-				.where(and(eq(schema.aiProvider.id, input.id), eq(schema.aiProvider.userId, input.userId)));
+				.where(eq(schema.aiProvider.id, input.id));
 
 			throw error;
 		}
 	},
 
-	markUsed: async (input: { id: string; userId: string }) => {
+	markUsed: async (input: { id: string }) => {
 		await db
 			.update(schema.aiProvider)
 			.set({ lastUsedAt: new Date() })
-			.where(and(eq(schema.aiProvider.id, input.id), eq(schema.aiProvider.userId, input.userId)));
+			.where(eq(schema.aiProvider.id, input.id));
 	},
 };

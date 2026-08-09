@@ -101,3 +101,15 @@ export const protectedProcedure = publicProcedure.use(({ context, next }) => {
 		},
 	});
 });
+
+/**
+ * Authenticated procedure that additionally requires the signed-in user to
+ * hold the `admin` role (set through the Better Auth admin plugin).
+ */
+export const adminProcedure = protectedProcedure.use(({ context, next }) => {
+	const { role } = context.user as typeof context.user & { role?: string };
+
+	if (role !== "admin") throw new ORPCError("FORBIDDEN", { message: "Admin access required" });
+
+	return next({ context });
+});

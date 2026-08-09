@@ -22,10 +22,7 @@ export const aiProvider = pg.pgTable(
 			.notNull()
 			.primaryKey()
 			.$defaultFn(() => generateId()),
-		userId: pg
-			.text("user_id")
-			.notNull()
-			.references(() => user.id, { onDelete: "cascade" }),
+		userId: pg.text("user_id").references(() => user.id, { onDelete: "cascade" }),
 		label: pg.text("label").notNull(),
 		provider: pg.text("provider").notNull(),
 		model: pg.text("model").notNull(),

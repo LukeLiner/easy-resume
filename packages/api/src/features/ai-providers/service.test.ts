@@ -103,7 +103,7 @@ describe("aiProvidersService", () => {
 	it("gets the first enabled and tested provider by creation order", async () => {
 		queryState.rows = [providerRow({ id: "first-created" })];
 
-		await expect(aiProvidersService.getDefaultRunnable({ userId: "user-1" })).resolves.toMatchObject({
+		await expect(aiProvidersService.getDefaultRunnable()).resolves.toMatchObject({
 			id: "first-created",
 			apiKey: "decrypted-key",
 		});

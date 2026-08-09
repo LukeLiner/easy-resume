@@ -7,10 +7,12 @@ import {
 	ChatCircleDotsIcon,
 	GearSixIcon,
 	ReadCvLogoIcon,
+	UsersIcon,
 } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@reactive-resume/ui/components/avatar";
 import { BrandIcon } from "@reactive-resume/ui/components/brand-icon";
+import { Route } from "../route";
 import {
 	Sidebar,
 	SidebarContent,
@@ -60,6 +62,14 @@ const settingsSidebarItems = [
 	},
 ] as const satisfies SidebarItem[];
 
+const adminSidebarItems = [
+	{
+		icon: <UsersIcon />,
+		label: msg`User Management`,
+		href: "/dashboard/admin/users",
+	},
+] as const satisfies SidebarItem[];
+
 type SidebarItemListProps = {
 	items: readonly SidebarItem[];
 };
@@ -90,6 +100,12 @@ function SidebarItemList({ items }: SidebarItemListProps) {
 
 export function DashboardSidebar() {
 	const { i18n } = useLingui();
+	const { session } = Route.useRouteContext();
+	const isAdmin = session.user.role === "admin";
+
+	const visibleSettingsItems = isAdmin
+		? settingsSidebarItems
+		: settingsSidebarItems.filter((item) => item.href !== "/dashboard/settings/integrations");
 
 	return (
 		<Sidebar variant="floating" collapsible="icon">
@@ -127,9 +143,20 @@ export function DashboardSidebar() {
 						<Trans>Settings</Trans>
 					</SidebarGroupLabel>
 					<SidebarGroupContent>
-						<SidebarItemList items={settingsSidebarItems} />
+						<SidebarItemList items={visibleSettingsItems} />
 					</SidebarGroupContent>
 				</SidebarGroup>
+
+				{isAdmin ? (
+					<SidebarGroup>
+						<SidebarGroupLabel>
+							<Trans>Admin</Trans>
+						</SidebarGroupLabel>
+						<SidebarGroupContent>
+							<SidebarItemList items={adminSidebarItems} />
+						</SidebarGroupContent>
+					</SidebarGroup>
+				) : null}
 			</SidebarContent>
 
 			<SidebarSeparator />

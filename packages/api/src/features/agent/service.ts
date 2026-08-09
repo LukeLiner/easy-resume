@@ -13,6 +13,7 @@ import { generateId } from "@reactive-resume/utils/string";
 import { assertAgentEnvironment } from "../ai/credentials";
 import { getAgentModel } from "../ai/service";
 import { aiProvidersService } from "../ai-providers/service";
+import { consumeThreadMessageQuota } from "../quota/service";
 import { resumeService } from "../resume/service";
 import { getStorageService, inferContentType } from "../storage/service";
 import { buildAgentDraftResumeName, buildUniqueAgentDraftSlug, normalizeAgentResumePatchOperations } from "./resume";
@@ -855,8 +856,8 @@ export const agentService = {
 			assertAgentEnvironment();
 
 			const selectedProvider = input.aiProviderId
-				? await aiProvidersService.getRunnableById({ id: input.aiProviderId, userId: input.userId })
-				: await aiProvidersService.getDefaultRunnable({ userId: input.userId });
+				? await aiProvidersService.getRunnableById({ id: input.aiProviderId })
+				: await aiProvidersService.getDefaultRunnable();
 
 			if (!selectedProvider) throw new ORPCError("BAD_REQUEST", { message: "No tested AI provider is available." });
 
@@ -891,8 +892,8 @@ export const agentService = {
 			if (existing) return toThreadSummary(existing);
 
 			const selectedProvider = input.aiProviderId
-				? await aiProvidersService.getRunnableById({ id: input.aiProviderId, userId: input.userId })
-				: await aiProvidersService.getDefaultRunnable({ userId: input.userId });
+				? await aiProvidersService.getRunnableById({ id: input.aiProviderId })
+				: await aiProvidersService.getDefaultRunnable();
 
 			if (!selectedProvider) throw new ORPCError("BAD_REQUEST", { message: "No tested AI provider is available." });
 
@@ -1031,7 +1032,6 @@ export const agentService = {
 			const [runnableProvider, attachments] = await Promise.all([
 				aiProvidersService.getRunnableById({
 					id: thread.aiProviderId,
-					userId: input.userId,
 				}),
 				getUnlinkedMessageAttachments({
 					ids: input.attachmentIds ?? [],
@@ -1064,6 +1064,7 @@ export const agentService = {
 						message: input.message,
 					});
 				} else {
+					await consumeThreadMessageQuota(input.userId);
 					attachmentsForModel = attachments;
 					const sequence = await getNextMessageSequence(input.threadId);
 					const userMessage = withAttachmentUiParts(input.message, attachments);
@@ -1094,7 +1095,7 @@ export const agentService = {
 					}
 				}
 
-				await aiProvidersService.markUsed({ id: runnableProvider.id, userId: input.userId });
+				await aiProvidersService.markUsed({ id: runnableProvider.id });
 
 				const messageRows = await repairLegacyAskUserQuestionAnswers(
 					await listThreadMessages({ threadId: input.threadId, userId: input.userId }),

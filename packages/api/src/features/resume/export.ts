@@ -5,6 +5,7 @@ import { getResumeExportData, resumeHasCoverLetter } from "@reactive-resume/resu
 import { generateFilename } from "@reactive-resume/utils/file";
 import { protectedProcedure } from "../../context";
 import { pdfExportRateLimit } from "../../middleware/rate-limit";
+import { consumeResumeDownloadQuota } from "../quota/service";
 import { parseStoredResumeData } from "./resume-data-validation";
 import { resumeService } from "./service";
 
@@ -77,10 +78,14 @@ export const downloadResumePdfProcedure = protectedProcedure
 		}),
 	)
 	.use(pdfExportRateLimit)
-	.handler(({ context, input }) =>
-		createResumePdfDownload({
+	.handler(async ({ context, input }) => {
+		const result = await createResumePdfDownload({
 			id: input.id,
 			userId: context.user.id,
 			...(input.target ? { target: input.target } : {}),
-		}),
-	);
+		});
+
+		await consumeResumeDownloadQuota(context.user.id);
+
+		return result;
+	});

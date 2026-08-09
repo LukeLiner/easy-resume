@@ -2,7 +2,7 @@ import type { AiProviderResponse } from "./service";
 import { ORPCError } from "@orpc/client";
 import { type } from "@orpc/server";
 import z from "zod";
-import { protectedProcedure } from "../../context";
+import { adminProcedure, protectedProcedure } from "../../context";
 import { aiRequestRateLimit } from "../../middleware/rate-limit";
 import { providerInput, updateProviderInput } from "./inputs";
 import { aiProvidersService } from "./service";
@@ -29,16 +29,16 @@ export const aiProvidersRouter = {
 		.errors({
 			PRECONDITION_FAILED: { message: "AI agent workspace is not configured.", status: 412 },
 		})
-		.handler(({ context }) => aiProvidersService.list({ userId: context.user.id })),
+		.handler(() => aiProvidersService.list()),
 
-	create: protectedProcedure
+	create: adminProcedure
 		.route({
 			method: "POST",
 			path: "/ai-providers",
 			tags: ["AI Providers"],
 			operationId: "createAiProvider",
-			summary: "Create saved AI provider",
-			description: "Stores an encrypted provider/model/API key combination. The key is never returned.",
+			summary: "Create global AI provider",
+			description: "Stores an encrypted provider/model/API key combination shared by all users. The key is never returned.",
 		})
 		.input(providerInput)
 		.output(type<AiProviderResponse>())
@@ -46,10 +46,9 @@ export const aiProvidersRouter = {
 			BAD_REQUEST: { message: "Invalid AI provider configuration.", status: 400 },
 			PRECONDITION_FAILED: { message: "AI agent workspace is not configured.", status: 412 },
 		})
-		.handler(async ({ context, input }) => {
+		.handler(async ({ input }) => {
 			try {
 				return await aiProvidersService.create({
-					userId: context.user.id,
 					label: input.label,
 					provider: input.provider,
 					model: input.model,
@@ -62,15 +61,15 @@ export const aiProvidersRouter = {
 			}
 		}),
 
-	update: protectedProcedure
+	update: adminProcedure
 		.route({
 			method: "PATCH",
 			path: "/ai-providers/{id}",
 			tags: ["AI Providers"],
 			operationId: "updateAiProvider",
-			summary: "Update saved AI provider",
+			summary: "Update global AI provider",
 			description:
-				"Updates a saved provider/model/API key combination. Updating the key requires retesting before use.",
+				"Updates a global provider/model/API key combination. Updating the key requires retesting before use.",
 		})
 		.input(updateProviderInput)
 		.output(type<AiProviderResponse>())
@@ -79,11 +78,10 @@ export const aiProvidersRouter = {
 			NOT_FOUND: { message: "AI provider was not found.", status: 404 },
 			PRECONDITION_FAILED: { message: "AI agent workspace is not configured.", status: 412 },
 		})
-		.handler(async ({ context, input }) => {
+		.handler(async ({ input }) => {
 			try {
 				return await aiProvidersService.update({
 					id: input.id,
-					userId: context.user.id,
 					...(input.label !== undefined ? { label: input.label } : {}),
 					...(input.provider !== undefined ? { provider: input.provider } : {}),
 					...(input.model !== undefined ? { model: input.model } : {}),
@@ -97,29 +95,29 @@ export const aiProvidersRouter = {
 			}
 		}),
 
-	delete: protectedProcedure
+	delete: adminProcedure
 		.route({
 			method: "DELETE",
 			path: "/ai-providers/{id}",
 			tags: ["AI Providers"],
 			operationId: "deleteAiProvider",
-			summary: "Delete saved AI provider",
-			description: "Deletes a saved provider/model/API key combination.",
+			summary: "Delete global AI provider",
+			description: "Deletes a global provider/model/API key combination.",
 		})
 		.input(z.object({ id: z.string() }))
 		.output(z.void())
 		.errors({
 			PRECONDITION_FAILED: { message: "AI agent workspace is not configured.", status: 412 },
 		})
-		.handler(({ context, input }) => aiProvidersService.delete({ id: input.id, userId: context.user.id })),
+		.handler(({ input }) => aiProvidersService.delete({ id: input.id })),
 
-	test: protectedProcedure
+	test: adminProcedure
 		.route({
 			method: "POST",
 			path: "/ai-providers/{id}/test",
 			tags: ["AI Providers"],
 			operationId: "testAiProvider",
-			summary: "Test saved AI provider",
+			summary: "Test global AI provider",
 			description: "Decrypts the saved API key server-side and validates the provider/model connection.",
 		})
 		.input(z.object({ id: z.string() }))
@@ -131,9 +129,9 @@ export const aiProvidersRouter = {
 			NOT_FOUND: { message: "AI provider was not found.", status: 404 },
 			PRECONDITION_FAILED: { message: "AI agent workspace is not configured.", status: 412 },
 		})
-		.handler(async ({ context, input }) => {
+		.handler(async ({ input }) => {
 			try {
-				return await aiProvidersService.test({ id: input.id, userId: context.user.id });
+				return await aiProvidersService.test({ id: input.id });
 			} catch (error) {
 				if (isInvalidAiBaseUrl(error)) throwInvalidProviderConfig();
 				if (error instanceof ORPCError) throw error;

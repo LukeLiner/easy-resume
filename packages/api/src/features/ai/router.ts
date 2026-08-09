@@ -8,6 +8,7 @@ import { storedResumeAnalysisSchema } from "@reactive-resume/schema/resume/analy
 import { protectedProcedure } from "../../context";
 import { aiRequestRateLimit } from "../../middleware/rate-limit";
 import { aiProvidersService } from "../ai-providers/service";
+import { checkResumeAnalysisQuota, consumeResumeAnalysisQuota } from "../quota/service";
 import { resumeService } from "../resume/service";
 import { aiService, fileInputSchema } from "./service";
 
@@ -45,10 +46,10 @@ function throwResumeStructureError(error: ZodError): never {
 	});
 }
 
-async function getRunnableProvider(userId: string, aiProviderId?: string) {
+async function getRunnableProvider(aiProviderId?: string) {
 	const provider = aiProviderId
-		? await aiProvidersService.getRunnableById({ id: aiProviderId, userId })
-		: await aiProvidersService.getDefaultRunnable({ userId });
+		? await aiProvidersService.getRunnableById({ id: aiProviderId })
+		: await aiProvidersService.getDefaultRunnable();
 
 	if (!provider) throw new ORPCError("BAD_REQUEST", { message: "No tested AI provider is available." });
 
@@ -73,9 +74,9 @@ export const aiRouter = {
 			BAD_GATEWAY: { message: "The AI provider returned an error or is unreachable.", status: 502 },
 			BAD_REQUEST: { message: "The AI returned an improperly formatted structure.", status: 400 },
 		})
-		.handler(async ({ context, input }): Promise<ResumeData> => {
+		.handler(async ({ input }): Promise<ResumeData> => {
 			try {
-				const provider = await getRunnableProvider(context.user.id, input.aiProviderId);
+				const provider = await getRunnableProvider(input.aiProviderId);
 				return await aiService.parsePdf({
 					provider: provider.provider,
 					model: provider.model,
@@ -118,9 +119,9 @@ export const aiRouter = {
 			BAD_GATEWAY: { message: "The AI provider returned an error or is unreachable.", status: 502 },
 			BAD_REQUEST: { message: "The AI returned an improperly formatted structure.", status: 400 },
 		})
-		.handler(async ({ context, input }) => {
+		.handler(async ({ input }) => {
 			try {
-				const provider = await getRunnableProvider(context.user.id, input.aiProviderId);
+				const provider = await getRunnableProvider(input.aiProviderId);
 				return await aiService.parseDocx({
 					provider: provider.provider,
 					model: provider.model,
@@ -159,7 +160,7 @@ export const aiRouter = {
 		.handler(async ({ context, input }) => {
 			try {
 				const [provider, resume] = await Promise.all([
-					getRunnableProvider(context.user.id, input.aiProviderId),
+					getRunnableProvider(input.aiProviderId),
 					resumeService.getById({ id: input.resumeId, userId: context.user.id }),
 				]);
 
@@ -203,11 +204,14 @@ export const aiRouter = {
 		.errors({
 			BAD_GATEWAY: { message: "The AI provider returned an error or is unreachable.", status: 502 },
 			BAD_REQUEST: { message: "The AI returned an improperly formatted structure.", status: 400 },
+			PRECONDITION_FAILED: { message: "You have exceeded your resume analysis quota.", status: 429 },
 		})
 		.handler(async ({ context, input }) => {
 			try {
+				await checkResumeAnalysisQuota(context.user.id);
+
 				const [provider, resume] = await Promise.all([
-					getRunnableProvider(context.user.id, input.aiProviderId),
+					getRunnableProvider(input.aiProviderId),
 					resumeService.getById({ id: input.resumeId, userId: context.user.id }),
 				]);
 				const analysis = await aiService.analyzeResume({
@@ -218,6 +222,8 @@ export const aiRouter = {
 					resumeData: resume.data,
 					...(input.locale ? { locale: input.locale } : {}),
 				});
+
+				await consumeResumeAnalysisQuota(context.user.id);
 
 				return await resumeService.analysis.upsert({
 					id: input.resumeId,

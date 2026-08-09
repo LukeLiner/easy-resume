@@ -27,6 +27,7 @@ import { Route as AuthVerify2faBackupRouteImport } from "./routes/auth/verify-2f
 import { Route as BuilderResumeIdRouteRouteImport } from "./routes/builder/$resumeId/route";
 import { Route as DashboardIndexRouteImport } from "./routes/dashboard/index";
 import { Route as BuilderResumeIdIndexRouteImport } from "./routes/builder/$resumeId/index";
+import { Route as DashboardAdminUsersRouteImport } from "./routes/dashboard/admin/users";
 import { Route as DashboardResumesIndexRouteImport } from "./routes/dashboard/resumes/index";
 import { Route as DashboardSettingsIntegrationsRouteRouteImport } from "./routes/dashboard/settings/integrations/route";
 import { Route as DashboardSettingsPreferencesRouteImport } from "./routes/dashboard/settings/preferences";
@@ -121,6 +122,11 @@ const BuilderResumeIdIndexRoute = BuilderResumeIdIndexRouteImport.update({
   path: "/",
   getParentRoute: () => BuilderResumeIdRouteRoute,
 } as any);
+const DashboardAdminUsersRoute = DashboardAdminUsersRouteImport.update({
+  id: "/admin/users",
+  path: "/admin/users",
+  getParentRoute: () => DashboardRouteRoute,
+} as any);
 const DashboardResumesIndexRoute = DashboardResumesIndexRouteImport.update({
   id: "/resumes/",
   path: "/resumes/",
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   "/auth/": typeof AuthIndexRoute;
   "/dashboard/": typeof DashboardIndexRoute;
   "/dashboard/settings/integrations": typeof DashboardSettingsIntegrationsRouteRoute;
+  "/dashboard/admin/users": typeof DashboardAdminUsersRoute;
   "/dashboard/settings/preferences": typeof DashboardSettingsPreferencesRoute;
   "/builder/$resumeId/": typeof BuilderResumeIdIndexRoute;
   "/dashboard/resumes/": typeof DashboardResumesIndexRoute;
@@ -177,6 +184,7 @@ export interface FileRoutesByTo {
   "/auth": typeof AuthIndexRoute;
   "/dashboard": typeof DashboardIndexRoute;
   "/dashboard/settings/integrations": typeof DashboardSettingsIntegrationsRouteRoute;
+  "/dashboard/admin/users": typeof DashboardAdminUsersRoute;
   "/dashboard/settings/preferences": typeof DashboardSettingsPreferencesRoute;
   "/builder/$resumeId": typeof BuilderResumeIdIndexRoute;
   "/dashboard/resumes": typeof DashboardResumesIndexRoute;
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   "/auth/": typeof AuthIndexRoute;
   "/dashboard/": typeof DashboardIndexRoute;
   "/dashboard/settings/integrations": typeof DashboardSettingsIntegrationsRouteRoute;
+  "/dashboard/admin/users": typeof DashboardAdminUsersRoute;
   "/dashboard/settings/preferences": typeof DashboardSettingsPreferencesRoute;
   "/builder/$resumeId/": typeof BuilderResumeIdIndexRoute;
   "/dashboard/resumes/": typeof DashboardResumesIndexRoute;
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | "/auth/"
     | "/dashboard/"
     | "/dashboard/settings/integrations"
+    | "/dashboard/admin/users"
     | "/dashboard/settings/preferences"
     | "/builder/$resumeId/"
     | "/dashboard/resumes/";
@@ -245,6 +255,7 @@ export interface FileRouteTypes {
     | "/auth"
     | "/dashboard"
     | "/dashboard/settings/integrations"
+    | "/dashboard/admin/users"
     | "/dashboard/settings/preferences"
     | "/builder/$resumeId"
     | "/dashboard/resumes";
@@ -268,6 +279,7 @@ export interface FileRouteTypes {
     | "/auth/"
     | "/dashboard/"
     | "/dashboard/settings/integrations"
+    | "/dashboard/admin/users"
     | "/dashboard/settings/preferences"
     | "/builder/$resumeId/"
     | "/dashboard/resumes/";
@@ -409,6 +421,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof BuilderResumeIdIndexRouteImport;
       parentRoute: typeof BuilderResumeIdRouteRoute;
     };
+    "/dashboard/admin/users": {
+      id: "/dashboard/admin/users";
+      path: "/admin/users";
+      fullPath: "/dashboard/admin/users";
+      preLoaderRoute: typeof DashboardAdminUsersRouteImport;
+      parentRoute: typeof DashboardRouteRoute;
+    };
     "/dashboard/resumes/": {
       id: "/dashboard/resumes/";
       path: "/resumes";
@@ -478,6 +497,7 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 interface DashboardRouteRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute;
   DashboardSettingsIntegrationsRouteRoute: typeof DashboardSettingsIntegrationsRouteRoute;
+  DashboardAdminUsersRoute: typeof DashboardAdminUsersRoute;
   DashboardSettingsPreferencesRoute: typeof DashboardSettingsPreferencesRoute;
   DashboardResumesIndexRoute: typeof DashboardResumesIndexRoute;
 }
@@ -486,6 +506,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardSettingsIntegrationsRouteRoute:
     DashboardSettingsIntegrationsRouteRoute,
+  DashboardAdminUsersRoute: DashboardAdminUsersRoute,
   DashboardSettingsPreferencesRoute: DashboardSettingsPreferencesRoute,
   DashboardResumesIndexRoute: DashboardResumesIndexRoute,
 };
