@@ -80,24 +80,28 @@ export function ResumeAnalysisSectionBuilder() {
 			toast.success(t`Resume analysis complete.`);
 		},
 		onError: (error) => {
-			toast.error(t`Failed to analyze resume.`, {
-				description: getOrpcErrorMessage(error, {
-					byCode: {
-						BAD_REQUEST: t({
-							comment: "Error description when AI returns invalid resume analysis format",
-							message: "The AI returned an invalid analysis format. Please try again.",
-						}),
-						BAD_GATEWAY: t({
-							comment: "Error description when AI provider cannot be reached during resume analysis",
-							message: "Could not reach the AI provider. Please try again.",
-						}),
-					},
-					fallback: t({
-						comment: "Fallback error description when resume analysis request fails",
-						message: "Something went wrong while analyzing your resume.",
+			const description = getOrpcErrorMessage(error, {
+				byCode: {
+					BAD_REQUEST: t({
+						comment: "Error description when AI returns invalid resume analysis format",
+						message: "The AI returned an invalid analysis format. Please try again.",
 					}),
+					BAD_GATEWAY: t({
+						comment: "Error description when AI provider cannot be reached during resume analysis",
+						message: "Could not reach the AI provider. Please try again.",
+					}),
+					PRECONDITION_FAILED: t({
+						comment: "Error description when user has exceeded their resume analysis quota",
+						message: "You have exceeded your resume analysis quota.",
+					}),
+				},
+				fallback: t({
+					comment: "Fallback error description when resume analysis request fails",
+					message: "Something went wrong while analyzing your resume.",
 				}),
 			});
+
+			toast.error(t`Failed to analyze resume.`, { description });
 		},
 	});
 

@@ -14,6 +14,7 @@ import { downloadWithAnchor, generateFilename } from "@reactive-resume/utils/fil
 import { resolvePublicResumePdfBlob } from "@/features/resume/public/public-pdf";
 import { useStylesheetStore } from "@/features/resume/stylesheet/store";
 import { createSectionTitleResolverForLocale } from "@/libs/resume/section-title-locale";
+import { client } from "@/libs/orpc/client";
 import { createResumePdfBlob } from "./pdf-document";
 
 /**
@@ -77,29 +78,51 @@ export function useResumeExport(resume: ExportableResume | undefined, exportOpti
 		[canonicalStylesheet],
 	);
 
-	const onDownloadJSON = useCallback(() => {
+	const onDownloadJSON = useCallback(async () => {
 		if (!resume) return;
-		const data = canonicalStylesheet
-			? {
-					...resume.data,
-					metadata: {
-						...resume.data.metadata,
-						stylesheet: canonicalStylesheet,
-					},
-				}
-			: resume.data;
-		const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-		downloadWithAnchor(blob, generateFilename(getExportName(resume), "json"));
+		try {
+			await client.quota.checkDownload({ _count: 1 });
+		} catch {
+			toast.error(t`You have exceeded your resume download quota.`);
+			return;
+		}
+		try {
+			const data = canonicalStylesheet
+				? {
+						...resume.data,
+						metadata: {
+							...resume.data.metadata,
+							stylesheet: canonicalStylesheet,
+						},
+					}
+				: resume.data;
+			const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+			downloadWithAnchor(blob, generateFilename(getExportName(resume), "json"));
+			await client.quota.consumeDownload({});
+		} catch {
+			toast.error(t`There was a problem while generating the JSON, please try again.`);
+		}
 	}, [canonicalStylesheet, resume]);
 
 	const onDownloadMarkdown = useCallback(
 		async (target: ResumeExportTarget = "resume") => {
 			if (!resume) return;
 			if (target === "cover-letter" && !resumeHasCoverLetter(resume.data)) return;
-			const data = getResumeExportData(resume.data, target);
-			const resolveTitle = await createSectionTitleResolver(data);
-			const blob = new Blob([buildMarkdown(data, resolveTitle)], { type: "text/markdown" });
-			downloadWithAnchor(blob, generateFilename(getTargetExportName(resume, target), "md"));
+			try {
+				await client.quota.checkDownload({ _count: 1 });
+			} catch {
+				toast.error(t`You have exceeded your resume download quota.`);
+				return;
+			}
+			try {
+				const data = getResumeExportData(resume.data, target);
+				const resolveTitle = await createSectionTitleResolver(data);
+				const blob = new Blob([buildMarkdown(data, resolveTitle)], { type: "text/markdown" });
+				downloadWithAnchor(blob, generateFilename(getTargetExportName(resume, target), "md"));
+				await client.quota.consumeDownload({});
+			} catch {
+				toast.error(t`There was a problem while generating the Markdown, please try again.`);
+			}
 		},
 		[resume],
 	);
@@ -109,10 +132,17 @@ export function useResumeExport(resume: ExportableResume | undefined, exportOpti
 			if (!resume) return;
 			if (target === "cover-letter" && !resumeHasCoverLetter(resume.data)) return;
 			try {
+				await client.quota.checkDownload({ _count: 1 });
+			} catch {
+				toast.error(t`You have exceeded your resume download quota.`);
+				return;
+			}
+			try {
 				const data = getResumeExportData(resume.data, target);
 				const resolveTitle = await createSectionTitleResolver(data);
 				const blob = await buildDocx(data, resolveTitle);
 				downloadWithAnchor(blob, generateFilename(getTargetExportName(resume, target), "docx"));
+				await client.quota.consumeDownload({});
 			} catch {
 				toast.error(t`There was a problem while generating the DOCX, please try again.`);
 			}
@@ -124,6 +154,12 @@ export function useResumeExport(resume: ExportableResume | undefined, exportOpti
 		async (target: ResumeExportTarget = "resume", downloadOptions?: DownloadPdfOptions) => {
 			if (!resume) return;
 			if (target === "cover-letter" && !resumeHasCoverLetter(resume.data)) return;
+			try {
+				await client.quota.checkDownload({ _count: 1 });
+			} catch {
+				toast.error(t`You have exceeded your resume download quota.`);
+				return;
+			}
 			const toastId = toast.loading(t`Please wait while your PDF is being generated...`);
 			setIsExporting(true);
 			try {
@@ -139,6 +175,7 @@ export function useResumeExport(resume: ExportableResume | undefined, exportOpti
 							pdfPresentation,
 						);
 				downloadWithAnchor(blob, generateFilename(getTargetExportName(resume, target), "pdf"));
+				await client.quota.consumeDownload({});
 			} catch {
 				toast.error(t`There was a problem while generating the PDF, please try again.`);
 			} finally {

@@ -101,7 +101,15 @@ export async function checkQuota(userId: string, kind: QuotaKind): Promise<void>
 	if (limit === DEFAULT_LIMIT) return; // unlimited
 	if (used < limit) return;
 
-	throw new ORPCError("PRECONDITION_FAILED", { message: "Quota exceeded" });
+	const KIND_LABELS: Record<QuotaKind, string> = {
+		threadMessages: "thread messages",
+		resumeAnalyses: "resume analyses",
+		resumeDownloads: "resume downloads",
+	};
+
+	throw new ORPCError("PRECONDITION_FAILED", {
+		message: `You have exceeded your ${KIND_LABELS[kind]} quota.`,
+	});
 }
 
 export function checkResumeAnalysisQuota(userId: string): Promise<void> {
