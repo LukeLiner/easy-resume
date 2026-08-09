@@ -11,10 +11,11 @@ import { UserDropdownMenu } from "@/features/user/dropdown-menu";
 import { getSectionIcon, getSectionTitle, leftSidebarSections, rightSidebarSections, type SidebarSection } from "@/libs/resume/section";
 import { BuilderSidebarLeftContent } from "../-sidebar/left";
 import { BuilderSidebarRightContent } from "../-sidebar/right";
+import { ResumeAnalysisSectionBuilder } from "../-sidebar/right/sections/resume-analysis";
 import { useBuilderSidebar } from "../-store/sidebar";
 import { BuilderSidebarEdge } from "./edge";
 
-type BuilderSidebarTab = "content" | "design";
+type BuilderSidebarTab = "content" | "design" | "analysis";
 
 const leftSectionSet = new Set<string>(leftSidebarSections);
 
@@ -25,7 +26,7 @@ export function BuilderSidebarCombined() {
 	const scrollToSection = useCallback(
 		(section: SidebarSection) => {
 			toggleSidebar("left", true);
-			setActiveTab(leftSectionSet.has(section) ? "content" : "design");
+			setActiveTab(section === "analysis" ? "analysis" : leftSectionSet.has(section) ? "content" : "design");
 
 			// Section ids are globally unique; defer scrolling until the active tab has rendered.
 			requestAnimationFrame(() => {
@@ -81,19 +82,28 @@ export function BuilderSidebarCombined() {
 			<div className="flex h-[calc(100svh-3.5rem)] min-w-0 flex-col bg-background sm:ms-12">
 				<div className="border-b p-2">
 					<Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as BuilderSidebarTab)}>
-						<TabsList className="grid w-full grid-cols-2">
+						<TabsList className="grid w-full grid-cols-3">
 							<TabsTrigger value="content">
 								<Trans>Edit</Trans>
 							</TabsTrigger>
 							<TabsTrigger value="design">
 								<Trans>Design</Trans>
 							</TabsTrigger>
+							<TabsTrigger value="analysis">
+								<Trans>Resume Analysis</Trans>
+							</TabsTrigger>
 						</TabsList>
 					</Tabs>
 				</div>
 
 				<ScrollArea className="@container min-h-0 flex-1">
-					{activeTab === "content" ? <BuilderSidebarLeftContent /> : <BuilderSidebarRightContent />}
+					{activeTab === "analysis" ? (
+						<ResumeAnalysisSectionBuilder />
+					) : activeTab === "content" ? (
+						<BuilderSidebarLeftContent />
+					) : (
+						<BuilderSidebarRightContent />
+					)}
 				</ScrollArea>
 			</div>
 		</>

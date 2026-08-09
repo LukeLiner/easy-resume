@@ -83,7 +83,6 @@ export const rightSidebarSections: RightSidebarSection[] = [
 	"styles",
 	"page",
 	"notes",
-	"analysis",
 ] as const;
 
 export const getSectionTitle = (type: SidebarSection | CustomOnlyType): string => {
