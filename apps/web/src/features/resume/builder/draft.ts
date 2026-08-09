@@ -519,6 +519,19 @@ export const usePreviewPausedStore = create<PreviewPausedStore>()((set) => ({
 	setPaused: (paused) => set({ paused }),
 }));
 
+// Desktop gates the Edit tab on the first successful preview render ("render first, edit later").
+// Lives here because it's the SSR-safe module both the builder shell and the preview client import.
+// The gating consumer also runs a timeout fallback so a stuck render can never lock the editor forever.
+type PreviewRenderStore = {
+	status: "pending" | "ready";
+	setReady: () => void;
+};
+
+export const usePreviewRenderStore = create<PreviewRenderStore>()((set) => ({
+	status: "pending",
+	setReady: () => set({ status: "ready" }),
+}));
+
 export function usePatchResume() {
 	return useResumeStore((state) => state.patchResume);
 }

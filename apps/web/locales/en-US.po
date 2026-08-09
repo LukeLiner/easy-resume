@@ -5225,3 +5225,11 @@ msgstr "Zoom out"
 #: src/libs/locale.ts
 msgid "Zulu"
 msgstr "Zulu"
+
+#: src/routes/builder/$resumeId/-components/combined-sidebar.tsx
+msgid "Editing unlocks once the preview is ready."
+msgstr "Editing unlocks once the preview is ready."
+
+#: src/routes/builder/$resumeId/-components/combined-sidebar.tsx
+msgid "Rendering resume preview…"
+msgstr "Rendering resume preview…"

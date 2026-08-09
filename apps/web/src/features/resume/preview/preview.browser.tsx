@@ -10,7 +10,7 @@ import { isRTL } from "@reactive-resume/utils/locale";
 import { cn } from "@reactive-resume/utils/style";
 import { createResumePdfBlob } from "@/features/resume/export/pdf-document";
 import { useStylesheetStore } from "@/features/resume/stylesheet/store";
-import { usePreviewPausedStore, useResumeData, useResumeStore } from "../builder/draft";
+import { usePreviewPausedStore, usePreviewRenderStore, useResumeData, useResumeStore } from "../builder/draft";
 import { PdfCanvasDocument, PdfCanvasPage } from "./pdf-canvas";
 import { ResumePreviewLoader } from "./preview.shared";
 import { getResumePreviewGapValue, getResumePreviewPageCount } from "./preview.shared.utils";
@@ -240,6 +240,9 @@ export function ResumePreviewClient({
 													);
 												}}
 												onRenderSuccess={() => {
+													// Signal the builder gate: the first page has actually painted to canvas.
+													usePreviewRenderStore.getState().setReady();
+
 													if (visiblePdf.phase !== "staged") return;
 
 													setPreviewLayers((current) => markPreviewPageRendered(current, visiblePdf.id, pageNumber));

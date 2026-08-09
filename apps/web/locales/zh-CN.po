@@ -5231,3 +5231,11 @@ msgstr "缩小"
 msgid "Zulu"
 msgstr "祖鲁语"
 
+
+#: src/routes/builder/$resumeId/-components/combined-sidebar.tsx
+msgid "Editing unlocks once the preview is ready."
+msgstr "预览渲染完成后即可开始编辑。"
+
+#: src/routes/builder/$resumeId/-components/combined-sidebar.tsx
+msgid "Rendering resume preview…"
+msgstr "正在渲染简历预览…"
