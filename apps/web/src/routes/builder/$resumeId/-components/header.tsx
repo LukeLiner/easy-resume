@@ -67,20 +67,10 @@ export function BuilderHeader() {
 			</div>
 
 			<div className="flex min-w-0 items-center gap-x-1">
-				<Button
-					size="icon"
-					variant="ghost"
-					aria-label={t({
-						comment: "Accessible label for button navigating from builder to resumes dashboard",
-						message: "Go to resumes dashboard",
-					})}
-					nativeButton={false}
-					render={
-						<Link to="/dashboard/resumes" search={{ sort: "lastUpdatedAt", tags: [] }}>
-							<HouseSimpleIcon />
-						</Link>
-					}
-				/>
+				<Button size="sm" variant="ghost" nativeButton={false} render={<Link to="/dashboard/resumes" search={{ sort: "lastUpdatedAt", tags: [] }} />}>
+					<HouseSimpleIcon />
+					<Trans>Home</Trans>
+				</Button>
 				<span className="me-2.5 text-muted-foreground">/</span>
 				<BuilderTitle name={name} isLocked={isLocked} resumeId={resumeId} />
 				{isLocked && <LockSimpleIcon className="ms-2 text-muted-foreground" />}

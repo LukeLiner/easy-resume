@@ -955,11 +955,9 @@ function AgentChatHeader({
 		<div className="flex h-14 shrink-0 items-center justify-between border-b px-4">
 			<div className="flex min-w-0 items-center gap-2">
 				{onToggleThreads ? (
-					<Button size="icon-sm" variant="ghost" onClick={onToggleThreads}>
+					<Button size="sm" variant="ghost" onClick={onToggleThreads}>
 						<SidebarSimpleIcon />
-						<span className="sr-only">
-							<Trans>Toggle threads</Trans>
-						</span>
+						<Trans>Toggle threads</Trans>
 					</Button>
 				) : null}
 

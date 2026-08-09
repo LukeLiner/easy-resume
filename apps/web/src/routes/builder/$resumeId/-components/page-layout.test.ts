@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_BUILDER_PREVIEW_PAGE_LAYOUT, getNextBuilderPreviewPageLayout } from "./page-layout";
 
 describe("DEFAULT_BUILDER_PREVIEW_PAGE_LAYOUT", () => {
-	it("defaults to horizontal", () => {
-		expect(DEFAULT_BUILDER_PREVIEW_PAGE_LAYOUT).toBe("horizontal");
+	it("defaults to vertical", () => {
+		expect(DEFAULT_BUILDER_PREVIEW_PAGE_LAYOUT).toBe("vertical");
 	});
 });
 
