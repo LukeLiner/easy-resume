@@ -389,6 +389,21 @@ msgstr "Analyze Resume"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Analyzing…"
 msgstr "Analyzing…"
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Reading resume data"
+msgstr "Reading resume data"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Scoring each dimension"
+msgstr "Scoring each dimension"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Generating suggestions"
+msgstr "Generating suggestions"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Finalizing the report"
+msgstr "Finalizing the report"
 
 #: src/routes/_home/-sections/features.tsx
 msgid "And many more..."

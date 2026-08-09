@@ -394,6 +394,21 @@ msgstr "分析简历"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Analyzing…"
 msgstr "分析…"
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Reading resume data"
+msgstr "正在读取简历数据"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Scoring each dimension"
+msgstr "正在对各维度评分"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Generating suggestions"
+msgstr "正在生成建议"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Finalizing the report"
+msgstr "正在生成最终报告"
 
 #: src/routes/_home/-sections/features.tsx
 msgid "And many more..."

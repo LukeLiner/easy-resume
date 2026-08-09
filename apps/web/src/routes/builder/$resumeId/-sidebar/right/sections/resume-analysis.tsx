@@ -5,12 +5,13 @@ import { Trans } from "@lingui/react/macro";
 import { ArrowRightIcon, ChartPolarIcon, InfoIcon, SparkleIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { Alert, AlertDescription } from "@reactive-resume/ui/components/alert";
 import { Badge } from "@reactive-resume/ui/components/badge";
 import { Button } from "@reactive-resume/ui/components/button";
+import { Spinner } from "@reactive-resume/ui/components/spinner";
 import { useResume } from "@/features/resume/builder/draft";
 import { getOrpcErrorMessage } from "@/libs/error-message";
 import { orpc } from "@/libs/orpc/client";
@@ -106,6 +107,27 @@ export function ResumeAnalysisSectionBuilder() {
 	// so the server render has no date and there's no hydration mismatch to defer around.
 	const updatedAtLabel = updatedAt ? new Date(updatedAt).toLocaleString() : null;
 	const analyzeLabel = isPending ? t`Analyzing…` : t`Analyze Resume`;
+	const analysisSteps = [
+		t`Reading resume data`,
+		t`Scoring each dimension`,
+		t`Generating suggestions`,
+		t`Finalizing the report`,
+	];
+	const [stepIndex, setStepIndex] = useState(0);
+
+	useEffect(() => {
+		if (!isPending) {
+			setStepIndex(0);
+			return;
+		}
+
+		const interval = window.setInterval(() => {
+			setStepIndex((current) => Math.min(current + 1, analysisSteps.length - 1));
+		}, 3000);
+
+		return () => window.clearInterval(interval);
+	}, [isPending, analysisSteps.length]);
+
 	const scoreTone =
 		score == null ? "bg-muted" : score >= 80 ? "bg-emerald-600" : score >= 60 ? "bg-amber-600" : "bg-rose-600";
 
@@ -136,10 +158,27 @@ export function ResumeAnalysisSectionBuilder() {
 								</p>
 							</div>
 
-							<Button disabled={isPending} onClick={onAnalyze} className="ml-auto w-fit">
-								<SparkleIcon />
-								{analyzeLabel}
-							</Button>
+							<div className="space-y-2">
+								<Button disabled={isPending} onClick={onAnalyze} className="ml-auto w-fit">
+									{isPending ? <Spinner /> : <SparkleIcon />}
+									{analyzeLabel}
+								</Button>
+
+								{isPending && (
+									<div className="space-y-1">
+										<div className="flex items-center justify-between text-muted-foreground text-xs">
+											<span>{analysisSteps[stepIndex]}</span>
+											<span>{Math.round(((stepIndex + 1) / analysisSteps.length) * 100)}%</span>
+										</div>
+										<div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+											<div
+												className="h-full rounded-full bg-primary transition-all duration-500"
+												style={{ width: `${((stepIndex + 1) / analysisSteps.length) * 100}%` }}
+											/>
+										</div>
+									</div>
+								)}
+							</div>
 						</div>
 
 						<div className="grid grid-cols-[auto_1fr] items-center gap-3">
