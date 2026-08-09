@@ -77,10 +77,14 @@ export function BuilderSidebarRight() {
 	);
 }
 
-export function BuilderSidebarRightContent() {
+type BuilderSidebarRightContentProps = {
+	sections?: readonly RightSidebarSection[];
+};
+
+export function BuilderSidebarRightContent({ sections = rightSidebarSections }: BuilderSidebarRightContentProps) {
 	return (
 		<div className="space-y-4 p-4">
-			{rightSidebarSections.map((section) => (
+			{sections.map((section) => (
 				<Fragment key={section}>
 					<Suspense fallback={<SectionSkeleton />}>
 						{getSectionComponent(section)}

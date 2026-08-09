@@ -1,21 +1,25 @@
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@reactive-resume/ui/components/avatar";
 import { Button } from "@reactive-resume/ui/components/button";
 import { ScrollArea } from "@reactive-resume/ui/components/scroll-area";
+import { Skeleton } from "@reactive-resume/ui/components/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@reactive-resume/ui/components/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@reactive-resume/ui/components/tooltip";
 import { getInitials } from "@reactive-resume/utils/string";
 import { UserDropdownMenu } from "@/features/user/dropdown-menu";
-import { getSectionIcon, getSectionTitle, leftSidebarSections, rightSidebarSections, type SidebarSection } from "@/libs/resume/section";
+import { getSectionIcon, getSectionTitle, leftSidebarSections, rightSidebarSections, type RightSidebarSection, type SidebarSection } from "@/libs/resume/section";
 import { BuilderSidebarLeftContent } from "../-sidebar/left";
 import { BuilderSidebarRightContent } from "../-sidebar/right";
-import { ResumeAnalysisSectionBuilder } from "../-sidebar/right/sections/resume-analysis";
 import { useBuilderSidebar } from "../-store/sidebar";
 import { BuilderSidebarEdge } from "./edge";
 
 type BuilderSidebarTab = "content" | "design" | "analysis";
+
+const ResumeAnalysisSectionBuilder = lazy(() =>
+	import("../-sidebar/right/sections/resume-analysis").then((m) => ({ default: m.ResumeAnalysisSectionBuilder })),
+);
 
 const leftSectionSet = new Set<string>(leftSidebarSections);
 
@@ -98,11 +102,15 @@ export function BuilderSidebarCombined() {
 
 				<ScrollArea className="@container min-h-0 flex-1">
 					{activeTab === "analysis" ? (
-						<ResumeAnalysisSectionBuilder />
+						<Suspense fallback={<Skeleton className="h-32 w-full" />}>
+							<ResumeAnalysisSectionBuilder />
+						</Suspense>
 					) : activeTab === "content" ? (
 						<BuilderSidebarLeftContent />
 					) : (
-						<BuilderSidebarRightContent />
+						<BuilderSidebarRightContent
+							sections={rightSidebarSections.filter((section: RightSidebarSection) => section !== "analysis")}
+						/>
 					)}
 				</ScrollArea>
 			</div>
