@@ -13,6 +13,7 @@ export type AdminUserListItem = {
 	username: string;
 	image: string | null;
 	role: string | null;
+	status: string | null;
 	banned: boolean | null;
 	emailVerified: boolean;
 	createdAt: Date;
@@ -87,7 +88,7 @@ export const adminService = {
 				)
 			: undefined;
 
-		const [users, totalResult] = await Promise.all([
+		const [users, totalResult] = 		await Promise.all([
 			db
 				.select({
 					id: schema.user.id,
@@ -96,6 +97,7 @@ export const adminService = {
 					username: schema.user.username,
 					image: schema.user.image,
 					role: schema.user.role,
+					status: schema.user.status,
 					banned: schema.user.banned,
 					emailVerified: schema.user.emailVerified,
 					createdAt: schema.user.createdAt,
@@ -145,6 +147,7 @@ export const adminService = {
 				email: schema.user.email,
 				username: schema.user.username,
 				role: schema.user.role,
+				status: schema.user.status,
 				banned: schema.user.banned,
 			})
 			.from(schema.user)
@@ -173,6 +176,7 @@ export const adminService = {
 				email: userRecord.email,
 				username: userRecord.username,
 				role: userRecord.role,
+				status: userRecord.status,
 				banned: userRecord.banned,
 			},
 			resumes,
@@ -186,6 +190,7 @@ export const adminService = {
 			.update(schema.user)
 			.set({
 				banned,
+				status: banned ? "banned" : "active",
 				banReason: banned ? (banReason ?? null) : null,
 				banExpires: banned ? resolveBanExpiry(banExpiresIn) : null,
 			})
@@ -229,5 +234,14 @@ export const adminService = {
 		await requireExistingUser(userId);
 
 		await resetUserQuotaUsage(userId);
+	},
+
+	approveUser: async ({ userId }: QuotaOperationInput): Promise<void> => {
+		await requireExistingUser(userId);
+
+		await db
+			.update(schema.user)
+			.set({ status: "active" })
+			.where(eq(schema.user.id, userId));
 	},
 };

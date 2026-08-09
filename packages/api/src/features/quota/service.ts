@@ -5,8 +5,9 @@ import { userQuota } from "@reactive-resume/db/schema";
 
 /**
  * Feature quotas tracked per user. A limit of `-1` means unlimited.
- * Without an explicit `user_quota` row the user is treated as unlimited,
- * so existing accounts keep working until an admin lowers a limit.
+ * When a new row is created, DB-level defaults apply (thread=5, analyses=2, downloads=1).
+ * Without an explicit `user_quota` row the user is treated as unlimited (`-1`),
+ * so existing accounts keep working until an admin adjusts limits.
  */
 export type QuotaKind = "threadMessages" | "resumeAnalyses" | "resumeDownloads";
 
@@ -62,7 +63,7 @@ async function consumeQuota(userId: string, kind: QuotaKind): Promise<void> {
 
 	if (updated) return;
 
-	// No row yet: create a default (unlimited) row that already counts the usage.
+	// No row yet: create a default row (with DB-level defaults) that already counts the usage.
 	const [inserted] = await db
 		.insert(userQuota)
 		.values({ userId, [usedKey]: 1 })

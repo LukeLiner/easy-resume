@@ -48,6 +48,7 @@ export const adminRouter = {
 							username: z.string(),
 							image: z.string().nullable(),
 							role: z.string().nullable(),
+							status: z.string().nullable(),
 							banned: z.boolean().nullable(),
 							emailVerified: z.boolean(),
 							createdAt: z.date(),
@@ -82,6 +83,7 @@ export const adminRouter = {
 						email: z.string(),
 						username: z.string(),
 						role: z.string().nullable(),
+						status: z.string().nullable(),
 						banned: z.boolean().nullable(),
 					}),
 					resumes: z.array(
@@ -133,6 +135,23 @@ export const adminRouter = {
 			.output(z.object({ ok: z.boolean() }))
 			.handler(async ({ input }) => {
 				await adminService.deleteUser(input);
+				return { ok: true };
+			}),
+
+		approve: adminProcedure
+			.route({
+				method: "POST",
+				path: "/admin/users/{userId}/approve",
+				tags: ["Admin"],
+				operationId: "adminApproveUser",
+				summary: "Approve a pending user",
+				description: "Approves and activates a user account that is pending review. Requires an admin session.",
+				successDescription: "The user was approved.",
+			})
+			.input(z.object({ userId: z.string() }))
+			.output(z.object({ ok: z.boolean() }))
+			.handler(async ({ input }) => {
+				await adminService.approveUser(input);
 				return { ok: true };
 			}),
 

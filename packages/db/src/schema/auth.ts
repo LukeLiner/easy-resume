@@ -25,6 +25,7 @@ export const user = pg.pgTable(
 		twoFactorEnabled: pg.boolean("two_factor_enabled").notNull().default(false),
 		lastActiveAt: pg.timestamp("last_active_at", { withTimezone: true }),
 		role: pg.text("role").default("user"),
+		status: pg.text("status").notNull().default("pending"),
 		banned: pg.boolean("banned").default(false),
 		banReason: pg.text("ban_reason"),
 		banExpires: pg.timestamp("ban_expires", {

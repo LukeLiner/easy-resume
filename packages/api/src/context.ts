@@ -94,6 +94,22 @@ export const publicProcedure = base.use(async ({ context, next }) => {
 export const protectedProcedure = publicProcedure.use(({ context, next }) => {
 	if (!context.user) throw new ORPCError("UNAUTHORIZED");
 
+	const { role, status } = context.user as typeof context.user & { role?: string; status?: string };
+
+	// Admins always bypass status check
+	if (role !== "admin") {
+		if (status === "pending") {
+			throw new ORPCError("FORBIDDEN", {
+				message: "Your account is pending approval. Please wait for an admin to review your account.",
+			});
+		}
+		if (status === "banned") {
+			throw new ORPCError("FORBIDDEN", {
+				message: "Your account has been suspended. Please contact support for more information.",
+			});
+		}
+	}
+
 	return next({
 		context: {
 			...context,
