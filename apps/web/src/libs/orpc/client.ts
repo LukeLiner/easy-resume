@@ -2,7 +2,6 @@ import type { InferRouterInputs, InferRouterOutputs, RouterClient } from "@orpc/
 import type router from "@reactive-resume/api/routers";
 import { createORPCClient, onError } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
-import { BatchLinkPlugin } from "@orpc/client/plugins";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 
 const getRpcUrl = () => {
@@ -14,12 +13,6 @@ export const client: RouterClient<typeof router> = createORPCClient(
 	new RPCLink({
 		url: getRpcUrl(),
 		fetch: (request, init) => fetch(request, { ...init, credentials: "include" }),
-		plugins: [
-			new BatchLinkPlugin({
-				mode: "streaming",
-				groups: [{ condition: () => true, context: {} }],
-			}),
-		],
 		interceptors: [
 			onError((error) => {
 				if (error instanceof DOMException && error.name === "AbortError") return;

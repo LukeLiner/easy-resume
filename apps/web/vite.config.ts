@@ -4,7 +4,6 @@ import { fileURLToPath } from "node:url";
 import { lingui, linguiTransformerBabelPreset } from "@lingui/vite-plugin";
 import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
-import { devtools } from "@tanstack/devtools-vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
@@ -64,7 +63,6 @@ export default defineConfig({
 					),
 			},
 		},
-		devtools(),
 		tailwindcss(),
 		tanstackRouter({
 			target: "react",

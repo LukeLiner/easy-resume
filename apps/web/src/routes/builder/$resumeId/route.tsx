@@ -20,7 +20,9 @@ export const Route = createFileRoute("/builder/$resumeId")({
 	loader: async ({ params, context }) => {
 		const [layout, resume] = await Promise.all([
 			getBuilderLayout(),
-			context.queryClient.ensureQueryData(orpc.resume.getById.queryOptions({ input: { id: params.resumeId } })),
+			context.queryClient.ensureQueryData(
+				orpc.resume.getById.queryOptions({ input: { id: params.resumeId } }),
+			),
 			context.queryClient.ensureQueryData(
 				orpc.resume.stylesheet.getState.queryOptions({ input: { id: params.resumeId } }),
 			),
