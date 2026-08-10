@@ -54,9 +54,9 @@ export function handleSitemap(options?: StaticSeoOptions) {
 export function handleLlms(options?: StaticSeoOptions) {
 	const baseUrl = appUrl();
 	const body = [
-		"# Reactive Resume",
+		"# Easy Resume",
 		"",
-		"Reactive Resume is an open-source resume builder for creating, managing, and exporting resumes.",
+		"Easy Resume is an open-source resume builder for creating, managing, and exporting resumes.",
 		"",
 		"## Links",
 		"",
