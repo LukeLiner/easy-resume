@@ -18,7 +18,7 @@ import { createTogetherAI } from "@ai-sdk/togetherai";
 import { createXai } from "@ai-sdk/xai";
 import { streamToEventIterator } from "@orpc/server";
 import { convertToModelMessages, createGateway, stepCountIs, tool } from "ai";
-import { generateText, streamText } from "./langsmith";
+import { generateText, streamText, wrapAISDKModel } from "./langsmith";
 import { createOllama } from "ollama-ai-provider-v2";
 import { match } from "ts-pattern";
 import { z } from "zod";
@@ -95,7 +95,7 @@ export function getModel(input: GetModelInput) {
 	const { provider, model, apiKey } = input;
 	const baseURL = resolveAiBaseUrl(input);
 
-	return match(provider)
+	const rawModel = match(provider)
 		.with("openai", () => createOpenAI({ apiKey, baseURL }).chat(model))
 		.with("anthropic", () => createAnthropic({ apiKey, baseURL }).languageModel(model))
 		.with("gemini", () => createGoogleGenerativeAI({ apiKey, baseURL }).languageModel(model))
@@ -123,12 +123,15 @@ export function getModel(input: GetModelInput) {
 			return ollama.languageModel(model);
 		})
 		.exhaustive();
+
+	return wrapAISDKModel ? wrapAISDKModel(rawModel) : rawModel;
 }
 
 export function getAgentModel(input: GetModelInput) {
 	if (!supportsProviderNativeWebSearch(input)) return getModel(input);
 
-	return createOpenAI({ apiKey: input.apiKey, baseURL: resolveAiBaseUrl(input) }).responses(input.model);
+	const rawModel = createOpenAI({ apiKey: input.apiKey, baseURL: resolveAiBaseUrl(input) }).responses(input.model);
+	return wrapAISDKModel ? wrapAISDKModel(rawModel) : rawModel;
 }
 
 const aiCredentialsSchema = z.object({

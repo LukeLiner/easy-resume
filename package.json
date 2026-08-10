@@ -64,5 +64,11 @@
 		"turbo": "^2.10.8",
 		"typescript": "^7.0.2",
 		"vitest": "^4.1.10"
+	},
+	"dependencies": {
+		"@ai-sdk/openai": "^4.0.25",
+		"ai": "^7.0.44",
+		"langsmith": "^0.3.87",
+		"zod": "^4.4.3"
 	}
 }
