@@ -75,6 +75,13 @@ export const env = createEnv({
 		REDIS_URL: z.url({ protocol: /redis(s)?/ }).optional(),
 		ENCRYPTION_SECRET: z.string().min(32, "ENCRYPTION_SECRET must be at least 32 characters").optional(),
 
+		// AI Observability (LangSmith, optional)
+		LANGSMITH_API_KEY: z.string().min(1).optional(),
+		LANGSMITH_ENDPOINT: z.url({ protocol: /https?/ }).optional(),
+		LANGSMITH_PROJECT: z.string().min(1).optional(),
+		LANGSMITH_TRACING: z.stringbool().optional(),
+		LANGSMITH_ENABLED: z.stringbool().optional(),
+
 		// Feature Flags
 		FLAG_DISABLE_SIGNUPS: z.stringbool().default(false),
 		FLAG_DISABLE_EMAIL_AUTH: z.stringbool().default(false),
