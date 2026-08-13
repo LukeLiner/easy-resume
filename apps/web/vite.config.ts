@@ -44,11 +44,20 @@ export default defineConfig({
 		},
 	},
 
-	server: {
-		host: true,
+	// server: {
+	// 	host: true,
+	// 	strictPort: true,
+	// 	port: Number.parseInt(process.env.PORT ?? "3000", 10),
+	// 	proxy: serverProxy,
+	// },
+	   server: {
+		host: '0.0.0.0',
 		strictPort: true,
 		port: Number.parseInt(process.env.PORT ?? "3000", 10),
 		proxy: serverProxy,
+		allowedHosts:[
+			'lovefamily.tail830c40.ts.net'
+		]
 	},
 
 	plugins: [
