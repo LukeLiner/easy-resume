@@ -178,6 +178,25 @@ export function getWebFontSource(family: string, weight: FontWeight = "400", ita
 	return webFont.files[key] ?? (italic ? webFont.files[weight] : undefined) ?? webFont.preview;
 }
 
+// 本地字体覆盖：这些字体文件已随 web 应用同源托管在 apps/web/public/fonts/ 下，
+// 浏览器端 PDF 渲染可直接 fetch 本地文件，避免依赖 fonts.gstatic.com / cdn.jsdelivr.net
+// 等外部 CDN（在受限网络下会导致渲染挂起）。值为相对 public 根的文件名。
+// 未覆盖的字重/字体仍回退到 webfontlist 中的 CDN 地址。
+const localFontOverrides: Partial<Record<string, Partial<Record<FontWeight, string>>>> = {
+	"Noto Sans SC": {
+		"400": "/fonts/noto-sans-sc-400.otf",
+		"500": "/fonts/noto-sans-sc-500.otf",
+		"700": "/fonts/noto-sans-sc-700.otf",
+	},
+};
+
+export function getLocalFontSource(family: string, weight: FontWeight = "400"): string | null {
+	const overrides = localFontOverrides[family];
+	if (!overrides) return null;
+
+	return overrides[weight] ?? null;
+}
+
 export function sortFontWeights<T extends string>(fontWeights: T[]): T[] {
 	return [...fontWeights].sort((a, b) => Number(a) - Number(b));
 }

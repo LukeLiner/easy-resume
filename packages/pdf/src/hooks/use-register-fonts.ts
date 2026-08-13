@@ -4,6 +4,7 @@ import type { Locale, Script } from "@reactive-resume/utils/locale";
 import { letters as cjkLetters } from "cjk-regex";
 import {
 	getFont,
+	getLocalFontSource,
 	getPdfFallbackFontFamilies,
 	getWebFontSource,
 	isStandardPdfFontFamily,
@@ -237,7 +238,14 @@ export const registerFonts = (
 		const key = `${family}:${normalizedWeight}:${fontStyle}`;
 		if (registeredFontVariants.has(key)) return;
 
-		const source = getWebFontSource(family, normalizedWeight, italic);
+		// 浏览器端优先使用本地字体：字体文件随 web 应用同源托管在 /fonts/ 下，
+		// 避免 PDF 渲染时依赖 fonts.gstatic.com / cdn.jsdelivr.net 等外部 CDN 导致
+		// toBlob() 挂起。server 端无法 fetch 同源相对路径，仍回退 CDN 地址。
+		const localSource = !italic ? getLocalFontSource(family, normalizedWeight) : null;
+		const source =
+			typeof window !== "undefined" && localSource
+				? `${window.location.origin}${localSource}`
+				: getWebFontSource(family, normalizedWeight, italic);
 		if (!source) return;
 
 		Font.register({ family, src: source, fontWeight: Number(normalizedWeight), fontStyle });
