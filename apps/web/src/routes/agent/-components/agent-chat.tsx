@@ -376,7 +376,7 @@ function StarterPromptMarquee({ onSelect }: StarterPromptMarqueeProps) {
 function getMessagePartKey(messageId: string, part: UIMessage["parts"][number], index: number) {
 	if ("toolCallId" in part && typeof part.toolCallId === "string")
 		return `${messageId}-${part.type}-${part.toolCallId}`;
-	if (part.type === "text") return `${messageId}-text-${part.text}`;
+	if (part.type === "text") return `${messageId}-text-${index}`;
 	if (part.type === "file") return `${messageId}-file-${part.url ?? part.filename}`;
 	return `${messageId}-${part.type}-${index}`;
 }
