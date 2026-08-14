@@ -58,7 +58,6 @@ type QuotaDialogProps = {
 	open: boolean;
 	userId: string;
 	userName: string;
-	initialQuota: UserItem["quota"];
 	initialBalance: number;
 	onClose: () => void;
 };
@@ -87,7 +86,6 @@ function RouteComponent() {
 	const [quotaDialog, setQuotaDialog] = useState<{
 		userId: string;
 		userName: string;
-		quota: UserItem["quota"];
 		balance: number;
 	} | null>(null);
 
@@ -324,7 +322,6 @@ function RouteComponent() {
 																setQuotaDialog({
 																	userId: user.id,
 																	userName: user.name,
-																	quota: user.quota,
 																	balance: user.balance,
 																})
 															}
@@ -396,7 +393,6 @@ function RouteComponent() {
 					open={quotaDialog !== null}
 					userId={quotaDialog.userId}
 					userName={quotaDialog.userName}
-					initialQuota={quotaDialog.quota}
 					initialBalance={quotaDialog.balance}
 					onClose={() => setQuotaDialog(null)}
 				/>
@@ -469,25 +465,16 @@ function PasswordDialog({ open, userId, userName, onClose }: PasswordDialogProps
 	);
 }
 
-function QuotaDialog({ open, userId, userName, initialQuota, initialBalance, onClose }: QuotaDialogProps) {
+function QuotaDialog({ open, userId, userName, initialBalance, onClose }: QuotaDialogProps) {
 	const { i18n } = useLingui();
 	const queryClient = useQueryClient();
 
-	const [threadMessages, setThreadMessages] = useState(
-		String(initialQuota?.threadMessagesLimit ?? -1),
-	);
-	const [resumeAnalyses, setResumeAnalyses] = useState(
-		String(initialQuota?.resumeAnalysesLimit ?? -1),
-	);
-	const [resumeDownloads, setResumeDownloads] = useState(
-		String(initialQuota?.resumeDownloadsLimit ?? -1),
-	);
 	const [balance, setBalance] = useState(String(initialBalance / 100));
 
-	const updateMutation = useMutation(
-		orpc.admin.quotas.update.mutationOptions({
+	const setBalanceMutation = useMutation(
+		orpc.admin.users.setBalance.mutationOptions({
 			onSuccess: () => {
-				toast.success(i18n.t("Quota updated successfully"));
+				toast.success(i18n.t("Balance updated successfully"));
 				void queryClient.invalidateQueries({ queryKey: orpc.admin.users.list.key() });
 				onClose();
 			},
@@ -497,56 +484,14 @@ function QuotaDialog({ open, userId, userName, initialQuota, initialBalance, onC
 		}),
 	);
 
-	const resetMutation = useMutation(
-		orpc.admin.quotas.resetUsage.mutationOptions({
-			onSuccess: () => {
-				toast.success(i18n.t("Usage counters reset"));
-				void queryClient.invalidateQueries({ queryKey: orpc.admin.users.list.key() });
-			},
-			onError: (error) => {
-				toast.error(error.message);
-			},
-		}),
-	);
-
-	const setBalanceMutation = useMutation(
-		orpc.admin.users.setBalance.mutationOptions({
-			onSuccess: () => {
-				toast.success(i18n.t("Balance updated successfully"));
-				void queryClient.invalidateQueries({ queryKey: orpc.admin.users.list.key() });
-			},
-			onError: (error) => {
-				toast.error(error.message);
-			},
-		}),
-	);
-
 	const handleSave = () => {
-		const tml = Number.parseInt(threadMessages, 10);
-		const ral = Number.parseInt(resumeAnalyses, 10);
-		const rdl = Number.parseInt(resumeDownloads, 10);
-
-		if (Number.isNaN(tml) || Number.isNaN(ral) || Number.isNaN(rdl)) {
-			toast.error(i18n.t("Please enter valid numbers"));
+		const balanceCents = Math.round(Number(balance) * 100);
+		if (!Number.isFinite(balanceCents)) {
+			toast.error(i18n.t("Please enter a valid number"));
 			return;
 		}
-
-		updateMutation.mutate({
-			userId,
-			limits: {
-				threadMessagesLimit: tml,
-				resumeAnalysesLimit: ral,
-				resumeDownloadsLimit: rdl,
-			},
-		});
-
-		const balanceCents = Math.round(Number(balance) * 100);
-		if (Number.isFinite(balanceCents)) {
-			setBalanceMutation.mutate({ userId, balance: balanceCents });
-		}
+		setBalanceMutation.mutate({ userId, balance: balanceCents });
 	};
-
-	const formatLimit = (limit: number) => (limit === -1 ? "\u221E" : String(limit));
 
 	return (
 		<Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -556,80 +501,11 @@ function QuotaDialog({ open, userId, userName, initialQuota, initialBalance, onC
 						<Trans>Edit Quota</Trans>
 					</DialogTitle>
 					<DialogDescription>
-						<Trans>
-							Configure usage limits for{" "}
-							<span className="font-medium">{userName}</span>. Set to -1 for unlimited.
-						</Trans>
+						<Trans>Configure balance for <span className="font-medium">{userName}</span>.</Trans>
 					</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4">
-					<FormItem>
-						<FormLabel>
-							<Trans>Thread Messages</Trans>
-						</FormLabel>
-						<FormControl>
-							<Input
-								type="number"
-								min={-1}
-								value={threadMessages}
-								onChange={(e) => setThreadMessages(e.target.value)}
-							/>
-						</FormControl>
-						{initialQuota && (
-							<p className="text-muted-foreground text-xs">
-								<Trans>
-									Used: {initialQuota.threadMessagesUsed} /{" "}
-									{formatLimit(initialQuota.threadMessagesLimit)}
-								</Trans>
-							</p>
-						)}
-					</FormItem>
-
-					<FormItem>
-						<FormLabel>
-							<Trans>Resume Analyses</Trans>
-						</FormLabel>
-						<FormControl>
-							<Input
-								type="number"
-								min={-1}
-								value={resumeAnalyses}
-								onChange={(e) => setResumeAnalyses(e.target.value)}
-							/>
-						</FormControl>
-						{initialQuota && (
-							<p className="text-muted-foreground text-xs">
-								<Trans>
-									Used: {initialQuota.resumeAnalysesUsed} /{" "}
-									{formatLimit(initialQuota.resumeAnalysesLimit)}
-								</Trans>
-							</p>
-						)}
-					</FormItem>
-
-					<FormItem>
-						<FormLabel>
-							<Trans>Resume Downloads</Trans>
-						</FormLabel>
-						<FormControl>
-							<Input
-								type="number"
-								min={-1}
-								value={resumeDownloads}
-								onChange={(e) => setResumeDownloads(e.target.value)}
-							/>
-						</FormControl>
-						{initialQuota && (
-							<p className="text-muted-foreground text-xs">
-								<Trans>
-									Used: {initialQuota.resumeDownloadsUsed} /{" "}
-									{formatLimit(initialQuota.resumeDownloadsLimit)}
-								</Trans>
-							</p>
-						)}
-					</FormItem>
-
 					<FormItem>
 						<FormLabel>
 							<Trans>Balance</Trans>
@@ -647,21 +523,11 @@ function QuotaDialog({ open, userId, userName, initialQuota, initialBalance, onC
 							<Trans>In CNY. Credits are added once a recharge is approved.</Trans>
 						</p>
 					</FormItem>
-
-					<Button
-						variant="outline"
-						size="sm"
-						disabled={resetMutation.isPending}
-						onClick={() => resetMutation.mutate({ userId })}
-					>
-						{resetMutation.isPending ? <Spinner /> : null}
-						<Trans>Reset Usage Counters</Trans>
-					</Button>
 				</div>
 
 				<DialogFooter showCloseButton>
-					<Button disabled={updateMutation.isPending} onClick={handleSave}>
-						{updateMutation.isPending ? <Spinner /> : null}
+					<Button disabled={setBalanceMutation.isPending} onClick={handleSave}>
+						{setBalanceMutation.isPending ? <Spinner /> : null}
 						<Trans>Save</Trans>
 					</Button>
 				</DialogFooter>

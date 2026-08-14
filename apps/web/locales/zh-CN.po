@@ -68,6 +68,10 @@ msgstr ""
 msgid "Usage counters reset"
 msgstr ""
 
+#: src/routes/dashboard/admin/users.tsx
+msgid "Please enter a valid number"
+msgstr "请输入一个有效的数字"
+
 #. js-lingui-explicit-id
 #: src/routes/dashboard/admin/users.tsx
 msgid "Please enter valid numbers"
@@ -1017,6 +1021,10 @@ msgstr "将此简历与此职位网址进行比较，更新关键词，同时保
 #: src/routes/_home/-sections/features.tsx
 msgid "Completely free, forever, no hidden costs."
 msgstr "完全免费，永久免费，没有任何隐藏费用。"
+
+#: src/routes/dashboard/admin/users.tsx
+msgid "Configure balance for <0>{userName}</0>."
+msgstr "为 <0>{userName}</0> 配置余额"
 
 #: src/routes/dashboard/admin/users.tsx
 msgid "Configure usage limits for <0>{userName}</0>. Set to -1 for unlimited."

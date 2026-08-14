@@ -3,11 +3,18 @@ import { count, desc, eq, sql } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import { user, userQuota, userTransaction } from "@reactive-resume/db/schema";
 
-/** 每次使用扣费金额（单位：分）。0.5 元 = 50 分。 */
-export const PRICE_PER_USE_CENTS = 50;
-
 /** 使用明细类型，与配额种类一一对应。 */
 export type TransactionType = "threadMessages" | "resumeAnalyses" | "resumeDownloads";
+
+/**
+ * 各类使用扣费金额（单位：分）。
+ * 每 ¥1 获得 1 次下载；每 ¥2 获得 1 次简历分析；每 ¥2 获得 1 次对话生成。
+ */
+export const PRICE_PER_USE_CENTS: Record<TransactionType, number> = {
+	resumeDownloads: 100,
+	resumeAnalyses: 200,
+	threadMessages: 200,
+};
 
 const TYPE_REMARKS: Record<TransactionType, string> = {
 	threadMessages: "简历生成对话",
@@ -23,10 +30,12 @@ export type UserTransactionItem = typeof userTransaction.$inferSelect;
  * 待充值功能上线后再接入强校验。
  */
 export async function deductBalance(userId: string, type: TransactionType): Promise<void> {
+	const priceCents = PRICE_PER_USE_CENTS[type];
+
 	await db.transaction(async (tx) => {
 		const [updated] = await tx
 			.update(user)
-			.set({ balance: sql`${user.balance} - ${PRICE_PER_USE_CENTS}` })
+			.set({ balance: sql`${user.balance} - ${priceCents}` })
 			.where(eq(user.id, userId))
 			.returning({ balance: user.balance });
 
@@ -35,7 +44,7 @@ export async function deductBalance(userId: string, type: TransactionType): Prom
 		await tx.insert(userTransaction).values({
 			userId,
 			type,
-			amount: -PRICE_PER_USE_CENTS,
+			amount: -priceCents,
 			balance: updated.balance,
 			remark: TYPE_REMARKS[type],
 		});

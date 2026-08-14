@@ -31,10 +31,6 @@ function formatCents(cents: number): string {
 	return `${sign}¥${yuan}`;
 }
 
-function formatQuota(used: number, limit: number): string {
-	return limit < 0 ? `${used} / \u221E` : `${used} / ${limit}`;
-}
-
 export const Route = createFileRoute("/dashboard/account")({
 	component: RouteComponent,
 });
@@ -116,41 +112,6 @@ function RouteComponent() {
 								<Trans>Top Up</Trans>
 							</Button>
 						)}
-					</div>
-				</div>
-			)}
-
-			<h2 className="pt-2 font-medium text-lg">
-				<Trans>Remaining Quota</Trans>
-			</h2>
-
-			{profile && (
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-					<div className="rounded-lg border p-4">
-						<p className="text-muted-foreground text-xs">
-							<Trans>Downloads</Trans>
-						</p>
-						<p className="mt-1 font-medium text-sm">
-							{formatQuota(profile.quota.resumeDownloadsUsed, profile.quota.resumeDownloadsLimit)}
-						</p>
-					</div>
-
-					<div className="rounded-lg border p-4">
-						<p className="text-muted-foreground text-xs">
-							<Trans>Resume Analyses</Trans>
-						</p>
-						<p className="mt-1 font-medium text-sm">
-							{formatQuota(profile.quota.resumeAnalysesUsed, profile.quota.resumeAnalysesLimit)}
-						</p>
-					</div>
-
-					<div className="rounded-lg border p-4">
-						<p className="text-muted-foreground text-xs">
-							<Trans>Conversation Generations</Trans>
-						</p>
-						<p className="mt-1 font-medium text-sm">
-							{formatQuota(profile.quota.threadMessagesUsed, profile.quota.threadMessagesLimit)}
-						</p>
 					</div>
 				</div>
 			)}
