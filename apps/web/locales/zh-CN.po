@@ -3747,8 +3747,9 @@ msgid "Resume"
 msgstr "简历预览"
 
 #: src/routes/dashboard/admin/users.tsx
+#: src/routes/dashboard/account.tsx
 msgid "Resume Analyses"
-msgstr ""
+msgstr "简历分析次数"
 
 #: src/routes/dashboard/account.tsx
 msgid "Resume analysis"
@@ -5136,7 +5137,7 @@ msgstr "用户中心"
 #: src/routes/dashboard/-components/sidebar.tsx
 #: src/routes/dashboard/admin/users.tsx
 msgid "User Management"
-msgstr ""
+msgstr "用户管理"
 
 #. Label for username input on registration form
 #: src/dialogs/resume/sections/profile.tsx
@@ -5429,3 +5430,73 @@ msgstr "缩小"
 #: src/libs/locale.ts
 msgid "Zulu"
 msgstr "祖鲁语"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Click the QR code to enlarge it."
+msgstr "点击二维码可放大查看。"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Click to enlarge the payment QR code"
+msgstr "点击放大支付二维码"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Click to upload"
+msgstr "点击上传"
+
+#: src/routes/dashboard/account.tsx
+msgid "Conversation Generations"
+msgstr "对话生成次数"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Every ¥1 get per download, Every ¥2 get 1 resume analyses, Every ¥2 get 1 conversation generations."
+msgstr "每 ¥1 可获得 1次下载、每 ¥2 可获得 1次简历深度分析,每 ¥2 可获得 1次智能简历生成。"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Only multiples of ¥{minRechargeYuan} are accepted."
+msgstr "仅接受 ¥{minRechargeYuan} 的整数倍。"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Payment proof"
+msgstr "付款凭证"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Payment QR code"
+msgstr "支付二维码"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Payment QR code is not configured yet. Please contact support."
+msgstr "尚未配置支付二维码，请联系客服。"
+
+#: src/routes/dashboard/-components/sidebar.tsx
+#: src/routes/dashboard/admin/payments.tsx
+msgid "Payment Records"
+msgstr "支付记录"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Please scan the code with WeChat to complete the payment."
+msgstr "请使用微信扫描二维码完成支付。"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Recharge request submitted. We will review it shortly."
+msgstr "充值申请已提交，我们将尽快审核。"
+
+#: src/routes/dashboard/account.tsx
+msgid "Remaining Quota"
+msgstr "剩余额度"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Scan the code below with WeChat to pay, then upload your payment proof."
+msgstr "请使用微信扫描下方二维码付款，然后上传付款凭证。"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Submit for Review"
+msgstr "提交审核"
+
+#: src/routes/dashboard/account.tsx
+#: src/features/billing/recharge-dialog.tsx
+msgid "Top Up"
+msgstr "充值"
+
+#: src/features/billing/recharge-dialog.tsx
+msgid "Uploaded"
+msgstr "已上传"
