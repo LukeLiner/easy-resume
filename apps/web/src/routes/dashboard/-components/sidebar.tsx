@@ -7,12 +7,12 @@ import {
 	ChatCircleDotsIcon,
 	GearSixIcon,
 	ReadCvLogoIcon,
+	UserCircleIcon,
 	UsersIcon,
 } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@reactive-resume/ui/components/avatar";
 import { BrandIcon } from "@reactive-resume/ui/components/brand-icon";
-import { Route } from "../route";
 import {
 	Sidebar,
 	SidebarContent,
@@ -29,6 +29,7 @@ import {
 } from "@reactive-resume/ui/components/sidebar";
 import { getInitials } from "@reactive-resume/utils/string";
 import { UserDropdownMenu } from "@/features/user/dropdown-menu";
+import { Route } from "../route";
 
 type SidebarItem = {
 	icon: React.ReactNode;
@@ -50,6 +51,11 @@ const appSidebarItems = [
 ] as const satisfies SidebarItem[];
 
 const settingsSidebarItems = [
+	{
+		icon: <UserCircleIcon />,
+		label: msg`User Center`,
+		href: "/dashboard/account",
+	},
 	{
 		icon: <GearSixIcon />,
 		label: msg`Preferences`,
@@ -122,7 +128,6 @@ export function DashboardSidebar() {
 							}
 						/>
 					</SidebarMenuItem>
-
 				</SidebarMenu>
 			</SidebarHeader>
 
@@ -183,8 +188,7 @@ export function DashboardSidebar() {
 						</UserDropdownMenu>
 					</SidebarMenuItem>
 				</SidebarMenu>
-
-				</SidebarFooter>
+			</SidebarFooter>
 
 			<SidebarRail />
 		</Sidebar>

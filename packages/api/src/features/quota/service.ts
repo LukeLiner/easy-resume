@@ -2,6 +2,7 @@ import { ORPCError } from "@orpc/server";
 import { and, eq, lt, or, sql } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import { userQuota } from "@reactive-resume/db/schema";
+import { deductBalance } from "../billing/service";
 
 /**
  * Feature quotas tracked per user. A limit of `-1` means unlimited.
@@ -21,7 +22,13 @@ export type QuotaLimits = {
 
 const DEFAULT_LIMIT = -1;
 
-const KIND_FIELDS: Record<QuotaKind, { limitKey: "threadMessagesLimit" | "resumeAnalysesLimit" | "resumeDownloadsLimit"; usedKey: "threadMessagesUsed" | "resumeAnalysesUsed" | "resumeDownloadsUsed" }> = {
+const KIND_FIELDS: Record<
+	QuotaKind,
+	{
+		limitKey: "threadMessagesLimit" | "resumeAnalysesLimit" | "resumeDownloadsLimit";
+		usedKey: "threadMessagesUsed" | "resumeAnalysesUsed" | "resumeDownloadsUsed";
+	}
+> = {
 	threadMessages: { limitKey: "threadMessagesLimit", usedKey: "threadMessagesUsed" },
 	resumeAnalyses: { limitKey: "resumeAnalysesLimit", usedKey: "resumeAnalysesUsed" },
 	resumeDownloads: { limitKey: "resumeDownloadsLimit", usedKey: "resumeDownloadsUsed" },
@@ -61,7 +68,10 @@ async function consumeQuota(userId: string, kind: QuotaKind): Promise<void> {
 		)
 		.returning();
 
-	if (updated) return;
+	if (updated) {
+		await deductBalance(userId, kind);
+		return;
+	}
 
 	// No row yet: create a default row (with DB-level defaults) that already counts the usage.
 	const [inserted] = await db
@@ -70,7 +80,10 @@ async function consumeQuota(userId: string, kind: QuotaKind): Promise<void> {
 		.onConflictDoNothing()
 		.returning();
 
-	if (inserted) return;
+	if (inserted) {
+		await deductBalance(userId, kind);
+		return;
+	}
 
 	throw new ORPCError("PRECONDITION_FAILED", { message: "Quota exceeded" });
 }

@@ -32,6 +32,7 @@ export const user = pg.pgTable(
 			precision: 6,
 			withTimezone: true,
 		}),
+		balance: pg.integer("balance").notNull().default(0),
 		createdAt: pg.timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 		updatedAt: pg
 			.timestamp("updated_at", { withTimezone: true })
