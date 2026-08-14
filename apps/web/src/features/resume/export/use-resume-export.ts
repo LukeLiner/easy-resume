@@ -83,7 +83,7 @@ export function useResumeExport(resume: ExportableResume | undefined, exportOpti
 		try {
 			await client.quota.checkDownload({ _count: 1 });
 		} catch {
-			toast.error(t`You have exceeded your resume download quota.`);
+			toast.error(t`Insufficient balance. Please recharge to continue.`);
 			return;
 		}
 		try {
@@ -111,7 +111,7 @@ export function useResumeExport(resume: ExportableResume | undefined, exportOpti
 			try {
 				await client.quota.checkDownload({ _count: 1 });
 			} catch {
-				toast.error(t`You have exceeded your resume download quota.`);
+				toast.error(t`Insufficient balance. Please recharge to continue.`);
 				return;
 			}
 			try {
@@ -134,7 +134,7 @@ export function useResumeExport(resume: ExportableResume | undefined, exportOpti
 			try {
 				await client.quota.checkDownload({ _count: 1 });
 			} catch {
-				toast.error(t`You have exceeded your resume download quota.`);
+				toast.error(t`Insufficient balance. Please recharge to continue.`);
 				return;
 			}
 			try {
@@ -157,7 +157,7 @@ export function useResumeExport(resume: ExportableResume | undefined, exportOpti
 			try {
 				await client.quota.checkDownload({ _count: 1 });
 			} catch {
-				toast.error(t`You have exceeded your resume download quota.`);
+				toast.error(t`Insufficient balance. Please recharge to continue.`);
 				return;
 			}
 			const toastId = toast.loading(t`Please wait while your PDF is being generated...`);

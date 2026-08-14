@@ -2,7 +2,7 @@ import { ORPCError } from "@orpc/server";
 import { and, eq, lt, or, sql } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import { userQuota } from "@reactive-resume/db/schema";
-import { deductBalance } from "../billing/service";
+import { assertSufficientBalance, deductBalance } from "../billing/service";
 
 /**
  * Feature quotas tracked per user. A limit of `-1` means unlimited.
@@ -57,6 +57,9 @@ export async function getUserQuota(userId: string): Promise<UserQuota> {
 async function consumeQuota(userId: string, kind: QuotaKind): Promise<void> {
 	const { limitKey, usedKey } = KIND_FIELDS[kind];
 
+	// 先校验余额，余额不足时直接拒绝，不消耗配额计数。
+	await assertSufficientBalance(userId, kind);
+
 	const [updated] = await db
 		.update(userQuota)
 		.set({ [usedKey]: sql`${userQuota[usedKey]} + 1` })
@@ -106,6 +109,9 @@ export function consumeResumeDownloadQuota(userId: string): Promise<void> {
  * This allows fail-fast checks before starting expensive operations (e.g. AI analysis, file generation).
  */
 export async function checkQuota(userId: string, kind: QuotaKind): Promise<void> {
+	// 余额不足时直接拒绝，避免在生成文件/分析之后才失败。
+	await assertSufficientBalance(userId, kind);
+
 	const quota = await getUserQuota(userId);
 	const { limitKey, usedKey } = KIND_FIELDS[kind];
 

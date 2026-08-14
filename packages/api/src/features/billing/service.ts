@@ -1,5 +1,5 @@
 import { ORPCError } from "@orpc/server";
-import { count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, sql } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import { user, userQuota, userTransaction } from "@reactive-resume/db/schema";
 
@@ -25,9 +25,28 @@ const TYPE_REMARKS: Record<TransactionType, string> = {
 export type UserTransactionItem = typeof userTransaction.$inferSelect;
 
 /**
+ * 校验用户余额是否足够支付一次 `type` 的使用费用。
+ * 余额不足时抛出 PRECONDITION_FAILED，供预检查（checkDownload 等）在操作前拦截，
+ * 避免先生成文件/分析再因余额不足而失败。
+ */
+export async function assertSufficientBalance(userId: string, type: TransactionType): Promise<void> {
+	const priceCents = PRICE_PER_USE_CENTS[type];
+
+	const [row] = await db
+		.select({ balance: user.balance })
+		.from(user)
+		.where(eq(user.id, userId))
+		.limit(1);
+
+	if (!row) throw new ORPCError("NOT_FOUND", { message: "User not found" });
+	if (row.balance < priceCents) {
+		throw new ORPCError("PRECONDITION_FAILED", { message: "额度不足，请充值" });
+	}
+}
+
+/**
  * 从用户余额中扣除一次使用费用，并记录一条使用明细。
- * 当前为「尽力扣费」：不因余额不足而阻断功能（余额可为负），
- * 待充值功能上线后再接入强校验。
+ * 原子扣减：余额不足时更新不生效并抛出 PRECONDITION_FAILED，余额不会变为负数。
  */
 export async function deductBalance(userId: string, type: TransactionType): Promise<void> {
 	const priceCents = PRICE_PER_USE_CENTS[type];
@@ -36,10 +55,12 @@ export async function deductBalance(userId: string, type: TransactionType): Prom
 		const [updated] = await tx
 			.update(user)
 			.set({ balance: sql`${user.balance} - ${priceCents}` })
-			.where(eq(user.id, userId))
+			.where(and(eq(user.id, userId), gte(user.balance, priceCents)))
 			.returning({ balance: user.balance });
 
-		if (!updated) return;
+		if (!updated) {
+			throw new ORPCError("PRECONDITION_FAILED", { message: "额度不足，请充值" });
+		}
 
 		await tx.insert(userTransaction).values({
 			userId,

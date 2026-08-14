@@ -5322,12 +5322,12 @@ msgstr "你可以通过唯一的公共 URL 分享你的简历，用密码保护�
 
 #. Error description when user has exceeded their resume analysis quota
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
-msgid "You have exceeded your resume analysis quota."
-msgstr ""
+msgid "You have exceeded your resume analysis quota.Please top up your accoun."
+msgstr "您已超出简历分析配额，请充值您的账户。"
 
 #: src/features/resume/export/use-resume-export.ts
-msgid "You have exceeded your resume download quota."
-msgstr ""
+msgid "Insufficient balance. Please recharge to continue."
+msgstr "余额不足，请充值后继续使用。"
 
 #: src/hooks/use-form-blocker.tsx
 msgid "You have unsaved changes that will be lost."

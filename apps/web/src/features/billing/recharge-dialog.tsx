@@ -29,11 +29,13 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
 
 	const [amountYuan, setAmountYuan] = useState("10");
 	const [proofUrl, setProofUrl] = useState<string | null>(null);
-	const [contactEmail, setContactEmail] = useState("");
 	const [previewOpen, setPreviewOpen] = useState(false);
 
 	const configQuery = useQuery(orpc.payment.getConfig.queryOptions());
 	const config = configQuery.data;
+
+	const userCenterQuery = useQuery(orpc.billing.getUserCenter.queryOptions());
+	const userEmail = userCenterQuery.data?.email ?? "";
 	const minRechargeCents = config?.minRechargeCents ?? 1000;
 	const minRechargeYuan = minRechargeCents / 100;
 
@@ -65,7 +67,7 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
 		submitMutation.mutate({
 			amount: amountCents,
 			proofUrl,
-			contactEmail: contactEmail || undefined,
+			contactEmail: userEmail,
 		});
 	};
 
@@ -174,18 +176,12 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
 						</div>
 
 						<div>
-							<Label htmlFor="contact-email">
+							<Label>
 								<Trans>Email</Trans>
-								<span style={{ fontSize: '12px', color: 'red' }}>
-        (填写注册邮箱)
-      </span>
 							</Label>
-							<Input
-								id="contact-email"
-								type="email"
-								value={contactEmail}
-								onChange={(event) => setContactEmail(event.target.value)}
-							/>
+							<p className="mt-2 rounded-lg border bg-muted/40 px-3 py-2 text-sm">
+								{userEmail}
+							</p>
 						</div>
 
 						<Button
