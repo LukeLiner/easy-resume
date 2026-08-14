@@ -5,7 +5,7 @@ export const localeSchema = z.enum(["en-US", "zh-CN"]);
 
 export type Locale = z.infer<typeof localeSchema>;
 
-export const defaultLocale: Locale = "en-US";
+export const defaultLocale: Locale = "zh-CN";
 
 export function isLocale(value: unknown): value is Locale {
 	return localeSchema.safeParse(value).success;

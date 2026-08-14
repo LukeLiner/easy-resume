@@ -1,14 +1,12 @@
-import { ORPCError } from "@orpc/server";
-import { and, eq, lt, or, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import { userQuota } from "@reactive-resume/db/schema";
 import { assertSufficientBalance, deductBalance } from "../billing/service";
 
 /**
- * Feature quotas tracked per user. A limit of `-1` means unlimited.
- * When a new row is created, DB-level defaults apply (thread=5, analyses=2, downloads=1).
- * Without an explicit `user_quota` row the user is treated as unlimited (`-1`),
- * so existing accounts keep working until an admin adjusts limits.
+ * Consumption is billed against the user's balance only; balance is the single
+ * source of truth for charging. The `user_quota` table and the admin quota
+ * helpers below are legacy bookkeeping and no longer gate consumption.
  */
 export type QuotaKind = "threadMessages" | "resumeAnalyses" | "resumeDownloads";
 
@@ -21,18 +19,6 @@ export type QuotaLimits = {
 };
 
 const DEFAULT_LIMIT = -1;
-
-const KIND_FIELDS: Record<
-	QuotaKind,
-	{
-		limitKey: "threadMessagesLimit" | "resumeAnalysesLimit" | "resumeDownloadsLimit";
-		usedKey: "threadMessagesUsed" | "resumeAnalysesUsed" | "resumeDownloadsUsed";
-	}
-> = {
-	threadMessages: { limitKey: "threadMessagesLimit", usedKey: "threadMessagesUsed" },
-	resumeAnalyses: { limitKey: "resumeAnalysesLimit", usedKey: "resumeAnalysesUsed" },
-	resumeDownloads: { limitKey: "resumeDownloadsLimit", usedKey: "resumeDownloadsUsed" },
-};
 
 export async function getUserQuota(userId: string): Promise<UserQuota> {
 	const [row] = await db.select().from(userQuota).where(eq(userQuota.userId, userId)).limit(1);
@@ -51,44 +37,13 @@ export async function getUserQuota(userId: string): Promise<UserQuota> {
 }
 
 /**
- * Atomically increments the used counter for `kind` unless the limit is
- * already reached. Throws `PRECONDITION_FAILED` when the quota is exhausted.
+ * Consumes one unit of `kind` by charging the user's balance.
+ * Throws `PRECONDITION_FAILED` when the balance is insufficient.
  */
 async function consumeQuota(userId: string, kind: QuotaKind): Promise<void> {
-	const { limitKey, usedKey } = KIND_FIELDS[kind];
-
-	// 先校验余额，余额不足时直接拒绝，不消耗配额计数。
+	// 余额是唯一门槛：余额足够即放行并扣费，不足时在 assertSufficientBalance 内拒绝。
 	await assertSufficientBalance(userId, kind);
-
-	const [updated] = await db
-		.update(userQuota)
-		.set({ [usedKey]: sql`${userQuota[usedKey]} + 1` })
-		.where(
-			and(
-				eq(userQuota.userId, userId),
-				or(eq(userQuota[limitKey], DEFAULT_LIMIT), lt(userQuota[usedKey], userQuota[limitKey])),
-			),
-		)
-		.returning();
-
-	if (updated) {
-		await deductBalance(userId, kind);
-		return;
-	}
-
-	// No row yet: create a default row (with DB-level defaults) that already counts the usage.
-	const [inserted] = await db
-		.insert(userQuota)
-		.values({ userId, [usedKey]: 1 })
-		.onConflictDoNothing()
-		.returning();
-
-	if (inserted) {
-		await deductBalance(userId, kind);
-		return;
-	}
-
-	throw new ORPCError("PRECONDITION_FAILED", { message: "Quota exceeded" });
+	await deductBalance(userId, kind);
 }
 
 export function consumeThreadMessageQuota(userId: string): Promise<void> {
@@ -109,27 +64,8 @@ export function consumeResumeDownloadQuota(userId: string): Promise<void> {
  * This allows fail-fast checks before starting expensive operations (e.g. AI analysis, file generation).
  */
 export async function checkQuota(userId: string, kind: QuotaKind): Promise<void> {
-	// 余额不足时直接拒绝，避免在生成文件/分析之后才失败。
+	// 余额是唯一门槛：余额不足时直接拒绝，避免在生成文件/分析之后才失败。
 	await assertSufficientBalance(userId, kind);
-
-	const quota = await getUserQuota(userId);
-	const { limitKey, usedKey } = KIND_FIELDS[kind];
-
-	const limit = quota[limitKey];
-	const used = quota[usedKey];
-
-	if (limit === DEFAULT_LIMIT) return; // unlimited
-	if (used < limit) return;
-
-	const KIND_LABELS: Record<QuotaKind, string> = {
-		threadMessages: "thread messages",
-		resumeAnalyses: "resume analyses",
-		resumeDownloads: "resume downloads",
-	};
-
-	throw new ORPCError("PRECONDITION_FAILED", {
-		message: `You have exceeded your ${KIND_LABELS[kind]} quota.`,
-	});
 }
 
 export function checkResumeAnalysisQuota(userId: string): Promise<void> {

@@ -1,6 +1,6 @@
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { ArrowRightIcon, EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, EyeIcon, EyeSlashIcon, PaperPlaneIcon } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -8,8 +8,17 @@ import { useToggle } from "usehooks-ts";
 import z from "zod";
 import { Alert, AlertDescription, AlertTitle } from "@reactive-resume/ui/components/alert";
 import { Button } from "@reactive-resume/ui/components/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@reactive-resume/ui/components/dialog";
 import { FormControl, FormItem, FormLabel, FormMessage } from "@reactive-resume/ui/components/form";
 import { Input } from "@reactive-resume/ui/components/input";
+import { cn } from "@reactive-resume/utils/style";
 import { authClient } from "@/libs/auth/client";
 import { useAppForm } from "@/libs/tanstack-form";
 import { SocialAuth } from "../components/social-auth";
@@ -248,6 +257,8 @@ export function RegisterPage({ disableEmailAuth }: Props) {
 }
 
 function PostSignupScreen() {
+	const [zoomed, setZoomed] = useState(false);
+
 	return (
 		<>
 			<div className="space-y-1 text-center">
@@ -269,6 +280,37 @@ function PostSignupScreen() {
 					</Trans>
 				</AlertDescription>
 			</Alert>
+
+			<Dialog>
+				<DialogTrigger
+					render={
+						<Button variant="outline" className="w-full">
+							<PaperPlaneIcon />
+							<Trans>等不及了？催催管理员</Trans>
+						</Button>
+					}
+				/>
+				<DialogContent className="text-center">
+					<DialogHeader>
+						<DialogTitle>
+							<Trans>催更通道已开启</Trans>
+						</DialogTitle>
+						<DialogDescription>
+							<Trans>审核路上有点堵？扫码加管理员微信，来一句「在吗」，说不定管理员一乐，你的账号就被优先安排啦～</Trans>
+						</DialogDescription>
+					</DialogHeader>
+
+					<img
+						src="/icon/admin.jpg"
+						alt={t`管理员微信二维码`}
+						onClick={() => setZoomed((prev) => !prev)}
+						className={cn(
+							"mx-auto rounded-xl border bg-white object-contain p-2 transition-all duration-300",
+							zoomed ? "size-96 cursor-zoom-out" : "size-64 cursor-zoom-in",
+						)}
+					/>
+				</DialogContent>
+			</Dialog>
 
 			<Button
 				nativeButton={false}

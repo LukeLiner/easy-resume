@@ -14,7 +14,7 @@ import { genericOAuth } from "better-auth/plugins/generic-oauth";
 import { twoFactor } from "better-auth/plugins/two-factor";
 import { username } from "better-auth/plugins/username";
 import { createElement } from "react";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import * as schema from "@reactive-resume/db/schema";
 import { ResetPasswordEmail, VerifyEmail, VerifyEmailChange } from "@reactive-resume/email/templates/auth";
@@ -108,6 +108,28 @@ const getAuthConfig = () => {
 		hooks: {
 			// biome-ignore lint/suspicious/useAwait: Better Auth requires middleware callbacks to return a Promise.
 			before: createAuthMiddleware(async (ctx) => {
+				// Block sign-up when the email is already registered (case-insensitive).
+				if (ctx.path === "/sign-up/email") {
+					const body = ctx.body as { email?: string } | undefined;
+					const email = body?.email?.trim().toLowerCase();
+
+					if (email) {
+						const [existing] = await db
+							.select({ id: schema.user.id })
+							.from(schema.user)
+							.where(sql`lower(${schema.user.email}) = ${email}`)
+							.limit(1);
+
+						if (existing) {
+							throw new APIError("CONFLICT", {
+								message: "An account with this email already exists.",
+							});
+						}
+					}
+
+					return;
+				}
+
 				// Block sign-in for pending or banned users
 				if (ctx.path === "/sign-in/email") {
 					const body = ctx.body as { email?: string } | undefined;
