@@ -15,8 +15,8 @@ describe("isLocale", () => {
 		expect(isLocale("en-US")).toBe(true);
 	});
 
-	it("returns true for de-DE", () => {
-		expect(isLocale("de-DE")).toBe(true);
+	it("returns false for removed locale de-DE", () => {
+		expect(isLocale("de-DE")).toBe(false);
 	});
 
 	it("returns true for zh-CN", () => {
@@ -42,7 +42,7 @@ describe("isLocale", () => {
 
 describe("resolveLocale", () => {
 	it("returns the locale unchanged when valid", () => {
-		expect(resolveLocale("fr-FR")).toBe("fr-FR");
+		expect(resolveLocale("zh-CN")).toBe("zh-CN");
 	});
 
 	it("returns en-US default for invalid locale", () => {
@@ -75,9 +75,9 @@ describe("changeLocale", () => {
 	it("persists a valid locale and reloads", () => {
 		const reload = vi.spyOn(window.location, "reload").mockImplementation(() => undefined);
 
-		changeLocale("de-DE");
+		changeLocale("zh-CN");
 
-		expect(Cookies.get("locale")).toBe("de-DE");
+		expect(Cookies.get("locale")).toBe("zh-CN");
 		expect(reload).toHaveBeenCalledOnce();
 	});
 });

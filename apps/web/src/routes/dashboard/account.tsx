@@ -11,6 +11,7 @@ import { Badge } from "@reactive-resume/ui/components/badge";
 import { Button } from "@reactive-resume/ui/components/button";
 import { Separator } from "@reactive-resume/ui/components/separator";
 import { Spinner } from "@reactive-resume/ui/components/spinner";
+import { RechargeDialog } from "@/features/billing/recharge-dialog";
 import { orpc } from "@/libs/orpc/client";
 import { DashboardHeader } from "./-components/header";
 
@@ -30,6 +31,10 @@ function formatCents(cents: number): string {
 	return `${sign}¥${yuan}`;
 }
 
+function formatQuota(used: number, limit: number): string {
+	return limit < 0 ? `${used} / \u221E` : `${used} / ${limit}`;
+}
+
 export const Route = createFileRoute("/dashboard/account")({
 	component: RouteComponent,
 });
@@ -37,11 +42,13 @@ export const Route = createFileRoute("/dashboard/account")({
 function RouteComponent() {
 	const { i18n } = useLingui();
 	const [page, setPage] = useState(1);
+	const [rechargeOpen, setRechargeOpen] = useState(false);
 
 	const profileQuery = useQuery(orpc.billing.getUserCenter.queryOptions());
 	const transactionsQuery = useQuery(
 		orpc.billing.listTransactions.queryOptions({ input: { page, limit: LIMIT_PER_PAGE } }),
 	);
+	const paymentConfigQuery = useQuery(orpc.payment.getConfig.queryOptions());
 
 	const profile = profileQuery.data;
 	const transactions = transactionsQuery.data?.transactions ?? [];
@@ -104,6 +111,46 @@ function RouteComponent() {
 							<Trans>Balance</Trans>
 						</p>
 						<p className="mt-1 font-semibold text-primary text-sm">{formatCents(profile?.balance ?? 0)}</p>
+						{paymentConfigQuery.data?.enabled && (
+							<Button type="button" size="sm" variant="outline" className="mt-2" onClick={() => setRechargeOpen(true)}>
+								<Trans>Top Up</Trans>
+							</Button>
+						)}
+					</div>
+				</div>
+			)}
+
+			<h2 className="pt-2 font-medium text-lg">
+				<Trans>Remaining Quota</Trans>
+			</h2>
+
+			{profile && (
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+					<div className="rounded-lg border p-4">
+						<p className="text-muted-foreground text-xs">
+							<Trans>Downloads</Trans>
+						</p>
+						<p className="mt-1 font-medium text-sm">
+							{formatQuota(profile.quota.resumeDownloadsUsed, profile.quota.resumeDownloadsLimit)}
+						</p>
+					</div>
+
+					<div className="rounded-lg border p-4">
+						<p className="text-muted-foreground text-xs">
+							<Trans>Resume Analyses</Trans>
+						</p>
+						<p className="mt-1 font-medium text-sm">
+							{formatQuota(profile.quota.resumeAnalysesUsed, profile.quota.resumeAnalysesLimit)}
+						</p>
+					</div>
+
+					<div className="rounded-lg border p-4">
+						<p className="text-muted-foreground text-xs">
+							<Trans>Conversation Generations</Trans>
+						</p>
+						<p className="mt-1 font-medium text-sm">
+							{formatQuota(profile.quota.threadMessagesUsed, profile.quota.threadMessagesLimit)}
+						</p>
 					</div>
 				</div>
 			)}
@@ -197,6 +244,8 @@ function RouteComponent() {
 					)}
 				</>
 			)}
+
+			<RechargeDialog open={rechargeOpen} onOpenChange={setRechargeOpen} />
 		</div>
 	);
 }

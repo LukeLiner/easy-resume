@@ -16,6 +16,7 @@ export type AdminUserListItem = {
 	status: string | null;
 	banned: boolean | null;
 	emailVerified: boolean;
+	balance: number;
 	createdAt: Date;
 	updatedAt: Date;
 	resumeCount: number;
@@ -100,9 +101,10 @@ export const adminService = {
 					status: schema.user.status,
 					banned: schema.user.banned,
 					emailVerified: schema.user.emailVerified,
+					balance: schema.user.balance,
 					createdAt: schema.user.createdAt,
 					updatedAt: schema.user.updatedAt,
-				})
+					})
 				.from(schema.user)
 				.where(searchWhere)
 				.orderBy(desc(schema.user.createdAt))
@@ -243,5 +245,17 @@ export const adminService = {
 			.update(schema.user)
 			.set({ status: "active" })
 			.where(eq(schema.user.id, userId));
+	},
+
+	setUserBalance: async ({ userId, balance }: { userId: string; balance: number }): Promise<{ balance: number }> => {
+		await requireExistingUser(userId);
+
+		const [updated] = await db
+			.update(schema.user)
+			.set({ balance })
+			.where(eq(schema.user.id, userId))
+			.returning({ balance: schema.user.balance });
+
+		return { balance: updated?.balance ?? balance };
 	},
 };

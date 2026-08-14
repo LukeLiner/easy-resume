@@ -82,6 +82,11 @@ export const env = createEnv({
 		LANGSMITH_TRACING: z.stringbool().optional(),
 		LANGSMITH_ENABLED: z.stringbool().optional(),
 
+		// Payment (manual recharge, optional)
+		PAYMENT_ENABLED: z.stringbool().default(true),
+		PAYMENT_QR_CODE_URL: z.string().min(1).optional(),
+		PAYMENT_N8N_WEBHOOK_URL: z.url({ protocol: /https?/ }).optional(),
+
 		// Feature Flags
 		FLAG_DISABLE_SIGNUPS: z.stringbool().default(false),
 		FLAG_DISABLE_EMAIL_AUTH: z.stringbool().default(false),

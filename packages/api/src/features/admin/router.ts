@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { adminProcedure } from "../../context";
+import { listExceptions, listPayments, reviewPayment } from "../payment/service";
 import { adminService } from "./service";
 
 const userQuotaSchema = z.object({
@@ -28,7 +29,8 @@ export const adminRouter = {
 				tags: ["Admin"],
 				operationId: "adminListUsers",
 				summary: "List all users",
-				description: "Lists users with pagination, optional search, resume counts, and quota information. Requires an admin session.",
+				description:
+					"Lists users with pagination, optional search, resume counts, and quota information. Requires an admin session.",
 				successDescription: "Paginated list of users.",
 			})
 			.input(
@@ -51,6 +53,7 @@ export const adminRouter = {
 							status: z.string().nullable(),
 							banned: z.boolean().nullable(),
 							emailVerified: z.boolean(),
+							balance: z.number().int(),
 							createdAt: z.date(),
 							updatedAt: z.date(),
 							resumeCount: z.number().int(),
@@ -71,7 +74,8 @@ export const adminRouter = {
 				tags: ["Admin"],
 				operationId: "adminGetUserResumes",
 				summary: "Get all resumes of a user",
-				description: "Returns the resume list (without the full resume data payload) for the given user. Requires an admin session.",
+				description:
+					"Returns the resume list (without the full resume data payload) for the given user. Requires an admin session.",
 				successDescription: "The user profile and their resumes.",
 			})
 			.input(z.object({ userId: z.string() }))
@@ -171,6 +175,20 @@ export const adminRouter = {
 				await adminService.resetUserPassword(input);
 				return { ok: true };
 			}),
+
+		setBalance: adminProcedure
+			.route({
+				method: "POST",
+				path: "/admin/users/{userId}/balance",
+				tags: ["Admin"],
+				operationId: "adminSetUserBalance",
+				summary: "Set a user balance",
+				description: "Sets the recharge balance (in cents) for the given user. Requires an admin session.",
+				successDescription: "The updated balance.",
+			})
+			.input(z.object({ userId: z.string(), balance: z.number().int().min(0) }))
+			.output(z.object({ balance: z.number().int() }))
+			.handler(({ input }) => adminService.setUserBalance(input)),
 	},
 
 	quotas: {
@@ -216,6 +234,106 @@ export const adminRouter = {
 			.output(z.object({ ok: z.boolean() }))
 			.handler(async ({ input }) => {
 				await adminService.resetQuotaUsage(input);
+				return { ok: true };
+			}),
+	},
+
+	payments: {
+		list: adminProcedure
+			.route({
+				method: "GET",
+				path: "/admin/payments",
+				tags: ["Admin"],
+				operationId: "adminListPayments",
+				summary: "List payment orders",
+				description:
+					"Lists recharge payment orders with pagination and optional status/user filters. Requires an admin session.",
+			})
+			.input(
+				z.object({
+					page: z.number().int().min(1).default(1),
+					limit: z.number().int().min(1).max(100).default(20),
+					status: z.string().optional(),
+					userId: z.string().optional(),
+				}),
+			)
+			.output(
+				z.object({
+					orders: z.array(
+						z.object({
+							id: z.string(),
+							userId: z.string(),
+							username: z.string().nullable(),
+							email: z.string().nullable(),
+							orderNo: z.string(),
+							amount: z.number().int(),
+							status: z.string(),
+							codeUrl: z.string().nullable(),
+							transactionId: z.string().nullable(),
+							paidAt: z.date().nullable(),
+							proofUrl: z.string().nullable(),
+							contactEmail: z.string().nullable(),
+							paidAmount: z.number().int().nullable(),
+							expiresAt: z.date(),
+							createdAt: z.date(),
+							updatedAt: z.date(),
+						}),
+					),
+					total: z.number().int(),
+				}),
+			)
+			.handler(({ input }) => listPayments(input)),
+
+		exceptions: adminProcedure
+			.route({
+				method: "GET",
+				path: "/admin/payments/exceptions",
+				tags: ["Admin"],
+				operationId: "adminListPaymentExceptions",
+				summary: "List payment exception logs",
+				description: "Lists payment exception logs with pagination. Requires an admin session.",
+			})
+			.input(
+				z.object({
+					page: z.number().int().min(1).default(1),
+					limit: z.number().int().min(1).max(100).default(20),
+				}),
+			)
+			.output(
+				z.object({
+					logs: z.array(
+						z.object({
+							id: z.string(),
+							orderNo: z.string().nullable(),
+							userId: z.string().nullable(),
+							stage: z.string(),
+							errorType: z.string(),
+							message: z.string().nullable(),
+							rawPayload: z.string().nullable(),
+							stack: z.string().nullable(),
+							createdAt: z.date(),
+						}),
+					),
+					total: z.number().int(),
+				}),
+			)
+			.handler(({ input }) => listExceptions(input.page, input.limit)),
+
+		review: adminProcedure
+			.route({
+				method: "POST",
+				path: "/admin/payments/{orderId}/review",
+				tags: ["Admin"],
+				operationId: "adminReviewPayment",
+				summary: "Review a recharge request",
+				description:
+					"Approves (credits the user balance) or rejects a manual recharge request. Requires an admin session.",
+				successDescription: "The recharge request was reviewed.",
+			})
+			.input(z.object({ orderId: z.string(), decision: z.enum(["approve", "reject"]) }))
+			.output(z.object({ ok: z.boolean() }))
+			.handler(async ({ input }) => {
+				await reviewPayment(input.orderId, input.decision);
 				return { ok: true };
 			}),
 	},

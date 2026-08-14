@@ -1,63 +1,7 @@
 import z from "zod";
 
-// ponytail: z.enum([...]) over 56 z.literal calls; same parse behavior, same inferred union type
-export const localeSchema = z.enum([
-	"af-ZA",
-	"am-ET",
-	"ar-SA",
-	"az-AZ",
-	"bg-BG",
-	"bn-BD",
-	"ca-ES",
-	"cs-CZ",
-	"da-DK",
-	"de-DE",
-	"el-GR",
-	"en-US",
-	"en-GB",
-	"es-ES",
-	"fa-IR",
-	"fi-FI",
-	"fr-FR",
-	"he-IL",
-	"hi-IN",
-	"hu-HU",
-	"id-ID",
-	"it-IT",
-	"ja-JP",
-	"km-KH",
-	"kn-IN",
-	"ko-KR",
-	"lt-LT",
-	"lv-LV",
-	"ml-IN",
-	"mr-IN",
-	"ms-MY",
-	"ne-NP",
-	"nl-NL",
-	"no-NO",
-	"or-IN",
-	"pl-PL",
-	"pt-BR",
-	"pt-PT",
-	"ro-RO",
-	"ru-RU",
-	"sk-SK",
-	"sl-SI",
-	"sq-AL",
-	"sr-SP",
-	"sv-SE",
-	"ta-IN",
-	"te-IN",
-	"th-TH",
-	"tr-TR",
-	"uk-UA",
-	"uz-UZ",
-	"vi-VN",
-	"zh-CN",
-	"zh-TW",
-	"zu-ZA",
-]);
+// ponytail: z.enum([...]) over z.literal calls; same parse behavior, same inferred union type
+export const localeSchema = z.enum(["en-US", "zh-CN"]);
 
 export type Locale = z.infer<typeof localeSchema>;
 
@@ -68,7 +12,7 @@ export function isLocale(value: unknown): value is Locale {
 }
 
 export function isCJKLocale(locale: Locale): boolean {
-	return locale === "zh-CN" || locale === "zh-TW" || locale === "ja-JP" || locale === "ko-KR";
+	return locale === "zh-CN";
 }
 
 // A writing system that needs a dedicated fallback font in the PDF renderer,
@@ -88,28 +32,9 @@ export function isCjkScript(script: Script): boolean {
 }
 
 // The script a locale primarily uses, used to order the fallback stack so the
-// dominant language renders with its native font. Persian (fa-IR) uses the
-// Arabic script.
+// dominant language renders with its native font.
 export function getLocaleScript(locale?: Locale): Script | null {
-	switch (locale) {
-		case "ko-KR":
-			return "hangul";
-		case "ja-JP":
-			return "kana";
-		case "zh-TW":
-			return "han-traditional";
-		case "zh-CN":
-			return "han-simplified";
-		case "ar-SA":
-		case "fa-IR":
-			return "arabic";
-		case "he-IL":
-			return "hebrew";
-		case "th-TH":
-			return "thai";
-		default:
-			return null;
-	}
+	return locale === "zh-CN" ? "han-simplified" : null;
 }
 
 const RTL_LANGUAGES = new Set([

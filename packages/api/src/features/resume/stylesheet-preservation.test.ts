@@ -104,18 +104,18 @@ describe("createResumeData", () => {
 	});
 
 	it("clones normal and sample defaults instead of mutating shared data", () => {
-		const normal = createResumeData({ locale: "de-DE" });
+		const normal = createResumeData({ locale: "zh-CN" });
 		const sample = createResumeData({
 			withSampleData: true,
 			name: "Sample Person",
-			locale: "de-DE",
+			locale: "zh-CN",
 		});
 
 		normal.basics.name = "Mutated";
 		sample.metadata.page.locale = "en-US";
 
 		expect(defaultResumeData.basics.name).toBe("");
-		expect(defaultResumeData.metadata.page.locale).not.toBe("de-DE");
+		expect(defaultResumeData.metadata.page.locale).not.toBe("zh-CN");
 		expect(sample.basics.name).toBe("Sample Person");
 	});
 });

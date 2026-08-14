@@ -1,7 +1,7 @@
 import { ORPCError } from "@orpc/server";
 import { count, desc, eq, sql } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
-import { user, userTransaction } from "@reactive-resume/db/schema";
+import { user, userQuota, userTransaction } from "@reactive-resume/db/schema";
 
 /** 每次使用扣费金额（单位：分）。0.5 元 = 50 分。 */
 export const PRICE_PER_USE_CENTS = 50;
@@ -42,11 +42,21 @@ export async function deductBalance(userId: string, type: TransactionType): Prom
 	});
 }
 
+export type QuotaProfile = {
+	threadMessagesLimit: number;
+	threadMessagesUsed: number;
+	resumeAnalysesLimit: number;
+	resumeAnalysesUsed: number;
+	resumeDownloadsLimit: number;
+	resumeDownloadsUsed: number;
+};
+
 export type UserCenterProfile = {
 	username: string;
 	email: string;
 	status: string;
 	balance: number;
+	quota: QuotaProfile;
 };
 
 export async function getUserCenter(userId: string): Promise<UserCenterProfile> {
@@ -56,14 +66,36 @@ export async function getUserCenter(userId: string): Promise<UserCenterProfile> 
 			email: user.email,
 			status: user.status,
 			balance: user.balance,
+			threadMessagesLimit: userQuota.threadMessagesLimit,
+			threadMessagesUsed: userQuota.threadMessagesUsed,
+			resumeAnalysesLimit: userQuota.resumeAnalysesLimit,
+			resumeAnalysesUsed: userQuota.resumeAnalysesUsed,
+			resumeDownloadsLimit: userQuota.resumeDownloadsLimit,
+			resumeDownloadsUsed: userQuota.resumeDownloadsUsed,
 		})
 		.from(user)
+		.leftJoin(userQuota, eq(user.id, userQuota.userId))
 		.where(eq(user.id, userId))
 		.limit(1);
 
 	if (!record) throw new ORPCError("NOT_FOUND", { message: "User not found" });
 
-	return record;
+	const { username, email, status, balance, ...quota } = record;
+
+	return {
+		username,
+		email,
+		status,
+		balance,
+		quota: {
+			threadMessagesLimit: quota.threadMessagesLimit ?? -1,
+			threadMessagesUsed: quota.threadMessagesUsed ?? 0,
+			resumeAnalysesLimit: quota.resumeAnalysesLimit ?? -1,
+			resumeAnalysesUsed: quota.resumeAnalysesUsed ?? 0,
+			resumeDownloadsLimit: quota.resumeDownloadsLimit ?? -1,
+			resumeDownloadsUsed: quota.resumeDownloadsUsed ?? 0,
+		},
+	};
 }
 
 export type TransactionList = {

@@ -17,6 +17,14 @@ export const billingRouter = {
 				email: z.string(),
 				status: z.string(),
 				balance: z.number(),
+				quota: z.object({
+					threadMessagesLimit: z.number().int(),
+					threadMessagesUsed: z.number().int(),
+					resumeAnalysesLimit: z.number().int(),
+					resumeAnalysesUsed: z.number().int(),
+					resumeDownloadsLimit: z.number().int(),
+					resumeDownloadsUsed: z.number().int(),
+				}),
 			}),
 		)
 		.handler(async ({ context }) => getUserCenter(context.user.id)),

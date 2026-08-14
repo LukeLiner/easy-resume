@@ -5,6 +5,7 @@ import { aiProvidersRouter } from "../features/ai-providers/router";
 import { authRouter } from "../features/auth/router";
 import { billingRouter } from "../features/billing/router";
 import { flagsRouter } from "../features/flags/router";
+import { paymentRouter } from "../features/payment/router";
 import { quotaRouter } from "../features/quota/router";
 import { resumeRouter } from "../features/resume/router";
 import { storageRouter } from "../features/storage/router";
@@ -17,6 +18,7 @@ export default {
 	auth: authRouter,
 	billing: billingRouter,
 	flags: flagsRouter,
+	payment: paymentRouter,
 	quota: quotaRouter,
 	resume: resumeRouter,
 	storage: storageRouter,

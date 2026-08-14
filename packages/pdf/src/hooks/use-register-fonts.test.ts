@@ -71,35 +71,23 @@ describe("registerFonts", () => {
 		);
 	});
 
-	it("registers the Korean Noto fallback for the ko-KR locale so Hangul renders", async () => {
+	it("registers the Japanese Noto fallback when Kana content is detected", async () => {
 		const registerSpy = vi.spyOn(Font, "register").mockImplementation(() => {});
 		vi.spyOn(Font, "registerHyphenationCallback").mockImplementation(() => {});
 		const { registerFonts } = await import("./use-register-fonts");
 
-		const pdfTypography = registerFonts(typography, "ko-KR");
-
-		expect(pdfTypography.body.fontFamily).toEqual(["IBM Plex Serif", "Noto Serif KR", "Noto Serif SC"]);
-		expect(pdfTypography.heading.fontFamily).toEqual(["IBM Plex Serif", "Noto Serif KR", "Noto Serif SC"]);
-		expect(registerSpy).toHaveBeenCalledWith(expect.objectContaining({ family: "Noto Serif KR" }));
-	});
-
-	it("registers the Japanese Noto fallback for the ja-JP locale", async () => {
-		const registerSpy = vi.spyOn(Font, "register").mockImplementation(() => {});
-		vi.spyOn(Font, "registerHyphenationCallback").mockImplementation(() => {});
-		const { registerFonts } = await import("./use-register-fonts");
-
-		const pdfTypography = registerFonts(typography, "ja-JP");
+		const pdfTypography = registerFonts(typography, "en-US", true, new Set(["kana"]));
 
 		expect(pdfTypography.body.fontFamily).toEqual(["IBM Plex Serif", "Noto Serif JP", "Noto Serif SC"]);
 		expect(registerSpy).toHaveBeenCalledWith(expect.objectContaining({ family: "Noto Serif JP" }));
 	});
 
-	it("registers the Traditional Chinese Noto fallback for the zh-TW locale", async () => {
+	it("registers the Traditional Chinese Noto fallback when Han-traditional content is detected", async () => {
 		const registerSpy = vi.spyOn(Font, "register").mockImplementation(() => {});
 		vi.spyOn(Font, "registerHyphenationCallback").mockImplementation(() => {});
 		const { registerFonts } = await import("./use-register-fonts");
 
-		const pdfTypography = registerFonts(typography, "zh-TW");
+		const pdfTypography = registerFonts(typography, "en-US", true, new Set(["han-traditional"]));
 
 		expect(pdfTypography.body.fontFamily).toEqual(["IBM Plex Serif", "Noto Serif TC", "Noto Serif SC"]);
 		expect(registerSpy).toHaveBeenCalledWith(expect.objectContaining({ family: "Noto Serif TC" }));
@@ -116,17 +104,6 @@ describe("registerFonts", () => {
 		expect(registerSpy).toHaveBeenCalledWith(expect.objectContaining({ family: "Noto Serif KR" }));
 	});
 
-	it("registers the Arabic Noto fallback for the fa-IR (Persian) locale", async () => {
-		const registerSpy = vi.spyOn(Font, "register").mockImplementation(() => {});
-		vi.spyOn(Font, "registerHyphenationCallback").mockImplementation(() => {});
-		const { registerFonts } = await import("./use-register-fonts");
-
-		const pdfTypography = registerFonts(typography, "fa-IR");
-
-		expect(pdfTypography.body.fontFamily).toEqual(["IBM Plex Serif", "Noto Naskh Arabic"]);
-		expect(registerSpy).toHaveBeenCalledWith(expect.objectContaining({ family: "Noto Naskh Arabic" }));
-	});
-
 	it("registers the Arabic Noto fallback for Latin locale when content contains Arabic", async () => {
 		const registerSpy = vi.spyOn(Font, "register").mockImplementation(() => {});
 		vi.spyOn(Font, "registerHyphenationCallback").mockImplementation(() => {});
@@ -138,23 +115,23 @@ describe("registerFonts", () => {
 		expect(registerSpy).toHaveBeenCalledWith(expect.objectContaining({ family: "Noto Naskh Arabic" }));
 	});
 
-	it("registers the Hebrew Noto fallback for the he-IL locale (no SC safety net)", async () => {
+	it("registers the Hebrew Noto fallback when Hebrew content is detected (no SC safety net)", async () => {
 		const registerSpy = vi.spyOn(Font, "register").mockImplementation(() => {});
 		vi.spyOn(Font, "registerHyphenationCallback").mockImplementation(() => {});
 		const { registerFonts } = await import("./use-register-fonts");
 
-		const pdfTypography = registerFonts(typography, "he-IL");
+		const pdfTypography = registerFonts(typography, "en-US", false, new Set(["hebrew"]));
 
 		expect(pdfTypography.body.fontFamily).toEqual(["IBM Plex Serif", "Noto Sans Hebrew"]);
 		expect(registerSpy).not.toHaveBeenCalledWith(expect.objectContaining({ family: "Noto Serif SC" }));
 	});
 
-	it("registers the Thai Noto fallback for the th-TH locale", async () => {
+	it("registers the Thai Noto fallback when Thai content is detected", async () => {
 		const registerSpy = vi.spyOn(Font, "register").mockImplementation(() => {});
 		vi.spyOn(Font, "registerHyphenationCallback").mockImplementation(() => {});
 		const { registerFonts } = await import("./use-register-fonts");
 
-		const pdfTypography = registerFonts(typography, "th-TH");
+		const pdfTypography = registerFonts(typography, "en-US", false, new Set(["thai"]));
 
 		expect(pdfTypography.body.fontFamily).toEqual(["IBM Plex Serif", "Noto Sans Thai"]);
 		expect(registerSpy).toHaveBeenCalledWith(expect.objectContaining({ family: "Noto Sans Thai" }));
@@ -165,7 +142,7 @@ describe("registerFonts", () => {
 		vi.spyOn(Font, "register").mockImplementation(() => {});
 		const { registerFonts } = await import("./use-register-fonts");
 
-		registerFonts(typography, "fa-IR");
+		registerFonts(typography, "en-US", false, new Set(["arabic"]));
 
 		const hyphenationCallback = registerHyphenationSpy.mock.calls.at(-1)?.[0];
 		// Arabic is cursive — words must NOT be split per character.

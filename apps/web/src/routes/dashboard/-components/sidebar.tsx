@@ -5,6 +5,7 @@ import { Trans } from "@lingui/react/macro";
 import {
 	BrainIcon,
 	ChatCircleDotsIcon,
+	CreditCardIcon,
 	GearSixIcon,
 	ReadCvLogoIcon,
 	UserCircleIcon,
@@ -73,6 +74,11 @@ const adminSidebarItems = [
 		icon: <UsersIcon />,
 		label: msg`User Management`,
 		href: "/dashboard/admin/users",
+	},
+	{
+		icon: <CreditCardIcon />,
+		label: msg`Payment Records`,
+		href: "/dashboard/admin/payments",
 	},
 ] as const satisfies SidebarItem[];
 

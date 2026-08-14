@@ -59,6 +59,7 @@ type QuotaDialogProps = {
 	userId: string;
 	userName: string;
 	initialQuota: UserItem["quota"];
+	initialBalance: number;
 	onClose: () => void;
 };
 
@@ -87,6 +88,7 @@ function RouteComponent() {
 		userId: string;
 		userName: string;
 		quota: UserItem["quota"];
+		balance: number;
 	} | null>(null);
 
 	const { data, isLoading } = useQuery(
@@ -323,6 +325,7 @@ function RouteComponent() {
 																	userId: user.id,
 																	userName: user.name,
 																	quota: user.quota,
+																	balance: user.balance,
 																})
 															}
 														>
@@ -394,6 +397,7 @@ function RouteComponent() {
 					userId={quotaDialog.userId}
 					userName={quotaDialog.userName}
 					initialQuota={quotaDialog.quota}
+					initialBalance={quotaDialog.balance}
 					onClose={() => setQuotaDialog(null)}
 				/>
 			)}
@@ -465,7 +469,7 @@ function PasswordDialog({ open, userId, userName, onClose }: PasswordDialogProps
 	);
 }
 
-function QuotaDialog({ open, userId, userName, initialQuota, onClose }: QuotaDialogProps) {
+function QuotaDialog({ open, userId, userName, initialQuota, initialBalance, onClose }: QuotaDialogProps) {
 	const { i18n } = useLingui();
 	const queryClient = useQueryClient();
 
@@ -478,6 +482,7 @@ function QuotaDialog({ open, userId, userName, initialQuota, onClose }: QuotaDia
 	const [resumeDownloads, setResumeDownloads] = useState(
 		String(initialQuota?.resumeDownloadsLimit ?? -1),
 	);
+	const [balance, setBalance] = useState(String(initialBalance / 100));
 
 	const updateMutation = useMutation(
 		orpc.admin.quotas.update.mutationOptions({
@@ -504,6 +509,18 @@ function QuotaDialog({ open, userId, userName, initialQuota, onClose }: QuotaDia
 		}),
 	);
 
+	const setBalanceMutation = useMutation(
+		orpc.admin.users.setBalance.mutationOptions({
+			onSuccess: () => {
+				toast.success(i18n.t("Balance updated successfully"));
+				void queryClient.invalidateQueries({ queryKey: orpc.admin.users.list.key() });
+			},
+			onError: (error) => {
+				toast.error(error.message);
+			},
+		}),
+	);
+
 	const handleSave = () => {
 		const tml = Number.parseInt(threadMessages, 10);
 		const ral = Number.parseInt(resumeAnalyses, 10);
@@ -522,6 +539,11 @@ function QuotaDialog({ open, userId, userName, initialQuota, onClose }: QuotaDia
 				resumeDownloadsLimit: rdl,
 			},
 		});
+
+		const balanceCents = Math.round(Number(balance) * 100);
+		if (Number.isFinite(balanceCents)) {
+			setBalanceMutation.mutate({ userId, balance: balanceCents });
+		}
 	};
 
 	const formatLimit = (limit: number) => (limit === -1 ? "\u221E" : String(limit));
@@ -606,6 +628,24 @@ function QuotaDialog({ open, userId, userName, initialQuota, onClose }: QuotaDia
 								</Trans>
 							</p>
 						)}
+					</FormItem>
+
+					<FormItem>
+						<FormLabel>
+							<Trans>Balance</Trans>
+						</FormLabel>
+						<FormControl>
+							<Input
+								type="number"
+								min={0}
+								step={0.01}
+								value={balance}
+								onChange={(e) => setBalance(e.target.value)}
+							/>
+						</FormControl>
+						<p className="text-muted-foreground text-xs">
+							<Trans>In CNY. Credits are added once a recharge is approved.</Trans>
+						</p>
 					</FormItem>
 
 					<Button
