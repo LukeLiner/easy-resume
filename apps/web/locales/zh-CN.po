@@ -1450,10 +1450,18 @@ msgstr "禁用双因素身份验证失败。请重试。"
 msgid "Failed to enable two-factor authentication. Please try again."
 msgstr "启用双因素身份验证失败。请重试。"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Failed to polish resume."
+msgstr "润色简历失败。"
+
 #. Fallback toast when resetting password fails and no backend message is available
 #: src/features/auth/pages/reset-password.tsx
 msgid "Failed to reset your password. Please try again."
 msgstr "重置密码失败。请重试。"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Failed to restore original content."
+msgstr "恢复原始内容失败。"
 
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Failed to save AI provider."
@@ -1957,6 +1965,10 @@ msgstr "JSON 简历"
 msgid "Justify Align"
 msgstr "两端对齐"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Keep changes"
+msgstr "保留修改"
+
 #. Layout editor toggle that prevents a section from splitting across pages
 #: src/routes/builder/$resumeId/-sidebar/right/sections/layout/pages.tsx
 msgid "Keep together"
@@ -2268,6 +2280,10 @@ msgstr "新对话"
 msgid "No Advertising, No Tracking"
 msgstr "无广告，无跟踪"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "No changes were needed for this suggestion."
+msgstr "这条建议无需修改。"
+
 #. Error shown when AI import endpoint returns no parsed resume data
 #: src/dialogs/resume/import.tsx
 msgid "No data was returned from the AI provider."
@@ -2429,6 +2445,10 @@ msgstr ""
 #: src/dialogs/resume/sections/volunteer.tsx
 msgid "Organization"
 msgstr "组织"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Original content restored."
+msgstr "已恢复原始内容。"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Overall Score"
@@ -2613,6 +2633,20 @@ msgstr "正在生成 PDF，请稍候…"
 msgid "Please wait while your PDF is being generated…"
 msgstr "请稍候，您的PDF文件正在生成中…"
 
+#. Button label to apply an AI polish to a resume suggestion
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Polish"
+msgstr "润色"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Polished! Keep the changes or restore the original."
+msgstr "已润色！你可以保留修改，或恢复原始内容。"
+
+#. Button label shown while polishing a resume suggestion
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Polishing…"
+msgstr ""
+
 #. Preset button for setting picture aspect ratio to portrait orientation
 #: src/routes/builder/$resumeId/-sidebar/left/sections/picture.tsx
 msgid "Portrait"
@@ -2678,7 +2712,7 @@ msgstr "项目"
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "Proof"
-msgstr ""
+msgstr "支付凭证"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "Protect your resume from unauthorized access with a password"
@@ -2894,6 +2928,10 @@ msgstr "资源"
 msgid "Restore"
 msgstr "恢复"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Restore original"
+msgstr "恢复原始内容"
+
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Restore the resume to before this patch? This will roll back this patch and any patches applied after it."
 msgstr "恢复到此补丁之前的状态？这将回滚此补丁以及其后应用的所有补丁。"
@@ -2936,6 +2974,10 @@ msgstr "简历选项"
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Resume patch"
 msgstr "恢复补丁"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Resume polished."
+msgstr "简历已润色。"
 
 #: src/routes/builder/$resumeId/-components/header.tsx
 msgid "Resume title"
@@ -3330,6 +3372,16 @@ msgstr "出问题了"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Something went wrong while analyzing your resume."
 msgstr "在分析您的简历时出了问题。"
+
+#. Fallback error description when polishing a resume suggestion fails
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Something went wrong while polishing your resume."
+msgstr "润色简历时出错了。"
+
+#. Fallback error description when restoring a polished resume suggestion fails
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Something went wrong while restoring your resume."
+msgstr ""
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "Something went wrong. Please try again."

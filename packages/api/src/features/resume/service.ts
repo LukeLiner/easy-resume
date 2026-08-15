@@ -58,7 +58,7 @@ function classifyJsonPointer(pointer: string): JsonPointerClass | undefined {
 	return segments[1] === "stylesheet" ? "stylesheet" : "other";
 }
 
-function assertSafePatchPointers(operation: JsonPatchOperation, index: number) {
+function assertValidPatchPointers(operation: JsonPatchOperation, index: number) {
 	const pathClass = classifyJsonPointer(operation.path);
 	if (!pathClass) {
 		throw invalidPatchOperation("Operation `path` property is not a valid JSON Pointer string.", index, operation);
@@ -71,6 +71,12 @@ function assertSafePatchPointers(operation: JsonPatchOperation, index: number) {
 			throw invalidPatchOperation("Operation `from` property is not a valid JSON Pointer string.", index, operation);
 		}
 	}
+
+	return { pathClass, fromClass };
+}
+
+function assertSafePatchPointers(operation: JsonPatchOperation, index: number) {
+	const { pathClass, fromClass } = assertValidPatchPointers(operation, index);
 
 	const protectedPath =
 		pathClass === "stylesheet" || (operation.op !== "test" && (pathClass === "root" || pathClass === "metadata"));
@@ -142,6 +148,7 @@ async function applyResumePatchTx(
 		operations: JsonPatchOperation[];
 		expectedUpdatedAt?: Date;
 		versionLabel?: string;
+		bypassStylesheetProtection?: boolean;
 	},
 ) {
 	const [existing] = await client
@@ -161,7 +168,11 @@ async function applyResumePatchTx(
 		throw resumeVersionConflict(existing.updatedAt);
 	}
 
-	input.operations.forEach(assertSafePatchPointers);
+	if (input.bypassStylesheetProtection) {
+		input.operations.forEach(assertValidPatchPointers);
+	} else {
+		input.operations.forEach(assertSafePatchPointers);
+	}
 
 	let patchedData: ResumeData;
 

@@ -68,6 +68,15 @@ notifyResumePatched 推送恢复结果（service.ts:1363-1367）。
 五、中断与恢复：stop / resume
 stop（service.ts:1176-1217）：若带 partialMessage 先以 status:"canceled" 持久化，并 canceledRunsWithPersistedPartial.add(activeRunId) 防止 onFinish 重复写；随后 activeRunControllers.get(activeRunId)?.abort("USER_STOPPED") + clearActiveAgentRunIfCurrent 释放锁。
 resume（service.ts:1218-1222）：agentStreamLifecycle.resume(thread.activeStreamId) —— 前端刷新/断线后用 activeStreamId 重连继续收流。
+五·五、一键润色建议：messages.polish
+在 resume-analysis 面板的每条建议上新增「魔法棒」按钮，一键把简历内容 + 建议交给 Agent 润色。入口 agentService.messages.polish（service.ts，messages.send 之后），与 send 复用同一套运行锁 / 配额 / 计费 / 落库流程，但为「非流式」：
+
+复用就地线程（getOrCreateForResume，workingResumeId === sourceResumeId === resumeId），Agent 直接 patch 当前简历，builder 通过 notifyResumePatched 实时刷新。
+构造润色消息 buildPolishUserMessage：把建议的 title / impact / why / exampleRewrite / copyPrompt 拼成一条 user 消息，指示 Agent 先 read_resume 再用 apply_resume_patch 局部修改，保持简历原有语言与结构。
+非流式执行：agent.stream 后，用 ai 的 consumeStream 消费 result.toUIMessageStream 直到结束（onFinish 内完成按 token 计费 deductBalanceByTokens、persistMessage、cleanupActiveRun，逻辑与 send 一致）。
+返回本次 run 产生的 action：以 startedAt 为界查询该线程新增的 applied agent_action，返回其 toAction 摘要（含 id、canRollback、appliedUpdatedAt）；若 Agent 判定无需修改则返回 null。
+二次确认：前端拿到 action 后展示「保留修改 / 恢复原始内容」。保留 = 就地生效无需额外操作；恢复 = 调用既有 actions.revert(actionId)，按快照整份 replace 回滚并 notifyResumePatched。
+
 六、一句话结论（均经源码验证）
 问题	实证答案
 Agent 怎么"生成"简历？	不是生成，是 createWorkingResume 克隆空白/现有简历成副本（service.ts:437-468），对话只是往副本打 patch

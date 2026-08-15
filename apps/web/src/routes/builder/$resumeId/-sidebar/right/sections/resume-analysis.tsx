@@ -4,11 +4,13 @@ import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
 import {
 	ArrowRightIcon,
+	ArrowsClockwiseIcon,
 	ChartPolarIcon,
 	CheckCircleIcon,
 	CheckIcon,
 	InfoIcon,
 	LightbulbIcon,
+	MagicWandIcon,
 	SparkleIcon,
 } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -112,6 +114,72 @@ export function ResumeAnalysisSectionBuilder() {
 			toast.error(t`Failed to analyze resume.`, { description });
 		},
 	});
+
+	const [polishingTitle, setPolishingTitle] = useState<string | null>(null);
+	const [polishedAction, setPolishedAction] = useState<{ id: string; title: string } | null>(null);
+
+	const { mutate: polishSuggestion } = useMutation({
+		...orpc.agent.messages.polish.mutationOptions(),
+		onSuccess: (action) => {
+			setPolishingTitle(null);
+			if (action) {
+				setPolishedAction({ id: action.id, title: action.title });
+				toast.success(t`Resume polished.`);
+			} else {
+				toast.info(t`No changes were needed for this suggestion.`);
+			}
+		},
+		onError: (error) => {
+			setPolishingTitle(null);
+			toast.error(t`Failed to polish resume.`, {
+				description: getOrpcErrorMessage(error, {
+					fallback: t({
+						comment: "Fallback error description when polishing a resume suggestion fails",
+						message: "Something went wrong while polishing your resume.",
+					}),
+				}),
+			});
+		},
+	});
+
+	const { mutate: revertAction, isPending: isReverting } = useMutation({
+		...orpc.agent.actions.revert.mutationOptions(),
+		onSuccess: () => {
+			setPolishedAction(null);
+			toast.success(t`Original content restored.`);
+		},
+		onError: (error) => {
+			toast.error(t`Failed to restore original content.`, {
+				description: getOrpcErrorMessage(error, {
+					fallback: t({
+						comment: "Fallback error description when restoring a polished resume suggestion fails",
+						message: "Something went wrong while restoring your resume.",
+					}),
+				}),
+			});
+		},
+	});
+
+	const onPolish = (suggestion: ResumeAnalysis["suggestions"][number]) => {
+		if (!resume) return;
+
+		setPolishingTitle(suggestion.title);
+		polishSuggestion({
+			resumeId: resume.id,
+			suggestion: {
+				title: suggestion.title,
+				impact: suggestion.impact,
+				why: suggestion.why,
+				exampleRewrite: suggestion.exampleRewrite,
+				copyPrompt: suggestion.copyPrompt,
+			},
+		});
+	};
+
+	const onRestore = () => {
+		if (!polishedAction) return;
+		revertAction({ id: polishedAction.id });
+	};
 
 	const score = analysis?.overallScore ?? null;
 	const updatedAt = analysis?.updatedAt ?? null;
@@ -313,6 +381,46 @@ export function ResumeAnalysisSectionBuilder() {
 												{suggestion.exampleRewrite && (
 													<div className="rounded bg-muted p-2 text-muted-foreground text-base">
 														{suggestion.exampleRewrite}
+													</div>
+												)}
+
+												<div className="flex items-center justify-end gap-2">
+													{polishingTitle === suggestion.title ? (
+														<Button size="sm" variant="outline" disabled>
+															<Spinner />
+															{t({
+																comment: "Button label shown while polishing a resume suggestion",
+																message: "Polishing…",
+															})}
+														</Button>
+													) : (
+														polishedAction?.title !== suggestion.title && (
+															<Button size="sm" variant="outline" onClick={() => onPolish(suggestion)}>
+																<MagicWandIcon />
+																{t({
+																	comment: "Button label to apply an AI polish to a resume suggestion",
+																	message: "Polish",
+																})}
+															</Button>
+														)
+													)}
+												</div>
+
+												{polishedAction?.title === suggestion.title && (
+													<div className="space-y-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3">
+														<p className="flex items-center gap-2 text-base text-emerald-700 dark:text-emerald-400">
+															<CheckCircleIcon className="shrink-0 text-emerald-600" weight="fill" />
+															<Trans>Polished! Keep the changes or restore the original.</Trans>
+														</p>
+														<div className="flex items-center gap-2">
+															<Button size="sm" onClick={() => setPolishedAction(null)}>
+																<Trans>Keep changes</Trans>
+															</Button>
+															<Button size="sm" variant="outline" onClick={onRestore} disabled={isReverting}>
+																{isReverting ? <Spinner /> : <ArrowsClockwiseIcon />}
+																<Trans>Restore original</Trans>
+															</Button>
+														</div>
 													</div>
 												)}
 											</div>

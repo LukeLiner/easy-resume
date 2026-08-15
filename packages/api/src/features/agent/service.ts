@@ -4,7 +4,7 @@ import type { FilePart, ImagePart, ModelMessage, TextPart, UIMessage } from "ai"
 import type { getModel } from "../ai/service";
 import { ORPCError } from "@orpc/client";
 import { streamToEventIterator } from "@orpc/server";
-import { convertToModelMessages, stepCountIs, ToolLoopAgent } from "ai";
+import { consumeStream, convertToModelMessages, stepCountIs, ToolLoopAgent } from "ai";
 import { and, asc, count, desc, eq, gte, inArray, isNull, max, sql } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import * as schema from "@reactive-resume/db/schema";
@@ -62,6 +62,18 @@ type SendMessageInput = {
 	attachmentIds?: unknown;
 };
 
+type PolishMessageInput = {
+	userId: string;
+	resumeId: string;
+	suggestion: {
+		title: string;
+		impact: "high" | "medium" | "low";
+		why: string;
+		exampleRewrite: string | null;
+		copyPrompt: string;
+	};
+};
+
 type CreateAttachmentInput = {
 	userId: string;
 	threadId: string;
@@ -77,6 +89,28 @@ type AttachmentModelInput = {
 
 function cloneResumeData<T>(data: T): T {
 	return structuredClone(data);
+}
+
+function buildPolishUserMessage(suggestion: PolishMessageInput["suggestion"]): UIMessage {
+	const lines = [
+		"Polish my resume by applying the following suggestion. First read the resume with read_resume, then apply the changes with apply_resume_patch. Keep the resume's existing language, tone, and structure, and do not modify anything unrelated to this suggestion.",
+		"",
+		`Title: ${suggestion.title}`,
+		`Impact: ${suggestion.impact}`,
+		`Reason: ${suggestion.why}`,
+	];
+
+	if (suggestion.exampleRewrite) {
+		lines.push(`Example rewrite: ${suggestion.exampleRewrite}`);
+	}
+
+	lines.push(`Instruction: ${suggestion.copyPrompt}`);
+
+	return {
+		id: generateId(),
+		role: "user",
+		parts: [{ type: "text", text: lines.join("\n") }],
+	};
 }
 
 function toThreadSummary(row: AgentThreadRecord & { resumeName?: string | null; providerLabel?: string | null }) {
@@ -1185,6 +1219,164 @@ export const agentService = {
 			}
 		},
 
+		polish: async (input: PolishMessageInput) => {
+			assertAgentEnvironment();
+
+			const thread = await agentService.threads.getOrCreateForResume({
+				userId: input.userId,
+				resumeId: input.resumeId,
+			});
+			if (thread.status === "archived") {
+				throw new ORPCError("CONFLICT", { message: "This thread is archived." });
+			}
+			if (thread.activeRunId) {
+				throw new ORPCError("CONFLICT", { message: "This thread already has an active run." });
+			}
+			if (!thread.workingResumeId || !thread.aiProviderId) {
+				throw new ORPCError("BAD_REQUEST", { message: "This thread is read-only." });
+			}
+
+			const runnableProvider = await aiProvidersService.getRunnableById({ id: thread.aiProviderId });
+
+			const runId = generateId();
+			const streamId = generateId();
+			const controller = new AbortController();
+			activeRunControllers.set(runId, controller);
+
+			const claimed = await claimActiveAgentRun({
+				threadId: thread.id,
+				userId: input.userId,
+				runId,
+				streamId,
+			});
+			if (!claimed) {
+				activeRunControllers.delete(runId);
+				throw new ORPCError("CONFLICT", { message: "This thread already has an active run." });
+			}
+
+			const startedAt = new Date();
+
+			try {
+				await consumeThreadMessageQuota(input.userId);
+
+				const userMessage = buildPolishUserMessage(input.suggestion);
+				const sequence = await getNextMessageSequence(thread.id);
+				const persistedUserMessage = await persistMessage({
+					userId: input.userId,
+					threadId: thread.id,
+					message: userMessage,
+					sequence,
+				});
+				if (!persistedUserMessage) throw new Error("AGENT_MESSAGE_CREATE_FAILED");
+
+				const [messageCount] = await db
+					.select({ total: count() })
+					.from(schema.agentMessage)
+					.where(eq(schema.agentMessage.threadId, thread.id));
+
+				if ((messageCount?.total ?? 0) === 1) {
+					await db
+						.update(schema.agentThread)
+						.set({ title: buildThreadTitle(userMessage, thread.title) })
+						.where(and(eq(schema.agentThread.id, thread.id), eq(schema.agentThread.userId, input.userId)));
+				}
+
+				await aiProvidersService.markUsed({ id: runnableProvider.id });
+
+				const messageRows = await repairLegacyAskUserQuestionAnswers(
+					await listThreadMessages({ threadId: thread.id, userId: input.userId }),
+					{ threadId: thread.id, userId: input.userId },
+				);
+				const messages = messageRows.map(toMessage);
+				const modelMessages = await convertToModelMessages(messages.map(toModelInputMessage));
+
+				const agent = createAgent({
+					userId: input.userId,
+					threadId: thread.id,
+					resumeId: thread.workingResumeId,
+					provider: {
+						provider: runnableProvider.provider,
+						model: runnableProvider.model,
+						apiKey: runnableProvider.apiKey,
+						baseURL: runnableProvider.baseURL ?? "",
+					},
+					model: getAgentModel({
+						provider: runnableProvider.provider,
+						model: runnableProvider.model,
+						apiKey: runnableProvider.apiKey,
+						baseURL: runnableProvider.baseURL ?? "",
+					}),
+				});
+
+				const result = await agent.stream({
+					messages: modelMessages,
+					abortSignal: controller.signal,
+				});
+
+				await consumeStream({
+					stream: result.toUIMessageStream({
+						originalMessages: messages,
+						generateMessageId: generateId,
+						sendSources: true,
+						onFinish: async ({ responseMessage, isAborted }) => {
+							// 按实际 token 用量结算润色费用（独立于消息持久化，计费失败不阻断流程）
+							try {
+								const usage = await result.usage;
+								const totalTokens = usage.totalTokens ?? (usage.inputTokens ?? 0) + (usage.outputTokens ?? 0);
+								if (totalTokens > 0) {
+									await deductBalanceByTokens(input.userId, totalTokens);
+								}
+							} catch (error) {
+								console.error("[agent] Failed to settle polish billing", error);
+							}
+
+							let persistError: unknown;
+							try {
+								if (!(isAborted && canceledRunsWithPersistedPartial.has(runId))) {
+									await persistMessage({
+										userId: input.userId,
+										threadId: thread.id,
+										message: responseMessage,
+										status: isAborted ? "canceled" : "completed",
+									});
+								}
+							} catch (error) {
+								persistError = error;
+								throw error;
+							} finally {
+								await cleanupActiveRun({
+									threadId: thread.id,
+									userId: input.userId,
+									runId,
+									streamId,
+									primaryError: persistError,
+								});
+							}
+						},
+						onError: (error) => (error instanceof Error ? error.message : "Agent run failed."),
+					}),
+				});
+
+				const [action] = await db
+					.select()
+					.from(schema.agentAction)
+					.where(and(eq(schema.agentAction.threadId, thread.id), gte(schema.agentAction.createdAt, startedAt)))
+					.orderBy(desc(schema.agentAction.createdAt))
+					.limit(1);
+
+				return action ? toAction(action) : null;
+			} catch (error) {
+				await cleanupActiveRun({
+					threadId: thread.id,
+					userId: input.userId,
+					runId,
+					streamId,
+					primaryError: error,
+				});
+				throw error;
+			}
+		},
+
 		stop: async (input: { userId: string; threadId: string; partialMessage?: UIMessage }) => {
 			assertAgentEnvironment();
 
@@ -1344,6 +1536,7 @@ export const agentService = {
 						userId: input.userId,
 						operations: [{ op: "replace", path: "", value: cloneResumeData(snapshotData) }],
 						expectedUpdatedAt: latestAction.appliedUpdatedAt,
+						bypassStylesheetProtection: true,
 					});
 
 					const rolledBackAt = new Date();

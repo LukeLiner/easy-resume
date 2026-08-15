@@ -1445,10 +1445,18 @@ msgstr "Failed to disable two-factor authentication. Please try again."
 msgid "Failed to enable two-factor authentication. Please try again."
 msgstr "Failed to enable two-factor authentication. Please try again."
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Failed to polish resume."
+msgstr "Failed to polish resume."
+
 #. Fallback toast when resetting password fails and no backend message is available
 #: src/features/auth/pages/reset-password.tsx
 msgid "Failed to reset your password. Please try again."
 msgstr "Failed to reset your password. Please try again."
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Failed to restore original content."
+msgstr "Failed to restore original content."
 
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Failed to save AI provider."
@@ -1952,6 +1960,10 @@ msgstr "JSON Resume"
 msgid "Justify Align"
 msgstr "Justify Align"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Keep changes"
+msgstr "Keep changes"
+
 #. Layout editor toggle that prevents a section from splitting across pages
 #: src/routes/builder/$resumeId/-sidebar/right/sections/layout/pages.tsx
 msgid "Keep together"
@@ -2263,6 +2275,10 @@ msgstr "New thread"
 msgid "No Advertising, No Tracking"
 msgstr "No Advertising, No Tracking"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "No changes were needed for this suggestion."
+msgstr "No changes were needed for this suggestion."
+
 #. Error shown when AI import endpoint returns no parsed resume data
 #: src/dialogs/resume/import.tsx
 msgid "No data was returned from the AI provider."
@@ -2424,6 +2440,10 @@ msgstr "Orders"
 #: src/dialogs/resume/sections/volunteer.tsx
 msgid "Organization"
 msgstr "Organization"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Original content restored."
+msgstr "Original content restored."
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Overall Score"
@@ -2607,6 +2627,20 @@ msgstr "Please wait while your PDF is being generated..."
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "Please wait while your PDF is being generated…"
 msgstr "Please wait while your PDF is being generated…"
+
+#. Button label to apply an AI polish to a resume suggestion
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Polish"
+msgstr "Polish"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Polished! Keep the changes or restore the original."
+msgstr "Polished! Keep the changes or restore the original."
+
+#. Button label shown while polishing a resume suggestion
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Polishing…"
+msgstr "Polishing…"
 
 #. Preset button for setting picture aspect ratio to portrait orientation
 #: src/routes/builder/$resumeId/-sidebar/left/sections/picture.tsx
@@ -2889,6 +2923,10 @@ msgstr "Resources"
 msgid "Restore"
 msgstr "Restore"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Restore original"
+msgstr "Restore original"
+
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Restore the resume to before this patch? This will roll back this patch and any patches applied after it."
 msgstr "Restore the resume to before this patch? This will roll back this patch and any patches applied after it."
@@ -2931,6 +2969,10 @@ msgstr "Resume options"
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Resume patch"
 msgstr "Resume patch"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Resume polished."
+msgstr "Resume polished."
 
 #: src/routes/builder/$resumeId/-components/header.tsx
 msgid "Resume title"
@@ -3325,6 +3367,16 @@ msgstr "Something went wrong"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Something went wrong while analyzing your resume."
 msgstr "Something went wrong while analyzing your resume."
+
+#. Fallback error description when polishing a resume suggestion fails
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Something went wrong while polishing your resume."
+msgstr "Something went wrong while polishing your resume."
+
+#. Fallback error description when restoring a polished resume suggestion fails
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Something went wrong while restoring your resume."
+msgstr "Something went wrong while restoring your resume."
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "Something went wrong. Please try again."

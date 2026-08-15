@@ -32,6 +32,48 @@ export const messagesRouter = {
 			}),
 		),
 
+	polish: protectedProcedure
+		.route({
+			method: "POST",
+			path: "/agent/messages/polish",
+			tags: ["Agent"],
+			operationId: "polishAgentSuggestion",
+			summary: "Polish resume content from an analysis suggestion",
+		})
+		.input(
+			z.object({
+				resumeId: z.string(),
+				suggestion: z.object({
+					title: z.string().trim().min(1),
+					impact: z.enum(["high", "medium", "low"]),
+					why: z.string().trim().min(1),
+					exampleRewrite: z.string().nullable(),
+					copyPrompt: z.string().trim().min(1),
+				}),
+			}),
+		)
+		.output(
+			z
+				.object({
+					id: z.string(),
+					title: z.string(),
+					summary: z.string().nullable(),
+					status: z.string(),
+					canRollback: z.boolean(),
+					appliedUpdatedAt: z.date().nullable(),
+				})
+				.nullable(),
+		)
+		.use(aiRequestRateLimit)
+		.use(mapAgentEnvironmentError)
+		.handler(({ context, input }) =>
+			agentService.messages.polish({
+				userId: context.user.id,
+				resumeId: input.resumeId,
+				suggestion: input.suggestion,
+			}),
+		),
+
 	stop: protectedProcedure
 		.route({
 			method: "POST",

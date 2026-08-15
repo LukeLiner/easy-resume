@@ -1295,6 +1295,7 @@ describe("agentService.actions.revert", () => {
 			userId: "user-1",
 			operations: [{ op: "replace", path: "", value: action.snapshotData }],
 			expectedUpdatedAt: laterAction.appliedUpdatedAt,
+			bypassStylesheetProtection: true,
 		});
 		expect(updateSet).toHaveBeenCalledWith(
 			expect.objectContaining({
