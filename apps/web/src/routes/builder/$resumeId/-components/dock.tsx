@@ -33,6 +33,7 @@ import {
 	useResumeStore,
 } from "@/features/resume/builder/draft";
 import { authClient } from "@/libs/auth/client";
+import { centerAtActualSize, fitToView } from "./preview-fit";
 
 type BuilderDockProps = {
 	pageLayout: BuilderPreviewPageLayout;
@@ -47,14 +48,15 @@ export function BuilderDock({ pageLayout, onTogglePageLayout }: BuilderDockProps
 	const navigate = useNavigate();
 
 	const [_, copyToClipboard] = useCopyToClipboard();
-	const { zoomIn, zoomOut, resetTransform } = useControls();
+	const controls = useControls();
+	const { zoomIn, zoomOut } = controls;
 
 	const canUndo = useResumeStore((state) => state.canUndo);
 	const canRedo = useResumeStore((state) => state.canRedo);
 	const undo = useResumeStore((state) => state.undo);
 	const redo = useResumeStore((state) => state.redo);
 
-	useHotkey("Mod+0", () => resetTransform());
+	useHotkey("Mod+0", () => centerAtActualSize(controls));
 	// App-level undo/redo of resume state, scoped to the builder. Mod maps to Cmd (mac) / Ctrl (win/linux).
 	// Inside a focused text field, defer to the browser's native input undo; the dock buttons remain
 	// available for resume-level history while editing a field.
@@ -118,7 +120,7 @@ export function BuilderDock({ pageLayout, onTogglePageLayout }: BuilderDockProps
 
 function ZoomMenu() {
 	const scale = useTransformComponent((ctx) => ctx.state.scale);
-	const { centerView, resetTransform } = useControls();
+	const controls = useControls();
 
 	return (
 		<DropdownMenu>
@@ -136,10 +138,10 @@ function ZoomMenu() {
 			/>
 
 			<DropdownMenuContent side="top" align="center">
-				<DropdownMenuItem onClick={() => centerView(1)}>
+				<DropdownMenuItem onClick={() => centerAtActualSize(controls, 200)}>
 					<Trans>Actual size (100%)</Trans>
 				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => resetTransform()}>
+				<DropdownMenuItem onClick={() => fitToView(controls)}>
 					<Trans>Fit to view</Trans>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
