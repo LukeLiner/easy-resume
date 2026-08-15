@@ -28,6 +28,7 @@ import { Route as BuilderResumeIdRouteRouteImport } from "./routes/builder/$resu
 import { Route as DashboardIndexRouteImport } from "./routes/dashboard/index";
 import { Route as DashboardAccountRouteImport } from "./routes/dashboard/account";
 import { Route as BuilderResumeIdIndexRouteImport } from "./routes/builder/$resumeId/index";
+import { Route as DashboardAdminFeedbackRouteImport } from "./routes/dashboard/admin/feedback";
 import { Route as DashboardAdminPaymentsRouteImport } from "./routes/dashboard/admin/payments";
 import { Route as DashboardAdminUsersRouteImport } from "./routes/dashboard/admin/users";
 import { Route as DashboardResumesIndexRouteImport } from "./routes/dashboard/resumes/index";
@@ -129,6 +130,11 @@ const BuilderResumeIdIndexRoute = BuilderResumeIdIndexRouteImport.update({
   path: "/",
   getParentRoute: () => BuilderResumeIdRouteRoute,
 } as any);
+const DashboardAdminFeedbackRoute = DashboardAdminFeedbackRouteImport.update({
+  id: "/admin/feedback",
+  path: "/admin/feedback",
+  getParentRoute: () => DashboardRouteRoute,
+} as any);
 const DashboardAdminPaymentsRoute = DashboardAdminPaymentsRouteImport.update({
   id: "/admin/payments",
   path: "/admin/payments",
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   "/auth/": typeof AuthIndexRoute;
   "/dashboard/": typeof DashboardIndexRoute;
   "/dashboard/settings/integrations": typeof DashboardSettingsIntegrationsRouteRoute;
+  "/dashboard/admin/feedback": typeof DashboardAdminFeedbackRoute;
   "/dashboard/admin/payments": typeof DashboardAdminPaymentsRoute;
   "/dashboard/admin/users": typeof DashboardAdminUsersRoute;
   "/dashboard/settings/preferences": typeof DashboardSettingsPreferencesRoute;
@@ -199,6 +206,7 @@ export interface FileRoutesByTo {
   "/auth": typeof AuthIndexRoute;
   "/dashboard": typeof DashboardIndexRoute;
   "/dashboard/settings/integrations": typeof DashboardSettingsIntegrationsRouteRoute;
+  "/dashboard/admin/feedback": typeof DashboardAdminFeedbackRoute;
   "/dashboard/admin/payments": typeof DashboardAdminPaymentsRoute;
   "/dashboard/admin/users": typeof DashboardAdminUsersRoute;
   "/dashboard/settings/preferences": typeof DashboardSettingsPreferencesRoute;
@@ -226,6 +234,7 @@ export interface FileRoutesById {
   "/auth/": typeof AuthIndexRoute;
   "/dashboard/": typeof DashboardIndexRoute;
   "/dashboard/settings/integrations": typeof DashboardSettingsIntegrationsRouteRoute;
+  "/dashboard/admin/feedback": typeof DashboardAdminFeedbackRoute;
   "/dashboard/admin/payments": typeof DashboardAdminPaymentsRoute;
   "/dashboard/admin/users": typeof DashboardAdminUsersRoute;
   "/dashboard/settings/preferences": typeof DashboardSettingsPreferencesRoute;
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
     | "/auth/"
     | "/dashboard/"
     | "/dashboard/settings/integrations"
+    | "/dashboard/admin/feedback"
     | "/dashboard/admin/payments"
     | "/dashboard/admin/users"
     | "/dashboard/settings/preferences"
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | "/auth"
     | "/dashboard"
     | "/dashboard/settings/integrations"
+    | "/dashboard/admin/feedback"
     | "/dashboard/admin/payments"
     | "/dashboard/admin/users"
     | "/dashboard/settings/preferences"
@@ -302,6 +313,7 @@ export interface FileRouteTypes {
     | "/auth/"
     | "/dashboard/"
     | "/dashboard/settings/integrations"
+    | "/dashboard/admin/feedback"
     | "/dashboard/admin/payments"
     | "/dashboard/admin/users"
     | "/dashboard/settings/preferences"
@@ -452,6 +464,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof BuilderResumeIdIndexRouteImport;
       parentRoute: typeof BuilderResumeIdRouteRoute;
     };
+    "/dashboard/admin/feedback": {
+      id: "/dashboard/admin/feedback";
+      path: "/admin/feedback";
+      fullPath: "/dashboard/admin/feedback";
+      preLoaderRoute: typeof DashboardAdminFeedbackRouteImport;
+      parentRoute: typeof DashboardRouteRoute;
+    };
     "/dashboard/admin/payments": {
       id: "/dashboard/admin/payments";
       path: "/admin/payments";
@@ -536,6 +555,7 @@ interface DashboardRouteRouteChildren {
   DashboardAccountRoute: typeof DashboardAccountRoute;
   DashboardIndexRoute: typeof DashboardIndexRoute;
   DashboardSettingsIntegrationsRouteRoute: typeof DashboardSettingsIntegrationsRouteRoute;
+  DashboardAdminFeedbackRoute: typeof DashboardAdminFeedbackRoute;
   DashboardAdminPaymentsRoute: typeof DashboardAdminPaymentsRoute;
   DashboardAdminUsersRoute: typeof DashboardAdminUsersRoute;
   DashboardSettingsPreferencesRoute: typeof DashboardSettingsPreferencesRoute;
@@ -547,6 +567,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardSettingsIntegrationsRouteRoute:
     DashboardSettingsIntegrationsRouteRoute,
+  DashboardAdminFeedbackRoute: DashboardAdminFeedbackRoute,
   DashboardAdminPaymentsRoute: DashboardAdminPaymentsRoute,
   DashboardAdminUsersRoute: DashboardAdminUsersRoute,
   DashboardSettingsPreferencesRoute: DashboardSettingsPreferencesRoute,

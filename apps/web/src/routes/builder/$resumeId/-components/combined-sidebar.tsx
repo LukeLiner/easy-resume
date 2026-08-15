@@ -144,21 +144,26 @@ export function BuilderSidebarCombined() {
 					</Tabs>
 				</div>
 
-				<ScrollArea className="@container min-h-0 flex-1">
-					{activeTab === "analysis" ? (
-						<Suspense fallback={<Skeleton className="h-32 w-full" />}>
-							<ResumeAnalysisSectionBuilder />
-						</Suspense>
-					) : activeTab === "content" ? (
-						<PreviewRenderGate>
-							<BuilderSidebarLeftContent />
-						</PreviewRenderGate>
-					) : (
+				{activeTab === "design" ? (
+					// Design 页由内层组件（如 CSS 编辑器）各自负责滚动，外层隐藏滚动条避免双滚动条。
+					<div className="@container min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 						<BuilderSidebarRightContent
 							sections={rightSidebarSections.filter((section: RightSidebarSection) => section !== "analysis")}
 						/>
-					)}
-				</ScrollArea>
+					</div>
+				) : (
+					<ScrollArea className="@container min-h-0 flex-1">
+						{activeTab === "analysis" ? (
+							<Suspense fallback={<Skeleton className="h-32 w-full" />}>
+								<ResumeAnalysisSectionBuilder />
+							</Suspense>
+						) : (
+							<PreviewRenderGate>
+								<BuilderSidebarLeftContent />
+							</PreviewRenderGate>
+						)}
+					</ScrollArea>
+				)}
 			</div>
 		</>
 	);

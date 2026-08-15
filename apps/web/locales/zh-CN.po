@@ -4127,6 +4127,95 @@ msgstr "与前 30 天相比"
 msgid "We couldn't detect the format automatically — please choose it above."
 msgstr "我们无法自动检测格式——请在上方选择格式。"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Add Admin WeChat"
+msgstr "添加管理员微信"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Admin WeChat QR code"
+msgstr "管理员微信二维码"
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "All"
+msgstr "全部"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Feedback"
+msgstr "反馈"
+
+#: src/routes/dashboard/admin/feedback.tsx
+#: src/routes/dashboard/-components/sidebar.tsx
+msgid "Feedback Records"
+msgstr "反馈记录"
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Feedback status updated."
+msgstr "反馈状态已更新。"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Image uploaded successfully."
+msgstr "图片上传成功。"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Images"
+msgstr "图片"
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "No feedback records found."
+msgstr "未找到反馈记录。"
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Page {page} of {totalPages} ({total} total)"
+msgstr "第 {page} 页，共 {totalPages} 页（共 {total} 条）"
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Pending"
+msgstr "待处理"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Please enter your feedback."
+msgstr "请输入反馈内容。"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Please sign in to submit feedback."
+msgstr "请先登录后再提交反馈。"
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Preview image"
+msgstr "预览图片"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Remove image"
+msgstr "移除图片"
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Resolved"
+msgstr "已处理"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Scan the QR code to contact the administrator. Click the image to preview."
+msgstr "扫码联系管理员，点击图片可预览。"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Submit Feedback"
+msgstr "提交反馈"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Thank you for your feedback!"
+msgstr "感谢您的反馈！"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Upload image"
+msgstr "上传图片"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Welcome to share product suggestions or report issues. Rich text and images are supported."
+msgstr "欢迎分享产品建议或反馈问题，支持富文本和图片。"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "You can upload up to 9 images."
+msgstr "最多可上传 9 张图片。"
+
 #: src/components/layout/not-found-screen.tsx
 msgid "We couldn't find that page"
 msgstr "我们找不到那一页"

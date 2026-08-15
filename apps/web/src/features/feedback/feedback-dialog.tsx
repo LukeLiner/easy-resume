@@ -1,6 +1,6 @@
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { ChatCircleDotsIcon, HeadsetIcon, ImageIcon, XIcon } from "@phosphor-icons/react";
+import { ChatCircleDotsIcon, HeadsetIcon, ImageIcon, WechatLogoIcon, XIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ import { Label } from "@reactive-resume/ui/components/label";
 import { Spinner } from "@reactive-resume/ui/components/spinner";
 import { cn } from "@reactive-resume/utils/style";
 import { RichInput } from "@/components/input/rich-input";
+import { ImagePreviewDialog } from "@/features/feedback/image-preview-dialog";
 import { authClient } from "@/libs/auth/client";
 import { orpc } from "@/libs/orpc/client";
 
@@ -34,6 +35,7 @@ export function FeedbackDialog() {
 	const [open, setOpen] = useState(false);
 	const [content, setContent] = useState("");
 	const [images, setImages] = useState<string[]>([]);
+	const [wechatPreviewOpen, setWechatPreviewOpen] = useState(false);
 
 	const uploadMutation = useMutation(
 		orpc.storage.uploadFile.mutationOptions({
@@ -139,11 +141,7 @@ export function FeedbackDialog() {
 										htmlFor="feedback-image-upload"
 										className="grid size-20 cursor-pointer place-items-center rounded-lg border border-dashed text-muted-foreground hover:bg-muted/30"
 									>
-										{uploadMutation.isPending ? (
-											<Spinner className="size-4" />
-										) : (
-											<ImageIcon className="size-5" />
-										)}
+										{uploadMutation.isPending ? <Spinner className="size-4" /> : <ImageIcon className="size-5" />}
 										<span className="sr-only">
 											<Trans>Upload image</Trans>
 										</span>
@@ -162,6 +160,30 @@ export function FeedbackDialog() {
 							</p>
 						</div>
 
+						<div className="rounded-lg border border-dashed p-4">
+							<div className="flex items-center gap-2">
+								<WechatLogoIcon className="size-5 text-green-600" />
+								<Label className="font-medium">
+									<Trans>Add Admin WeChat</Trans>
+								</Label>
+							</div>
+							<p className="mt-1 text-muted-foreground text-xs">
+								<Trans>Scan the QR code to contact the administrator. Click the image to preview.</Trans>
+							</p>
+							<button
+								type="button"
+								className="mt-3 size-28 cursor-zoom-in rounded-lg border transition-transform hover:scale-105"
+								title={t`Preview image`}
+								onClick={() => setWechatPreviewOpen(true)}
+							>
+								<img
+									src="/icon/admin.jpg"
+									alt={t`Admin WeChat QR code`}
+									className="size-full rounded-lg object-contain"
+								/>
+							</button>
+						</div>
+
 						<Button
 							type="button"
 							className={cn("w-full")}
@@ -173,6 +195,13 @@ export function FeedbackDialog() {
 					</div>
 				</DialogContent>
 			</Dialog>
+
+			<ImagePreviewDialog
+				open={wechatPreviewOpen}
+				src="/icon/admin.jpg"
+				alt={t`Admin WeChat QR code`}
+				onOpenChange={setWechatPreviewOpen}
+			/>
 		</>
 	);
 }
