@@ -202,7 +202,7 @@ export function ResumeAnalysisSectionBuilder() {
 										return (
 											<div
 												key={`scorebar-${index}`}
-												className={`h-1.5 rounded-full transition-colors ${active ? "bg-primary" : "bg-muted"}`}
+												className={`h-1.5 rounded-full transition-colors ${active ? scoreTone : "bg-muted"}`}
 											/>
 										);
 									})}
