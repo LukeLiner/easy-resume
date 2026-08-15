@@ -145,7 +145,7 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
 
 						<p className="rounded-lg bg-muted/40 p-3 text-muted-foreground text-xs">
 							<Trans>
-								Every ¥1 get per download, Every ¥2 get 1 resume analyses, Every ¥2 get 1 conversation generations.
+								Every ¥2.88 get per download, Every ¥2 get 1 resume analyses, AI conversation ¥10 per million tokens.
 							</Trans>
 						</p>
 

@@ -8,21 +8,21 @@ export type TransactionType = "threadMessages" | "resumeAnalyses" | "resumeDownl
 
 /**
  * 各类使用扣费金额（单位：分）。
- * 每 ¥1 获得 1 次下载；每 ¥2 获得 1 次简历分析。
+ * 每 ¥2.88 获得 1 次下载；每 ¥2 获得 1 次简历分析。
  * 注：对话生成（threadMessages）已改为按实际 token 用量计费，
  * 见 `PRICE_PER_MILLION_TOKENS_CENTS` 与 `deductBalanceByTokens`，不再使用此处的固定单价。
  */
 export const PRICE_PER_USE_CENTS: Record<TransactionType, number> = {
-	resumeDownloads: 100,
+	resumeDownloads: 288,
 	resumeAnalyses: 200,
 	threadMessages: 200,
 };
 
 /**
- * 对话生成按 token 计费的单价：6 元 / 百万 token（= 600 分）。
- * 即每 1 token 消耗 0.0006 分，最终金额向上取整到「分」，最低 1 分。
+ * 对话生成按 token 计费的单价：10 元 / 百万 token（= 1000 分）。
+ * 即每 1 token 消耗 0.001 分，最终金额向上取整到「分」，最低 1 分。
  */
-export const PRICE_PER_MILLION_TOKENS_CENTS = 600;
+export const PRICE_PER_MILLION_TOKENS_CENTS = 1000;
 
 const TYPE_REMARKS: Record<TransactionType, string> = {
 	threadMessages: "简历生成对话",
