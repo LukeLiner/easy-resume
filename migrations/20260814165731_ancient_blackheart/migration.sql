@@ -1,0 +1,1 @@
+ALTER TABLE "user_transaction" ADD COLUMN "tokens" integer;

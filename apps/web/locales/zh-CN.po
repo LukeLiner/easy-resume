@@ -460,6 +460,10 @@ msgstr "阿姆哈拉语"
 msgid "Amount"
 msgstr "金额"
 
+#: src/routes/dashboard/account.tsx
+msgid "Tokens"
+msgstr "Tokens"
+
 #: src/features/auth/pages/register.tsx
 msgid "An admin will review your account shortly. You can try signing in once your account is approved."
 msgstr "管理员会在几分钟内审核你的账户。一旦你的账户被批准，你可以尝试登录。"

@@ -51,6 +51,7 @@ export const billingRouter = {
 						type: z.string(),
 						amount: z.number(),
 						balance: z.number(),
+						tokens: z.number().nullable(),
 						remark: z.string().nullable(),
 						createdAt: z.date(),
 					}),

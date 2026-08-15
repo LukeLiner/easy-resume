@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import { userQuota } from "@reactive-resume/db/schema";
-import { assertSufficientBalance, deductBalance } from "../billing/service";
+import { assertPositiveBalance, assertSufficientBalance, deductBalance } from "../billing/service";
 
 /**
  * Consumption is billed against the user's balance only; balance is the single
@@ -47,7 +47,8 @@ async function consumeQuota(userId: string, kind: QuotaKind): Promise<void> {
 }
 
 export function consumeThreadMessageQuota(userId: string): Promise<void> {
-	return consumeQuota(userId, "threadMessages");
+	// 对话生成已改为按实际 token 计费：此处仅做余额预检，实际扣费在生成完成后按 token 结算。
+	return assertPositiveBalance(userId);
 }
 
 export function consumeResumeAnalysisQuota(userId: string): Promise<void> {

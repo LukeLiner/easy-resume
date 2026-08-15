@@ -22,6 +22,8 @@ export const userTransaction = pg.pgTable(
 		type: pg.text("type").notNull(),
 		amount: pg.integer("amount").notNull(),
 		balance: pg.integer("balance").notNull(),
+		/** 按 token 计费的类型（如对话生成）消耗的 token 总数；固定计费类型为 null。 */
+		tokens: pg.integer("tokens"),
 		remark: pg.text("remark"),
 		createdAt: pg.timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 	},

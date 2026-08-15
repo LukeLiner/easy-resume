@@ -137,6 +137,9 @@ function RouteComponent() {
 										<Trans>Amount</Trans>
 									</th>
 									<th className="px-4 py-3 text-start font-medium text-muted-foreground text-sm">
+										<Trans>Tokens</Trans>
+									</th>
+									<th className="px-4 py-3 text-start font-medium text-muted-foreground text-sm">
 										<Trans>Remaining Balance</Trans>
 									</th>
 									<th className="px-4 py-3 text-start font-medium text-muted-foreground text-sm">
@@ -150,7 +153,7 @@ function RouteComponent() {
 							<tbody>
 								{transactions.length === 0 ? (
 									<tr>
-										<td colSpan={5} className="px-4 py-8 text-center text-muted-foreground text-sm">
+										<td colSpan={6} className="px-4 py-8 text-center text-muted-foreground text-sm">
 											<Trans>No transactions yet.</Trans>
 										</td>
 									</tr>
@@ -159,6 +162,9 @@ function RouteComponent() {
 										<tr key={item.id} className="border-b last:border-b-0 hover:bg-muted/20">
 											<td className="px-4 py-3 text-sm">{typeLabel(item.type)}</td>
 											<td className="px-4 py-3 font-medium text-red-600 text-sm">{formatCents(item.amount)}</td>
+											<td className="px-4 py-3 text-muted-foreground text-sm">
+												{item.type === "threadMessages" && item.tokens != null ? item.tokens.toLocaleString(i18n.locale) : "—"}
+											</td>
 											<td className="px-4 py-3 text-muted-foreground text-sm">{formatCents(item.balance)}</td>
 											<td className="px-4 py-3 text-muted-foreground text-sm">{item.remark ?? "—"}</td>
 											<td className="whitespace-nowrap px-4 py-3 text-muted-foreground text-sm">

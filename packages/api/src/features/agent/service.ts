@@ -13,6 +13,7 @@ import { generateId } from "@reactive-resume/utils/string";
 import { assertAgentEnvironment } from "../ai/credentials";
 import { getAgentModel } from "../ai/service";
 import { aiProvidersService } from "../ai-providers/service";
+import { deductBalanceByTokens } from "../billing/service";
 import { consumeThreadMessageQuota } from "../quota/service";
 import { resumeService } from "../resume/service";
 import { getStorageService, inferContentType } from "../storage/service";
@@ -1134,6 +1135,17 @@ export const agentService = {
 							generateMessageId: generateId,
 							sendSources: true,
 							onFinish: async ({ responseMessage, isAborted }) => {
+								// 按实际 token 用量结算对话生成费用（独立于消息持久化，计费失败不阻断流）
+								try {
+									const usage = await result.usage;
+									const totalTokens = usage.totalTokens ?? (usage.inputTokens ?? 0) + (usage.outputTokens ?? 0);
+									if (totalTokens > 0) {
+										await deductBalanceByTokens(input.userId, totalTokens);
+									}
+								} catch (error) {
+									console.error("[agent] Failed to settle thread message billing", error);
+								}
+
 								let persistError: unknown;
 								try {
 									if (!(isAborted && canceledRunsWithPersistedPartial.has(runId))) {
