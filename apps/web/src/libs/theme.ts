@@ -8,7 +8,7 @@ const themeSchema = z.union([z.literal("light"), z.literal("dark")]);
 export type Theme = z.infer<typeof themeSchema>;
 
 const storageKey = "theme";
-const defaultTheme: Theme = "dark";
+const defaultTheme: Theme = "light";
 
 export const themeMap = {
 	light: msg`Light`,
