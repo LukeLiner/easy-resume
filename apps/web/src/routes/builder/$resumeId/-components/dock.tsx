@@ -103,14 +103,14 @@ export function BuilderDock({ pageLayout, onTogglePageLayout }: BuilderDockProps
 					}}
 				/>
 				<div className="mx-1 h-8 w-px bg-border" />
-				<DockIcon
+				{/* <DockIcon
 					icon={LinkSimpleIcon}
 					title={t`Copy URL`}
 					onClick={async () => {
 						await copyToClipboard(publicUrl);
 						toast.success(t`A link to your resume has been copied to clipboard.`);
 					}}
-				/>
+				/> */}
 			</m.div>
 		</div>
 	);

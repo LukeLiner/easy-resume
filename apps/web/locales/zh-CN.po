@@ -1222,7 +1222,7 @@ msgstr "保留早期版本；重置简历编辑器的撤销历史记录。"
 #: src/routes/builder/$resumeId/-components/combined-sidebar.tsx
 #: src/routes/builder/$resumeId/-components/mobile-builder-shell.tsx
 msgid "Edit"
-msgstr "编辑"
+msgstr "编辑内容"
 
 #. Screen reader label for button that edits a keyword chip. Variable is the current keyword text.
 #: src/components/input/chip-input.tsx
@@ -2636,7 +2636,7 @@ msgstr "请稍候，您的PDF文件正在生成中…"
 #. Button label to apply an AI polish to a resume suggestion
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Polish"
-msgstr "润色"
+msgstr "一键润色"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Polished! Keep the changes or restore the original."
