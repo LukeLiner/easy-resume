@@ -6,7 +6,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useRef, useState } from "react";
 import { Button } from "@reactive-resume/ui/components/button";
 import { ResizableGroup, ResizablePanel, ResizableSeparator } from "@reactive-resume/ui/components/resizable";
-import { Sheet, SheetContent, SheetTitle } from "@reactive-resume/ui/components/sheet";
 import { Tabs, TabsList, TabsTrigger } from "@reactive-resume/ui/components/tabs";
 import { cn } from "@reactive-resume/utils/style";
 import { LoadingScreen } from "@/components/layout/loading-screen";
@@ -24,8 +23,8 @@ function RouteComponent() {
 	const { threadId } = Route.useParams();
 	const navigate = useNavigate();
 	const [mobileTab, setMobileTab] = useState("chat");
-	const [isResumeOpen, setIsResumeOpen] = useState(false);
 	const threadsPanelRef = useRef<PanelImperativeHandle | null>(null);
+	const resumePanelRef = useRef<PanelImperativeHandle | null>(null);
 	const [isThreadsCollapsed, setIsThreadsCollapsed] = useState(false);
 	const { data, isLoading, error } = useQuery(orpc.agent.threads.get.queryOptions({ input: { id: threadId } }));
 	useAgentResumeUpdateSubscription({ resumeId: data?.resume?.id, threadId });
@@ -42,9 +41,14 @@ function RouteComponent() {
 		}
 	}, []);
 
-	// Desktop shows the resume preview as a right-side overlay so the chat column keeps its full width.
 	const toggleResumePanel = useCallback(() => {
-		setIsResumeOpen((open) => !open);
+		const panel = resumePanelRef.current;
+		if (!panel) return;
+		if (panel.isCollapsed()) {
+			panel.resize("40%");
+		} else {
+			panel.collapse();
+		}
 	}, []);
 
 	if (isLoading) return <LoadingScreen />;
@@ -77,7 +81,7 @@ function RouteComponent() {
 					<ResizablePanel
 						id="threads"
 						panelRef={threadsPanelRef}
-						defaultSize="18%"
+						defaultSize="20%"
 						minSize="240px"
 						maxSize="360px"
 						collapsible
@@ -87,7 +91,7 @@ function RouteComponent() {
 						<AgentThreadSidebar activeThreadId={threadId} className={cn(isThreadsCollapsed && "invisible")} />
 					</ResizablePanel>
 					<ResizableSeparator withHandle />
-					<ResizablePanel id="chat" defaultSize="82%" minSize="280px">
+					<ResizablePanel id="chat" defaultSize="80%" minSize="280px">
 						<AgentChat
 							threadId={threadId}
 							initialMessages={data.messages}
@@ -99,6 +103,18 @@ function RouteComponent() {
 							onToggleThreads={toggleThreadsPanel}
 							onToggleResume={toggleResumePanel}
 						/>
+					</ResizablePanel>
+					<ResizableSeparator withHandle />
+					<ResizablePanel
+						id="resume"
+						panelRef={resumePanelRef}
+						defaultSize="0%"
+						minSize="280px"
+						maxSize="60%"
+						collapsible
+						collapsedSize="0px"
+					>
+						<ResumePane resume={data.resume} />
 					</ResizablePanel>
 				</ResizableGroup>
 			</div>
@@ -142,21 +158,6 @@ function RouteComponent() {
 					</div>
 				</div>
 			</div>
-
-			<Sheet open={isResumeOpen} onOpenChange={setIsResumeOpen}>
-				<SheetContent
-					side="right"
-					showCloseButton
-					className="!w-screen !max-w-none gap-0 p-0"
-				>
-					<SheetTitle className="sr-only">
-						<Trans>Resume</Trans>
-					</SheetTitle>
-					<div className="h-full min-h-0">
-						<ResumePane resume={data.resume} />
-					</div>
-				</SheetContent>
-			</Sheet>
 		</div>
 	);
 }

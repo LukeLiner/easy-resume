@@ -3945,7 +3945,7 @@ msgstr "学校"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Score Distribution"
-msgstr ""
+msgstr "分数分布"
 
 #: src/features/applications/components/application-ai-copilot.tsx
 #~ msgid "Score my fit"

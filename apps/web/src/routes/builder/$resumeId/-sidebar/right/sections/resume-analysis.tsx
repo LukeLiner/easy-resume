@@ -227,7 +227,7 @@ export function ResumeAnalysisSectionBuilder() {
 					{analysis && (
 						<div className="space-y-4">
 							<div className="space-y-3 rounded-md border p-3">
-								<h5 className="flex items-center gap-2 font-semibold text-sm">
+								<h5 className="flex items-center gap-2 font-semibold text-base">
 									<ChartPolarIcon className="text-primary" />
 									<Trans>Score Distribution</Trans>
 								</h5>
@@ -236,7 +236,7 @@ export function ResumeAnalysisSectionBuilder() {
 
 							{analysis.strengths.length > 0 && (
 								<div className="space-y-3 rounded-md border p-3">
-									<h5 className="font-semibold text-sm">
+									<h5 className="font-semibold text-base">
 										<Trans>Strengths</Trans>
 									</h5>
 
@@ -252,7 +252,7 @@ export function ResumeAnalysisSectionBuilder() {
 
 							{analysis.suggestions.length > 0 && (
 								<div className="space-y-4 rounded-md border p-3">
-									<h5 className="font-semibold text-sm">
+									<h5 className="font-semibold text-base">
 										<Trans>Suggestions</Trans>
 									</h5>
 
@@ -266,7 +266,7 @@ export function ResumeAnalysisSectionBuilder() {
 														title={impactLabel(suggestion.impact)}
 													/>
 													<span className="sr-only">{impactLabel(suggestion.impact)}</span>
-													<div className="font-semibold text-sm tracking-tight">{suggestion.title}</div>
+													<div className="font-semibold text-base tracking-tight">{suggestion.title}</div>
 												</div>
 
 												<div className="text-muted-foreground text-xs">{suggestion.why}</div>
@@ -294,20 +294,39 @@ type ScorecardRadarProps = {
 };
 
 function splitLabel(label: string): string[] {
-	const words = label.split(" ");
-	if (label.length <= 10 || words.length < 2) return [label];
+	const words = label.split(" ").filter(Boolean);
 
-	let bestIndex = 1;
-	let bestDiff = Number.POSITIVE_INFINITY;
-	for (let i = 1; i < words.length; i += 1) {
-		const firstLength = words.slice(0, i).join(" ").length;
-		const diff = Math.abs(firstLength - label.length / 2);
-		if (diff < bestDiff) {
-			bestDiff = diff;
-			bestIndex = i;
+	// Multi-word labels (e.g. English): wrap by words, keeping each line short.
+	if (words.length > 1) {
+		const maxLength = 12;
+		const lines: string[] = [];
+		let current = "";
+
+		for (const word of words) {
+			if (current.length > 0 && current.length + 1 + word.length > maxLength) {
+				lines.push(current);
+				current = word;
+			} else {
+				current = current.length > 0 ? `${current} ${word}` : word;
+			}
 		}
+		if (current.length > 0) lines.push(current);
+
+		return lines;
 	}
-	return [words.slice(0, bestIndex).join(" "), words.slice(bestIndex).join(" ")];
+
+	// Single-word labels (e.g. CJK): split by characters into at most 3 lines.
+	const maxChars = 6;
+	if (label.length <= maxChars) return [label];
+
+	const lineCount = Math.min(3, Math.ceil(label.length / maxChars));
+	const perLine = Math.ceil(label.length / lineCount);
+	const lines: string[] = [];
+	for (let i = 0; i < label.length; i += perLine) {
+		lines.push(label.slice(i, i + perLine));
+	}
+
+	return lines;
 }
 
 function ScorecardRadar({ items }: ScorecardRadarProps) {
@@ -382,17 +401,19 @@ function ScorecardRadar({ items }: ScorecardRadarProps) {
 						const anchor = cos > 0.35 ? "start" : cos < -0.35 ? "end" : "middle";
 						const dx = cos > 0.35 ? 8 : cos < -0.35 ? -8 : 0;
 						const lines = splitLabel(scorecardDimensionLabel(item.dimension));
-						const dy = sin <= -0.5 ? -(lines.length - 1) * 12 - 10 : sin >= 0.5 ? 24 : 4;
+						const lineHeight = 16;
+						const dy =
+							sin <= -0.5 ? -(lines.length - 1) * lineHeight - 4 : sin >= 0.5 ? lineHeight + 4 : 4;
 						return (
 							<text
 								key={`label-${item.dimension}`}
 								x={tip.x + dx}
 								y={tip.y + dy}
 								textAnchor={anchor}
-								className="fill-muted-foreground font-medium text-[11px]"
+								className="fill-muted-foreground font-medium text-base"
 							>
 								{lines.map((line, lineIndex) => (
-									<tspan key={line} x={tip.x + dx} dy={lineIndex === 0 ? 0 : 10}>
+									<tspan key={line} x={tip.x + dx} dy={lineIndex === 0 ? 0 : lineHeight}>
 										{line}
 									</tspan>
 								))}
@@ -426,7 +447,7 @@ function ScorecardRadar({ items }: ScorecardRadarProps) {
 			<div className="space-y-3 rounded-md border bg-card p-3">
 				<div className="flex items-center justify-between gap-2">
 					<div className="font-medium text-sm">{scorecardDimensionLabel(selectedItem.dimension)}</div>
-					<Badge variant="secondary">{selectedItem.score}/100</Badge>
+					<Badge variant="default" className="font-bold">{selectedItem.score}/100</Badge>
 				</div>
 				<p className="text-muted-foreground text-xs">{selectedItem.rationale}</p>
 			</div>
