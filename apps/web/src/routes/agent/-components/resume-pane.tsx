@@ -163,13 +163,13 @@ export function ResumePane({ resume }: ResumePaneProps) {
 						>
 							<ArrowSquareOutIcon />
 						</ToolbarButton>
-						<ToolbarButton
+						{/* <ToolbarButton
 							label={t`Download PDF`}
 							disabled={!resume || isPrinting}
 							onClick={() => void onDownloadPDF()}
 						>
 							{isPrinting ? <CircleNotchIcon className="animate-spin" /> : <FilePdfIcon />}
-						</ToolbarButton>
+						</ToolbarButton> */}
 					</div>
 				</div>
 				<div className="p-4">
