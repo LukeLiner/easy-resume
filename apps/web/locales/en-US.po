@@ -15,16 +15,6 @@ msgstr ""
 
 #. js-lingui-explicit-id
 #: src/routes/dashboard/admin/users.tsx
-msgid "Balance updated successfully"
-msgstr "Balance updated successfully"
-
-#. js-lingui-explicit-id
-#: src/routes/dashboard/admin/users.tsx
-msgid "Please enter a valid number"
-msgstr "Please enter a valid number"
-
-#. js-lingui-explicit-id
-#: src/routes/dashboard/admin/users.tsx
 msgid "User deleted successfully"
 msgstr "User deleted successfully"
 
@@ -62,6 +52,16 @@ msgstr "Password must be at least 8 characters"
 #: src/routes/dashboard/admin/users.tsx
 msgid "Minimum 8 characters"
 msgstr "Minimum 8 characters"
+
+#. js-lingui-explicit-id
+#: src/routes/dashboard/admin/users.tsx
+msgid "Balance updated successfully"
+msgstr "Balance updated successfully"
+
+#. js-lingui-explicit-id
+#: src/routes/dashboard/admin/users.tsx
+msgid "Please enter a valid number"
+msgstr "Please enter a valid number"
 
 #: src/routes/_home/-sections/footer.tsx
 #: src/routes/_home/-sections/hero.tsx
@@ -1683,6 +1683,10 @@ msgstr "gpt-4.1"
 #: src/dialogs/resume/sections/education.tsx
 msgid "Grade"
 msgstr "Grade"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Great job! These strengths help your resume stand out."
+msgstr "Great job! These strengths help your resume stand out."
 
 #: src/routes/dashboard/resumes/index.tsx
 msgid "Grid"

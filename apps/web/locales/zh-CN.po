@@ -20,16 +20,6 @@ msgstr ""
 
 #. js-lingui-explicit-id
 #: src/routes/dashboard/admin/users.tsx
-msgid "Balance updated successfully"
-msgstr ""
-
-#. js-lingui-explicit-id
-#: src/routes/dashboard/admin/users.tsx
-msgid "Please enter a valid number"
-msgstr ""
-
-#. js-lingui-explicit-id
-#: src/routes/dashboard/admin/users.tsx
 msgid "User deleted successfully"
 msgstr ""
 
@@ -66,6 +56,16 @@ msgstr ""
 #. js-lingui-explicit-id
 #: src/routes/dashboard/admin/users.tsx
 msgid "Minimum 8 characters"
+msgstr ""
+
+#. js-lingui-explicit-id
+#: src/routes/dashboard/admin/users.tsx
+msgid "Balance updated successfully"
+msgstr ""
+
+#. js-lingui-explicit-id
+#: src/routes/dashboard/admin/users.tsx
+msgid "Please enter a valid number"
 msgstr ""
 
 #: src/routes/_home/-sections/footer.tsx
@@ -1688,6 +1688,10 @@ msgstr "gpt-4.1"
 #: src/dialogs/resume/sections/education.tsx
 msgid "Grade"
 msgstr "成绩"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Great job! These strengths help your resume stand out."
+msgstr "做得很棒！这些优势能让你的简历脱颖而出。"
 
 #: src/routes/dashboard/resumes/index.tsx
 msgid "Grid"

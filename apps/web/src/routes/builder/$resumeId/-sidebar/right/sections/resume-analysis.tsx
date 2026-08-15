@@ -2,7 +2,15 @@ import type { ResumeAnalysis } from "@reactive-resume/schema/resume/analysis";
 import { t } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
-import { ArrowRightIcon, ChartPolarIcon, InfoIcon, SparkleIcon } from "@phosphor-icons/react";
+import {
+	ArrowRightIcon,
+	ChartPolarIcon,
+	CheckCircleIcon,
+	CheckIcon,
+	InfoIcon,
+	LightbulbIcon,
+	SparkleIcon,
+} from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -235,24 +243,31 @@ export function ResumeAnalysisSectionBuilder() {
 							</div>
 
 							{analysis.strengths.length > 0 && (
-								<div className="space-y-3 rounded-md border p-3">
-									<h5 className="font-semibold text-base">
+								<div className="space-y-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3">
+									<h5 className="flex items-center gap-2 font-semibold text-base text-emerald-700 dark:text-emerald-400">
+										<CheckCircleIcon className="text-emerald-600" weight="fill" />
 										<Trans>Strengths</Trans>
 									</h5>
 
-									<ul className="list-outside list-disc pl-5 text-muted-foreground text-base">
+									<ul className="space-y-2">
 										{analysis.strengths.map((strength) => (
-											<li key={strength} className="py-1.5">
-												{strength}
+											<li key={strength} className="flex items-start gap-2 text-base">
+												<CheckIcon className="mt-1 shrink-0 text-emerald-600" weight="bold" />
+												<span>{strength}</span>
 											</li>
 										))}
 									</ul>
+
+									<p className="text-base text-emerald-700 dark:text-emerald-400">
+										<Trans>Great job! These strengths help your resume stand out.</Trans>
+									</p>
 								</div>
 							)}
 
 							{analysis.suggestions.length > 0 && (
 								<div className="space-y-4 rounded-md border p-3">
-									<h5 className="font-semibold text-base">
+									<h5 className="flex items-center gap-2 font-semibold text-base text-amber-700 dark:text-amber-400">
+										<LightbulbIcon className="text-amber-600" weight="fill" />
 										<Trans>Suggestions</Trans>
 									</h5>
 
