@@ -4,6 +4,7 @@ import { Trans } from "@lingui/react/macro";
 import {
 	CaretLeftIcon,
 	CaretRightIcon,
+	ChatCircleTextIcon,
 	CheckCircleIcon,
 	DotsThreeIcon,
 	KeyIcon,
@@ -62,6 +63,13 @@ type QuotaDialogProps = {
 	onClose: () => void;
 };
 
+type FeedbackDialogProps = {
+	open: boolean;
+	userId: string;
+	userName: string;
+	onClose: () => void;
+};
+
 const LIMIT_PER_PAGE = 20;
 
 export const Route = createFileRoute("/dashboard/admin/users")({
@@ -87,6 +95,10 @@ function RouteComponent() {
 		userId: string;
 		userName: string;
 		balance: number;
+	} | null>(null);
+	const [feedbackDialog, setFeedbackDialog] = useState<{
+		userId: string;
+		userName: string;
 	} | null>(null);
 
 	const { data, isLoading } = useQuery(
@@ -267,7 +279,7 @@ function RouteComponent() {
 											<td className="px-4 py-3 text-center text-muted-foreground text-sm">
 												{user.resumeCount}
 											</td>
-											<td className="px-4 py-3 whitespace-nowrap text-muted-foreground text-sm">
+											<td className="text-muted-foreground px-4 py-3 text-sm whitespace-nowrap">
 												{Intl.DateTimeFormat(i18n.locale, { dateStyle: "medium" }).format(
 													new Date(user.createdAt),
 												)}
@@ -328,6 +340,14 @@ function RouteComponent() {
 														>
 															<ListNumbersIcon />
 															<Trans>Edit Quota</Trans>
+														</DropdownMenuItem>
+														<DropdownMenuItem
+															onClick={() =>
+																setFeedbackDialog({ userId: user.id, userName: user.name })
+															}
+														>
+															<ChatCircleTextIcon />
+															<Trans>View Feedback</Trans>
 														</DropdownMenuItem>
 														<DropdownMenuSeparator />
 														<DropdownMenuItem
@@ -395,6 +415,15 @@ function RouteComponent() {
 					userName={quotaDialog.userName}
 					initialBalance={quotaDialog.balance}
 					onClose={() => setQuotaDialog(null)}
+				/>
+			)}
+
+			{feedbackDialog && (
+				<FeedbackDialog
+					open={feedbackDialog !== null}
+					userId={feedbackDialog.userId}
+					userName={feedbackDialog.userName}
+					onClose={() => setFeedbackDialog(null)}
 				/>
 			)}
 		</div>
@@ -531,6 +560,111 @@ function QuotaDialog({ open, userId, userName, initialBalance, onClose }: QuotaD
 						<Trans>Save</Trans>
 					</Button>
 				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
+function FeedbackDialog({ open, userId, userName, onClose }: FeedbackDialogProps) {
+	const { i18n } = useLingui();
+	const queryClient = useQueryClient();
+
+	const { data, isLoading } = useQuery(
+		orpc.admin.feedback.list.queryOptions({
+			input: { page: 1, limit: 50, userId },
+		}),
+	);
+	const items = data?.items ?? [];
+
+	const statusMutation = useMutation(
+		orpc.admin.feedback.updateStatus.mutationOptions({
+			onSuccess: () => {
+				toast.success(i18n.t("Feedback status updated"));
+				void queryClient.invalidateQueries({ queryKey: orpc.admin.feedback.list.key() });
+			},
+			onError: (error) => {
+				toast.error(error.message);
+			},
+		}),
+	);
+
+	const formatDate = (value: Date | string) =>
+		Intl.DateTimeFormat(i18n.locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
+
+	return (
+		<Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+			<DialogContent className="max-h-[80vh] overflow-y-auto">
+				<DialogHeader>
+					<DialogTitle>
+						<Trans>User Feedback</Trans>
+					</DialogTitle>
+					<DialogDescription>
+						<Trans>
+							Feedback submitted by <span className="font-medium">{userName}</span>.
+						</Trans>
+					</DialogDescription>
+				</DialogHeader>
+
+				{isLoading ? (
+					<div className="flex items-center justify-center py-10">
+						<Spinner />
+					</div>
+				) : items.length === 0 ? (
+					<p className="py-8 text-center text-muted-foreground text-sm">
+						<Trans>No feedback submitted by this user yet.</Trans>
+					</p>
+				) : (
+					<div className="space-y-4">
+						{items.map((item) => (
+							<div key={item.id} className="rounded-lg border p-4">
+								<div className="flex items-center justify-between gap-2">
+									<span className="text-muted-foreground text-xs">{formatDate(item.createdAt)}</span>
+									{item.status === "resolved" ? (
+										<Badge variant="default">
+											<Trans>Resolved</Trans>
+										</Badge>
+									) : (
+										<Badge variant="secondary">
+											<Trans>Open</Trans>
+										</Badge>
+									)}
+								</div>
+								<div
+									className="prose prose-sm mt-3 max-w-none [&_img]:rounded-md [&_img]:border"
+									dangerouslySetInnerHTML={{ __html: item.content }}
+								/>
+								{item.images.length > 0 && (
+									<div className="mt-3 flex flex-wrap gap-2">
+										{item.images.map((url) => (
+											<a
+												key={url}
+												href={url}
+												target="_blank"
+												rel="noreferrer"
+												className="size-16 overflow-hidden rounded-md border"
+											>
+												<img src={url} alt="" className="size-full object-cover" />
+											</a>
+										))}
+									</div>
+								)}
+								{item.status !== "resolved" && (
+									<div className="mt-3 flex justify-end">
+										<Button
+											variant="outline"
+											size="sm"
+											disabled={statusMutation.isPending}
+											onClick={() => statusMutation.mutate({ feedbackId: item.id, status: "resolved" })}
+										>
+											<CheckCircleIcon />
+											<Trans>Mark as Resolved</Trans>
+										</Button>
+									</div>
+								)}
+							</div>
+						))}
+					</div>
+				)}
 			</DialogContent>
 		</Dialog>
 	);

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { adminProcedure } from "../../context";
+import { listFeedback, updateFeedbackStatus } from "../feedback/service";
 import { listExceptions, listPayments, reviewPayment } from "../payment/service";
 import { adminService } from "./service";
 
@@ -234,6 +235,65 @@ export const adminRouter = {
 			.output(z.object({ ok: z.boolean() }))
 			.handler(async ({ input }) => {
 				await adminService.resetQuotaUsage(input);
+				return { ok: true };
+			}),
+	},
+
+	feedback: {
+		list: adminProcedure
+			.route({
+				method: "GET",
+				path: "/admin/feedback",
+				tags: ["Admin"],
+				operationId: "adminListFeedback",
+				summary: "List user feedback",
+				description:
+					"Lists user feedback with pagination and optional user/status filters. Requires an admin session.",
+			})
+			.input(
+				z.object({
+					page: z.number().int().min(1).default(1),
+					limit: z.number().int().min(1).max(100).default(20),
+					userId: z.string().optional(),
+					status: z.string().optional(),
+				}),
+			)
+			.output(
+				z.object({
+					items: z.array(
+						z.object({
+							id: z.string(),
+							userId: z.string(),
+							username: z.string().nullable(),
+							email: z.string().nullable(),
+							content: z.string(),
+							images: z.array(z.string()),
+							status: z.string(),
+							createdAt: z.date(),
+							updatedAt: z.date(),
+						}),
+					),
+					total: z.number().int(),
+					page: z.number().int(),
+					limit: z.number().int(),
+				}),
+			)
+			.handler(({ input }) => listFeedback(input)),
+
+		updateStatus: adminProcedure
+			.route({
+				method: "POST",
+				path: "/admin/feedback/{feedbackId}/status",
+				tags: ["Admin"],
+				operationId: "adminUpdateFeedbackStatus",
+				summary: "Update feedback status",
+				description: "Updates the status (e.g. open/resolved) of the given feedback. Requires an admin session.",
+				successDescription: "The feedback status was updated.",
+			})
+			.input(z.object({ feedbackId: z.string(), status: z.string().min(1) }))
+			.output(z.object({ ok: z.boolean() }))
+			.handler(async ({ input }) => {
+				await updateFeedbackStatus(input.feedbackId, input.status);
 				return { ok: true };
 			}),
 	},

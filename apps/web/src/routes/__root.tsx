@@ -18,6 +18,7 @@ import { Toaster } from "@reactive-resume/ui/components/sonner";
 import { TooltipProvider } from "@reactive-resume/ui/components/tooltip";
 import { BreakpointIndicator } from "@/components/layout/breakpoint-indicator";
 import { DialogManager } from "@/dialogs/manager";
+import { FeedbackDialog } from "@/features/feedback/feedback-dialog";
 import { ThemeProvider } from "@/features/theme/provider";
 import { ConfirmDialogProvider } from "@/hooks/use-confirm";
 import { PromptDialogProvider } from "@/hooks/use-prompt";
@@ -123,6 +124,7 @@ function RootComponent() {
 														<Outlet />
 
 														<DialogManager />
+														<FeedbackDialog />
 														<Toaster richColors position="bottom-center" />
 
 														{import.meta.env.DEV && <BreakpointIndicator />}

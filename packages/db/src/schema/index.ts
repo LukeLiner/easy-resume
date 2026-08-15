@@ -1,5 +1,6 @@
 export * from "./agent";
 export * from "./auth";
+export * from "./feedback";
 export * from "./payment";
 export * from "./resume";
 export * from "./user-quota";
