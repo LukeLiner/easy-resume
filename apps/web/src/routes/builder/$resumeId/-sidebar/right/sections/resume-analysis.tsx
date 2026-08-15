@@ -155,7 +155,7 @@ export function ResumeAnalysisSectionBuilder() {
 					<div className="space-y-4 rounded-md border bg-card p-3">
 						<div className="grid grid-cols-2 items-center gap-3">
 							<div>
-								<p className="text-muted-foreground text-xs">
+								<p className="text-muted-foreground text-base">
 									<Trans>
 										Get a review of your resume with an overall score, strengths, and actionable suggestions.
 									</Trans>
@@ -170,7 +170,7 @@ export function ResumeAnalysisSectionBuilder() {
 
 								{isPending && (
 									<div className="space-y-1">
-										<div className="flex items-center justify-between text-muted-foreground text-xs">
+										<div className="flex items-center justify-between text-muted-foreground text-base">
 											<span>{analysisSteps[stepIndex]}</span>
 											<span>{Math.round(((stepIndex + 1) / analysisSteps.length) * 100)}%</span>
 										</div>
@@ -193,7 +193,7 @@ export function ResumeAnalysisSectionBuilder() {
 							</div>
 
 							<div className="space-y-3">
-								<p className="font-medium text-sm leading-none">
+								<p className="font-medium text-base leading-none">
 									<Trans>Overall Score</Trans>
 								</p>
 								<div className="grid grid-cols-10 gap-1">
@@ -208,7 +208,7 @@ export function ResumeAnalysisSectionBuilder() {
 									})}
 								</div>
 								{updatedAtLabel ? (
-									<p className="text-muted-foreground text-xs leading-none">
+									<p className="text-muted-foreground text-base leading-none">
 										<Trans>Last analyzed on {updatedAtLabel}</Trans>
 									</p>
 								) : null}
@@ -218,7 +218,7 @@ export function ResumeAnalysisSectionBuilder() {
 
 					{analysisFetched && !analysis && !isPending && (
 						<div className="rounded-md border border-dashed p-3">
-							<p className="max-w-xs text-muted-foreground text-sm">
+							<p className="max-w-xs text-muted-foreground text-base">
 								<Trans>Run your first analysis to get a scorecard, strengths, and prioritized suggestions.</Trans>
 							</p>
 						</div>
@@ -240,7 +240,7 @@ export function ResumeAnalysisSectionBuilder() {
 										<Trans>Strengths</Trans>
 									</h5>
 
-									<ul className="list-outside list-disc pl-5 text-muted-foreground text-sm">
+									<ul className="list-outside list-disc pl-5 text-muted-foreground text-base">
 										{analysis.strengths.map((strength) => (
 											<li key={strength} className="py-1.5">
 												{strength}
@@ -256,6 +256,30 @@ export function ResumeAnalysisSectionBuilder() {
 										<Trans>Suggestions</Trans>
 									</h5>
 
+									<div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-base">
+										<span className="inline-flex items-center gap-1.5">
+											<span aria-hidden="true" className="size-2 rounded-full bg-rose-600" />
+											{t({
+												comment: "Legend label for high-impact resume suggestions",
+												message: "High impact",
+											})}
+										</span>
+										<span className="inline-flex items-center gap-1.5">
+											<span aria-hidden="true" className="size-2 rounded-full bg-amber-600" />
+											{t({
+												comment: "Legend label for medium-impact resume suggestions",
+												message: "Medium impact",
+											})}
+										</span>
+										<span className="inline-flex items-center gap-1.5">
+											<span aria-hidden="true" className="size-2 rounded-full bg-emerald-600" />
+											{t({
+												comment: "Legend label for low-impact resume suggestions",
+												message: "Low impact",
+											})}
+										</span>
+									</div>
+
 									<div className="space-y-3">
 										{analysis.suggestions.map((suggestion) => (
 											<div key={suggestion.title} className="space-y-3 rounded-md border bg-card p-3">
@@ -269,10 +293,10 @@ export function ResumeAnalysisSectionBuilder() {
 													<div className="font-semibold text-base tracking-tight">{suggestion.title}</div>
 												</div>
 
-												<div className="text-muted-foreground text-xs">{suggestion.why}</div>
+												<div className="text-muted-foreground text-base">{suggestion.why}</div>
 
 												{suggestion.exampleRewrite && (
-													<div className="rounded bg-muted p-2 text-muted-foreground text-xs">
+													<div className="rounded bg-muted p-2 text-muted-foreground text-base">
 														{suggestion.exampleRewrite}
 													</div>
 												)}
@@ -429,7 +453,7 @@ function ScorecardRadar({ items }: ScorecardRadarProps) {
 						key={item.dimension}
 						type="button"
 						onClick={() => setSelectedIndex(index)}
-						className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium text-xs transition-colors ${
+						className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium text-base transition-colors ${
 							index === selectedIndex
 								? "border-primary bg-primary text-primary-foreground"
 								: "border-border bg-card text-muted-foreground hover:bg-muted"
@@ -446,10 +470,10 @@ function ScorecardRadar({ items }: ScorecardRadarProps) {
 
 			<div className="space-y-3 rounded-md border bg-card p-3">
 				<div className="flex items-center justify-between gap-2">
-					<div className="font-medium text-sm">{scorecardDimensionLabel(selectedItem.dimension)}</div>
+					<div className="font-medium text-base">{scorecardDimensionLabel(selectedItem.dimension)}</div>
 					<Badge variant="default" className="font-bold">{selectedItem.score}/100</Badge>
 				</div>
-				<p className="text-muted-foreground text-xs">{selectedItem.rationale}</p>
+				<p className="text-muted-foreground text-base">{selectedItem.rationale}</p>
 			</div>
 		</div>
 	);
