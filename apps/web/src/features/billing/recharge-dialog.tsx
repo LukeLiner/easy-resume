@@ -19,6 +19,9 @@ import { orpc } from "@/libs/orpc/client";
 
 const PRESET_AMOUNTS_YUAN = [10, 20, 50, 100, 200];
 
+/** 分转元字符串，去除多余尾随零（如 288 -> "2.88"，200 -> "2"）。 */
+const formatYuan = (cents: number): string => (cents / 100).toFixed(2).replace(/\.?0+$/, "");
+
 type RechargeDialogProps = {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
@@ -38,6 +41,12 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
 	const userEmail = userCenterQuery.data?.email ?? "";
 	const minRechargeCents = config?.minRechargeCents ?? 1000;
 	const minRechargeYuan = minRechargeCents / 100;
+
+	const pricesQuery = useQuery(orpc.billing.getPrices.queryOptions());
+	const prices = pricesQuery.data;
+	const downloadYuan = prices ? formatYuan(prices.pricePerDownloadCents) : "";
+	const analysisYuan = prices ? formatYuan(prices.pricePerAnalysisCents) : "";
+	const tokenYuan = prices ? formatYuan(prices.pricePerMillionTokensCents) : "";
 
 	const amountCents = Math.round(Number(amountYuan) * 100);
 	const isValidAmount =
@@ -143,11 +152,11 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
 							</p>
 						</div>
 
-						<p className="rounded-lg bg-muted/40 p-3 text-muted-foreground text-xs">
-							<Trans>
-								Every ¥2.88 get per download, Every ¥2 get 1 resume analyses, AI conversation ¥10 per million tokens.
-							</Trans>
-						</p>
+						{prices ? (
+							<p className="rounded-lg bg-muted/40 p-3 text-muted-foreground text-xs">
+								{t`Every ¥${downloadYuan} get per download, Every ¥${analysisYuan} get 1 resume analyses, AI conversation ¥${tokenYuan} per million tokens.`}
+							</p>
+						) : null}
 
 						<div>
 							<Label htmlFor="proof-file">

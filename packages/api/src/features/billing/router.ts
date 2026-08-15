@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { protectedProcedure } from "../../context";
-import { getUserCenter, listTransactions } from "./service";
+import { getBillingPrices, getUserCenter, listTransactions } from "./service";
 
 export const billingRouter = {
 	getUserCenter: protectedProcedure
@@ -60,4 +60,21 @@ export const billingRouter = {
 			}),
 		)
 		.handler(async ({ context, input }) => listTransactions(context.user.id, input.page, input.limit)),
+
+	getPrices: protectedProcedure
+		.route({
+			method: "GET",
+			path: "/billing/prices",
+			tags: ["Billing"],
+			operationId: "getBillingPrices",
+			summary: "Get the current billing prices (in cents)",
+		})
+		.output(
+			z.object({
+				pricePerDownloadCents: z.number().int(),
+				pricePerAnalysisCents: z.number().int(),
+				pricePerMillionTokensCents: z.number().int(),
+			}),
+		)
+		.handler(async () => getBillingPrices()),
 };

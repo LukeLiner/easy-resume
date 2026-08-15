@@ -128,7 +128,7 @@ export function DashboardSidebar() {
 							className="h-auto justify-center"
 							render={
 								<Link to="/">
-									<BrandIcon variant="icon" className="size-6" />
+									<BrandIcon variant="icon" className="size-12" />
 									<h1 className="sr-only">Reactive Resume</h1>
 								</Link>
 							}

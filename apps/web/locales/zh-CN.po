@@ -5460,8 +5460,8 @@ msgid "Conversation Generations"
 msgstr "对话生成次数"
 
 #: src/features/billing/recharge-dialog.tsx
-msgid "Every ¥1 get per download, Every ¥2 get 1 resume analyses, Every ¥2 get 1 conversation generations."
-msgstr "每 ¥1 可获得 1次下载、每 ¥2 可获得 1次简历深度分析,每 ¥2 可获得 1次智能简历生成。"
+msgid "Every ¥{downloadYuan} get per download, Every ¥{analysisYuan} get 1 resume analyses, AI conversation ¥{tokenYuan} per million tokens."
+msgstr "每 ¥{downloadYuan} 可获得 1 次下载，每 ¥{analysisYuan} 可获得 1 次简历深度分析，AI 对话每百万 tokens 收费 ¥{tokenYuan}。"
 
 #: src/features/billing/recharge-dialog.tsx
 msgid "Only multiples of ¥{minRechargeYuan} are accepted."

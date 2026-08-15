@@ -2,27 +2,46 @@ import { ORPCError } from "@orpc/server";
 import { and, count, desc, eq, gte, sql } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import { user, userQuota, userTransaction } from "@reactive-resume/db/schema";
+import { env } from "@reactive-resume/env/server";
 
 /** 使用明细类型，与配额种类一一对应。 */
 export type TransactionType = "threadMessages" | "resumeAnalyses" | "resumeDownloads";
 
 /**
- * 各类使用扣费金额（单位：分）。
- * 每 ¥2.88 获得 1 次下载；每 ¥2 获得 1 次简历分析。
- * 注：对话生成（threadMessages）已改为按实际 token 用量计费，
- * 见 `PRICE_PER_MILLION_TOKENS_CENTS` 与 `deductBalanceByTokens`，不再使用此处的固定单价。
+ * 各类使用扣费金额（单位：分），通过环境变量动态调整（改 .env 后重启进程即可生效，无需重新部署代码）。
+ * - 下载：BILLING_PRICE_PER_DOWNLOAD_CENTS（默认 288，即 ¥2.88/次）
+ * - 分析：BILLING_PRICE_PER_ANALYSIS_CENTS（默认 200，即 ¥2/次）
+ * - threadMessages 已废弃固定单价：对话生成改为按实际 token 用量计费，
+ *   见 `PRICE_PER_MILLION_TOKENS_CENTS` 与 `deductBalanceByTokens`。
  */
 export const PRICE_PER_USE_CENTS: Record<TransactionType, number> = {
-	resumeDownloads: 288,
-	resumeAnalyses: 200,
-	threadMessages: 200,
+	resumeDownloads: env.BILLING_PRICE_PER_DOWNLOAD_CENTS,
+	resumeAnalyses: env.BILLING_PRICE_PER_ANALYSIS_CENTS,
+	threadMessages: 0, // 占位：对话生成不再使用固定单价。
 };
 
 /**
- * 对话生成按 token 计费的单价：10 元 / 百万 token（= 1000 分）。
- * 即每 1 token 消耗 0.001 分，最终金额向上取整到「分」，最低 1 分。
+ * 对话生成按 token 计费的单价（分 / 百万 token），通过 BILLING_PRICE_PER_MILLION_TOKENS_CENTS 调整。
+ * 默认 1000（即 ¥10 / 百万 token）。每 1 token 消耗 price/1_000_000 分，
+ * 最终金额向上取整到「分」且最低 1 分。
  */
-export const PRICE_PER_MILLION_TOKENS_CENTS = 1000;
+export const PRICE_PER_MILLION_TOKENS_CENTS = env.BILLING_PRICE_PER_MILLION_TOKENS_CENTS;
+
+/** 供前端充值弹窗动态展示的计费单价（单位：分）。 */
+export type BillingPrices = {
+	pricePerDownloadCents: number;
+	pricePerAnalysisCents: number;
+	pricePerMillionTokensCents: number;
+};
+
+/** 返回当前计费单价（单位：分），供前端动态展示，避免硬编码价格。 */
+export function getBillingPrices(): BillingPrices {
+	return {
+		pricePerDownloadCents: PRICE_PER_USE_CENTS.resumeDownloads,
+		pricePerAnalysisCents: PRICE_PER_USE_CENTS.resumeAnalyses,
+		pricePerMillionTokensCents: PRICE_PER_MILLION_TOKENS_CENTS,
+	};
+}
 
 const TYPE_REMARKS: Record<TransactionType, string> = {
 	threadMessages: "简历生成对话",
