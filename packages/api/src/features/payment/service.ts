@@ -3,6 +3,7 @@ import { ORPCError } from "@orpc/server";
 import { and, count, desc, eq, sql } from "drizzle-orm";
 import { db } from "@reactive-resume/db/client";
 import { paymentExceptionLog, paymentOrder, user, userTransaction } from "@reactive-resume/db/schema";
+import { env } from "@reactive-resume/env/server";
 import { getPaymentConfig, MIN_RECHARGE_CENTS, triggerN8nWebhook } from "./wechat-pay";
 
 function generateOrderNo(): string {
@@ -80,13 +81,21 @@ export async function submitRecharge(userId: string, input: SubmitRechargeInput)
 		expiresAt,
 	});
 
-	await triggerN8nWebhook({
-		orderNo,
-		userId,
-		amount: input.amount,
-		contactEmail: input.contactEmail,
-		proofUrl: input.proofUrl,
-	});
+	await triggerN8nWebhook(
+		env.PAYMENT_N8N_WEBHOOK_URL,
+		"charge",
+		{
+			orderNo,
+			userId,
+			amount: input.amount,
+			contactEmail: input.contactEmail,
+			proofUrl: input.proofUrl,
+		},
+		{
+			username: env.PAYMENT_N8N_WEBHOOK_USERNAME,
+			password: env.PAYMENT_N8N_WEBHOOK_PASSWORD,
+		},
+	);
 
 	return { orderNo, status: "manual_review" };
 }

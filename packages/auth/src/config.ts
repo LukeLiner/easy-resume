@@ -20,6 +20,7 @@ import * as schema from "@reactive-resume/db/schema";
 import { ResetPasswordEmail, VerifyEmail, VerifyEmailChange } from "@reactive-resume/email/templates/auth";
 import { sendEmail } from "@reactive-resume/email/transport";
 import { env } from "@reactive-resume/env/server";
+import { triggerN8nWebhook } from "@reactive-resume/utils/n8n-webhook";
 import { rateLimitConfig, TRUSTED_IP_HEADERS } from "@reactive-resume/utils/rate-limit";
 import { generateId, toUsername } from "@reactive-resume/utils/string";
 import { isAllowedOAuthRedirectUri } from "@reactive-resume/utils/url-security.node";
@@ -103,6 +104,30 @@ const getAuthConfig = () => {
 		rateLimit: {
 			...rateLimitConfig.betterAuth.global,
 			enabled: isRateLimitEnabled,
+		},
+
+		databaseHooks: {
+			user: {
+				create: {
+					after: async (user) => {
+						const username = typeof user.username === "string" ? user.username : undefined;
+						await triggerN8nWebhook(
+							env.PAYMENT_N8N_WEBHOOK_URL,
+							"register",
+							{
+								userId: user.id,
+								email: user.email,
+								username,
+								name: user.name,
+							},
+							{
+								username: env.PAYMENT_N8N_WEBHOOK_USERNAME,
+								password: env.PAYMENT_N8N_WEBHOOK_PASSWORD,
+							},
+						);
+					},
+				},
+			},
 		},
 
 		hooks: {

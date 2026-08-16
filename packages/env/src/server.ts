@@ -86,6 +86,8 @@ export const env = createEnv({
 		PAYMENT_ENABLED: z.stringbool().default(true),
 		PAYMENT_QR_CODE_URL: z.string().min(1).optional(),
 		PAYMENT_N8N_WEBHOOK_URL: z.url({ protocol: /https?/ }).optional(),
+		PAYMENT_N8N_WEBHOOK_USERNAME: z.string().min(1).optional(),
+		PAYMENT_N8N_WEBHOOK_PASSWORD: z.string().min(1).optional(),
 
 		// Billing prices (unit: cents). Tunable via .env without a code redeploy.
 		BILLING_PRICE_PER_DOWNLOAD_CENTS: z.coerce.number().int().min(1).default(288),

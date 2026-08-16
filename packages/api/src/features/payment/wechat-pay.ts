@@ -1,5 +1,7 @@
 import { env } from "@reactive-resume/env/server";
 
+export { triggerN8nWebhook } from "@reactive-resume/utils/n8n-webhook";
+
 /**
  * 手动充值配置与预留 webhook。
  *
@@ -23,28 +25,4 @@ export function getPaymentConfig(): PaymentConfig {
 		qrCodeUrl: env.PAYMENT_QR_CODE_URL ?? null,
 		minRechargeCents: MIN_RECHARGE_CENTS,
 	};
-}
-
-export type N8nWebhookPayload = {
-	orderNo: string;
-	userId: string;
-	amount: number;
-	contactEmail?: string | undefined;
-	proofUrl: string;
-};
-
-/** 预留：充值申请提交成功后向 N8N webhook 推送通知（失败不阻断主流程）。 */
-export async function triggerN8nWebhook(payload: N8nWebhookPayload): Promise<void> {
-	const webhookUrl = env.PAYMENT_N8N_WEBHOOK_URL;
-	if (!webhookUrl) return;
-
-	try {
-		await fetch(webhookUrl, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ event: "recharge.submitted", ...payload }),
-		});
-	} catch (error) {
-		console.error("Failed to trigger N8N webhook:", error);
-	}
 }

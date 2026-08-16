@@ -8,6 +8,7 @@
 		"./file": "./src/file.ts",
 		"./locale": "./src/locale.ts",
 		"./monorepo.node": "./src/monorepo.node.ts",
+		"./n8n-webhook": "./src/n8n-webhook.ts",
 		"./rate-limit": "./src/rate-limit.ts",
 		"./string": "./src/string.ts",
 		"./style": "./src/style.ts",
