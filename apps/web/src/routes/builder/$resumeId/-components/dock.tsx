@@ -33,7 +33,7 @@ import {
 	useResumeStore,
 } from "@/features/resume/builder/draft";
 import { authClient } from "@/libs/auth/client";
-import { centerAtActualSize, fitToView } from "./preview-fit";
+import { alignToStart, fitToStart } from "./preview-fit";
 
 type BuilderDockProps = {
 	pageLayout: BuilderPreviewPageLayout;
@@ -56,7 +56,7 @@ export function BuilderDock({ pageLayout, onTogglePageLayout }: BuilderDockProps
 	const undo = useResumeStore((state) => state.undo);
 	const redo = useResumeStore((state) => state.redo);
 
-	useHotkey("Mod+0", () => centerAtActualSize(controls));
+	useHotkey("Mod+0", () => alignToStart(controls));
 	// App-level undo/redo of resume state, scoped to the builder. Mod maps to Cmd (mac) / Ctrl (win/linux).
 	// Inside a focused text field, defer to the browser's native input undo; the dock buttons remain
 	// available for resume-level history while editing a field.
@@ -138,10 +138,10 @@ function ZoomMenu() {
 			/>
 
 			<DropdownMenuContent side="top" align="center">
-				<DropdownMenuItem onClick={() => centerAtActualSize(controls, 200)}>
+				<DropdownMenuItem onClick={() => alignToStart(controls, 200)}>
 					<Trans>Actual size (100%)</Trans>
 				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => fitToView(controls)}>
+				<DropdownMenuItem onClick={() => fitToStart(controls)}>
 					<Trans>Fit to view</Trans>
 				</DropdownMenuItem>
 			</DropdownMenuContent>

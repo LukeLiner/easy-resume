@@ -9,21 +9,25 @@ import { LoadingScreen } from "@/components/layout/loading-screen";
 import { ResumePreview } from "@/features/resume/preview/preview";
 import { BuilderDock } from "./dock";
 import { DEFAULT_BUILDER_PREVIEW_PAGE_LAYOUT, getNextBuilderPreviewPageLayout } from "./page-layout";
-import { centerAtActualSize } from "./preview-fit";
+import { zoomToStart } from "./preview-fit";
+
+// Default zoom for the initial preview: large enough to read the resume, aligned to the artboard.
+const DEFAULT_PREVIEW_SCALE = 1.5;
 
 export function PreviewPage() {
 	const [pageLayout, setPageLayout] = useState(DEFAULT_BUILDER_PREVIEW_PAGE_LAYOUT);
 
 	const handleTransformWrapperInit = useCallback((ref: ReactZoomPanPinchRef) => {
 		// The content size is not available when TransformWrapper initializes (lazy-loaded PDF pages),
-		// so fall back to a ResizeObserver and center once the first non-empty size is reported.
-		if (centerAtActualSize(ref)) return;
+		// so fall back to a ResizeObserver and apply the default zoom once the first non-empty size is
+		// reported. The resume is zoomed to 150% and aligned to the top-left of the artboard.
+		if (zoomToStart(ref, DEFAULT_PREVIEW_SCALE)) return;
 
 		const { contentComponent } = ref.instance;
 		if (!contentComponent) return;
 
 		const observer = new ResizeObserver(() => {
-			if (!centerAtActualSize(ref)) return;
+			if (!zoomToStart(ref, DEFAULT_PREVIEW_SCALE)) return;
 			observer.disconnect();
 		});
 		observer.observe(contentComponent);

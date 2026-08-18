@@ -121,16 +121,16 @@ function AiAssistantPanel({ resumeId, onClose }: BuilderAiAssistantProps & { onC
 }
 
 export function BuilderAiAssistant({ resumeId }: BuilderAiAssistantProps) {
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(true);
 
 	return (
-		<Sheet open={open} onOpenChange={setOpen}>
+		<Sheet open={open} onOpenChange={setOpen} modal={false}>
 			<Button
 				size="icon"
 				variant="ghost"
 				aria-label={t`Open AI assistant`}
 				aria-pressed={open}
-				onClick={() => setOpen(true)}
+				onClick={() => setOpen((prev) => !prev)}
 			>
 				<SparkleIcon weight={open ? "fill" : "regular"} />
 			</Button>
@@ -138,6 +138,7 @@ export function BuilderAiAssistant({ resumeId }: BuilderAiAssistantProps) {
 			<SheetContent
 				side="right"
 				showCloseButton={false}
+				hideOverlay
 				className="w-full max-w-full gap-0 p-0 sm:max-w-md md:max-w-lg"
 			>
 				<SheetTitle className="sr-only">

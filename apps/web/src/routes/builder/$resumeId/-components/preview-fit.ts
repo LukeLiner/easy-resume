@@ -21,27 +21,31 @@ function getArtboardBounds(): ArtboardBounds {
 	return { left: artboard.left, top: artboard.top, width: artboard.width, height: artboard.height };
 }
 
-// Positions the resume (scaled to `scale`) centered inside the artboard. Returns `false` while the
-// content has no measurable size (lazy-loaded PDF pages) so callers can retry via a ResizeObserver.
-function alignContentToCenter(ref: ReactZoomPanPinchRef, scale: number, animationTime: number): boolean {
+// Positions the resume (scaled to `scale`) aligned to the top-left corner of the artboard, so the
+// resume starts exactly where the combined sidebar ends. Returns `false` while the content has no
+// measurable size (lazy-loaded PDF pages) so callers can retry via a ResizeObserver.
+function alignContentToStart(ref: ReactZoomPanPinchRef, scale: number, animationTime: number): boolean {
 	const { instance, setTransform } = ref;
 	const { contentComponent } = instance;
 	if (!contentComponent || contentComponent.offsetWidth <= 0) return false;
 
 	const bounds = getArtboardBounds();
-	const positionX = bounds.left + (bounds.width - contentComponent.offsetWidth * scale) / 2;
-	const positionY = bounds.top + (bounds.height - contentComponent.offsetHeight * scale) / 2;
-	setTransform(positionX, positionY, scale, animationTime, "easeOut");
+	setTransform(bounds.left, bounds.top, scale, animationTime, "easeOut");
 	return true;
 }
 
-// Centers the resume at 100% zoom inside the artboard.
-export function centerAtActualSize(ref: ReactZoomPanPinchRef, animationTime = 0): boolean {
-	return alignContentToCenter(ref, 1, animationTime);
+// Aligns the resume to the top-left corner of the artboard at 100% zoom.
+export function alignToStart(ref: ReactZoomPanPinchRef, animationTime = 0): boolean {
+	return alignContentToStart(ref, 1, animationTime);
 }
 
-// Fits the resume to fill the artboard (the remaining visible page) and centers it.
-export function fitToView(ref: ReactZoomPanPinchRef): boolean {
+// Zooms the resume to the given scale and aligns it to the top-left corner of the artboard.
+export function zoomToStart(ref: ReactZoomPanPinchRef, scale: number, animationTime = 0): boolean {
+	return alignContentToStart(ref, scale, animationTime);
+}
+
+// Fits the resume to fill the artboard (the remaining visible page) and aligns it to the top-left corner.
+export function fitToStart(ref: ReactZoomPanPinchRef): boolean {
 	const { instance } = ref;
 	const { contentComponent } = instance;
 	if (!contentComponent || contentComponent.offsetWidth <= 0) return false;
@@ -49,5 +53,5 @@ export function fitToView(ref: ReactZoomPanPinchRef): boolean {
 	const bounds = getArtboardBounds();
 	const scale =
 		Math.min(bounds.width / contentComponent.offsetWidth, bounds.height / contentComponent.offsetHeight) * FIT_PADDING;
-	return alignContentToCenter(ref, scale, 200);
+	return alignContentToStart(ref, scale, 200);
 }

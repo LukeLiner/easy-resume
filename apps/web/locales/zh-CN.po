@@ -2503,7 +2503,7 @@ msgstr "OpenAI代理"
 
 #: src/routes/builder/$resumeId/-components/ai-assistant.tsx
 msgid "Open AI assistant"
-msgstr "OpenAI助手"
+msgstr "打开AI助手"
 
 #. Button label to open the user's default email app
 #: src/features/auth/pages/forgot-password.tsx
