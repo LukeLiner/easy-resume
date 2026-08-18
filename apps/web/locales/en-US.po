@@ -15,6 +15,11 @@ msgstr ""
 
 #. js-lingui-explicit-id
 #: src/routes/dashboard/admin/users.tsx
+msgid "Feedback status updated"
+msgstr "Feedback status updated"
+
+#. js-lingui-explicit-id
+#: src/routes/dashboard/admin/users.tsx
 msgid "User deleted successfully"
 msgstr "User deleted successfully"
 
@@ -126,7 +131,6 @@ msgstr "6 months"
 msgid "A free and open-source resume builder that simplifies the process of creating, updating, and sharing your resume."
 msgstr "A free and open-source resume builder that simplifies the process of creating, updating, and sharing your resume."
 
-#: src/routes/builder/$resumeId/-components/dock.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "A link to your resume has been copied to clipboard."
 msgstr "A link to your resume has been copied to clipboard."
@@ -160,6 +164,7 @@ msgstr "Account created"
 msgid "Account menu"
 msgstr "Account menu"
 
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 #: src/routes/dashboard/admin/users.tsx
 #: src/routes/dashboard/resumes/-components/list-view.tsx
@@ -249,6 +254,10 @@ msgstr "Add a new skill"
 msgid "Add a new volunteer experience"
 msgstr "Add a new volunteer experience"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Add Admin WeChat"
+msgstr "Add Admin WeChat"
+
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Add and test a provider before starting an agent thread."
 msgstr "Add and test a provider before starting an agent thread."
@@ -286,9 +295,17 @@ msgstr "Adjust the resume for a remote-first role that values async communicatio
 msgid "Admin"
 msgstr "Admin"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Admin WeChat QR code"
+msgstr "Admin WeChat QR code"
+
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Advanced"
 msgstr "Advanced"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-summary.tsx
+msgid "After"
+msgstr "After"
 
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Agent ready"
@@ -330,6 +347,10 @@ msgstr "AI Providers"
 msgid "AI providers require REDIS_URL and ENCRYPTION_SECRET to be configured."
 msgstr "AI providers require REDIS_URL and ENCRYPTION_SECRET to be configured."
 
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "All"
+msgstr "All"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "Allow Public Access"
 msgstr "Allow Public Access"
@@ -357,10 +378,15 @@ msgstr "An unexpected error stopped this page from loading. You can try again or
 msgid "An unknown error occurred while importing your resume."
 msgstr "An unknown error occurred while importing your resume."
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Analyze Job Match"
+msgstr "Analyze Job Match"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Analyze Resume"
 msgstr "Analyze Resume"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Analyzing…"
 msgstr "Analyzing…"
@@ -550,6 +576,10 @@ msgstr "Basics"
 #: src/routes/_home/-sections/features.tsx
 msgid "Beautiful templates to choose from, with more on the way."
 msgstr "Beautiful templates to choose from, with more on the way."
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-summary.tsx
+msgid "Before"
+msgstr "Before"
 
 #: src/features/resume/export/download-dialog.tsx
 msgid "Best for applications, sharing, and printing."
@@ -747,6 +777,10 @@ msgstr "Company"
 msgid "Compare this resume against this role URL and update keywords while keeping the voice concise and credible."
 msgstr "Compare this resume against this role URL and update keywords while keeping the voice concise and credible."
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Comparing skills & experience"
+msgstr "Comparing skills & experience"
+
 #: src/routes/_home/-sections/features.tsx
 msgid "Completely free, forever, no hidden costs."
 msgstr "Completely free, forever, no hidden costs."
@@ -776,6 +810,8 @@ msgstr "Connection verified — provider is ready to use."
 
 #: src/dialogs/resume/sections/cover-letter.tsx
 #: src/dialogs/resume/sections/summary-item.tsx
+#: src/features/feedback/feedback-dialog.tsx
+#: src/routes/dashboard/admin/feedback.tsx
 msgid "Content"
 msgstr "Content"
 
@@ -836,14 +872,15 @@ msgstr "Copy stylesheet"
 msgid "Copy this secret key and use it in your applications to access your data."
 msgstr "Copy this secret key and use it in your applications to access your data."
 
-#: src/routes/builder/$resumeId/-components/dock.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "Copy URL"
 msgstr "Copy URL"
 
+#. Error description when AI provider cannot be reached during job-match analysis
 #. Error description when AI provider cannot be reached during resume analysis
 #. Error shown when AI provider is unreachable during PDF/DOCX resume import
 #: src/dialogs/resume/import.tsx
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Could not reach the AI provider. Please try again."
 msgstr "Could not reach the AI provider. Please try again."
@@ -876,6 +913,10 @@ msgstr "Cover letter"
 #: src/routes/builder/$resumeId/-sidebar/left/sections/custom.tsx
 msgid "Cover Letter"
 msgstr "Cover Letter"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Covered"
+msgstr "Covered"
 
 #. Create API key dialog submit action
 #: src/dialogs/api-key/create.tsx
@@ -995,6 +1036,7 @@ msgstr "Create one now"
 msgid "Create resume with options"
 msgstr "Create resume with options"
 
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 #: src/routes/dashboard/admin/users.tsx
 #: src/routes/dashboard/resumes/-components/list-view.tsx
@@ -1407,6 +1449,10 @@ msgstr "Export your resume to PDF instantly, without any waiting or delays."
 msgid "Failed"
 msgstr "Failed"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Failed to analyze job description."
+msgstr "Failed to analyze job description."
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Failed to analyze resume."
 msgstr "Failed to analyze resume."
@@ -1445,6 +1491,7 @@ msgstr "Failed to disable two-factor authentication. Please try again."
 msgid "Failed to enable two-factor authentication. Please try again."
 msgstr "Failed to enable two-factor authentication. Please try again."
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Failed to polish resume."
 msgstr "Failed to polish resume."
@@ -1454,6 +1501,7 @@ msgstr "Failed to polish resume."
 msgid "Failed to reset your password. Please try again."
 msgstr "Failed to reset your password. Please try again."
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Failed to restore original content."
 msgstr "Failed to restore original content."
@@ -1530,6 +1578,23 @@ msgstr "Failed to verify your code. Please try again."
 msgid "Features"
 msgstr "Features"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Feedback"
+msgstr "Feedback"
+
+#: src/routes/dashboard/-components/sidebar.tsx
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Feedback Records"
+msgstr "Feedback Records"
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Feedback status updated."
+msgstr "Feedback status updated."
+
+#: src/routes/dashboard/admin/users.tsx
+msgid "Feedback submitted by <0>{userName}</0>."
+msgstr "Feedback submitted by <0>{userName}</0>."
+
 #: src/dialogs/resume/import.tsx
 msgid "File"
 msgstr "File"
@@ -1538,6 +1603,7 @@ msgstr "File"
 msgid "Filter by"
 msgstr "Filter by"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Finalizing the report"
 msgstr "Finalizing the report"
@@ -1637,6 +1703,10 @@ msgstr "Fullscreen Editor"
 #: src/dialogs/resume/index.tsx
 msgid "Generate a random name"
 msgstr "Generate a random name"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Generating rewrite suggestions"
+msgstr "Generating rewrite suggestions"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Generating suggestions"
@@ -1808,7 +1878,10 @@ msgstr "Hide Section Icons"
 msgid "High"
 msgstr "High"
 
+#. Label for high-impact job-match suggestions
+#. Legend label for high-impact job-match suggestions
 #. Legend label for high-impact resume suggestions
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "High impact"
 msgstr "High impact"
@@ -1845,6 +1918,15 @@ msgstr "Icon"
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Identify gaps for an applicant tracking system and apply only high-confidence keyword improvements."
 msgstr "Identify gaps for an applicant tracking system and apply only high-confidence keyword improvements."
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Image uploaded successfully."
+msgstr "Image uploaded successfully."
+
+#: src/features/feedback/feedback-dialog.tsx
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Images"
+msgstr "Images"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Impact & Quantification"
@@ -1932,6 +2014,15 @@ msgstr "Issuer"
 msgid "Italic"
 msgstr "Italic"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Job match analysis complete."
+msgstr "Job match analysis complete."
+
+#: src/libs/resume/section.tsx
+#: src/routes/builder/$resumeId/-components/combined-sidebar.tsx
+msgid "Job Radar"
+msgstr "Job Radar"
+
 #. Example full name placeholder on registration form
 #: src/features/auth/pages/register.tsx
 msgid "John Doe"
@@ -1960,6 +2051,7 @@ msgstr "JSON Resume"
 msgid "Justify Align"
 msgstr "Justify Align"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Keep changes"
 msgstr "Keep changes"
@@ -1972,6 +2064,10 @@ msgstr "Keep together"
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Key"
 msgstr "Key"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Keyword"
+msgstr "Keyword"
 
 #: src/dialogs/resume/sections/interest.tsx
 #: src/dialogs/resume/sections/skill.tsx
@@ -2149,7 +2245,10 @@ msgstr "Lost access to your authenticator?"
 msgid "Low"
 msgstr "Low"
 
+#. Label for low-impact job-match suggestions
+#. Legend label for low-impact job-match suggestions
 #. Legend label for low-impact resume suggestions
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Low impact"
 msgstr "Low impact"
@@ -2179,12 +2278,27 @@ msgstr "Margin (Horizontal)"
 msgid "Margin (Vertical)"
 msgstr "Margin (Vertical)"
 
+#: src/routes/dashboard/admin/users.tsx
+msgid "Mark as Resolved"
+msgstr "Mark as Resolved"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-dimensions.tsx
+msgid "Match score"
+msgstr "Match score"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Matched"
+msgstr "Matched"
+
 #. Impact severity label in resume analysis suggestion card
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Medium"
 msgstr "Medium"
 
+#. Label for medium-impact job-match suggestions
+#. Legend label for medium-impact job-match suggestions
 #. Legend label for medium-impact resume suggestions
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Medium impact"
 msgstr "Medium impact"
@@ -2194,6 +2308,10 @@ msgstr "Medium impact"
 #: src/dialogs/resume/import.tsx
 msgid "Microsoft Word"
 msgstr "Microsoft Word"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Missing or weak"
+msgstr "Missing or weak"
 
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "Missing working resume"
@@ -2275,6 +2393,7 @@ msgstr "New thread"
 msgid "No Advertising, No Tracking"
 msgstr "No Advertising, No Tracking"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "No changes were needed for this suggestion."
 msgstr "No changes were needed for this suggestion."
@@ -2287,6 +2406,14 @@ msgstr "No data was returned from the AI provider."
 #: src/routes/dashboard/admin/payments.tsx
 msgid "No exception logs found."
 msgstr "No exception logs found."
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "No feedback records found."
+msgstr "No feedback records found."
+
+#: src/routes/dashboard/admin/users.tsx
+msgid "No feedback submitted by this user yet."
+msgstr "No feedback submitted by this user yet."
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "No payment records found."
@@ -2360,6 +2487,7 @@ msgstr "Only multiples of ¥{minRechargeYuan} are accepted."
 
 #. Resume card context menu action to open the resume editor
 #. Resume card dropdown action to open the resume editor
+#: src/routes/dashboard/admin/users.tsx
 #: src/routes/dashboard/resumes/-components/menus/context-menu.tsx
 #: src/routes/dashboard/resumes/-components/menus/dropdown-menu.tsx
 msgid "Open"
@@ -2386,6 +2514,7 @@ msgstr "Open focus mode"
 msgid "Open in builder"
 msgstr "Open in builder"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Open Integrations Settings"
 msgstr "Open Integrations Settings"
@@ -2441,6 +2570,7 @@ msgstr "Orders"
 msgid "Organization"
 msgstr "Organization"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Original content restored."
 msgstr "Original content restored."
@@ -2466,6 +2596,7 @@ msgid "Page {0}"
 msgstr "Page {0}"
 
 #: src/routes/dashboard/account.tsx
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 #: src/routes/dashboard/admin/users.tsx
 msgid "Page {page} of {totalPages} ({total} total)"
@@ -2482,6 +2613,10 @@ msgstr "Paragraph"
 #: src/components/input/rich-input.tsx
 msgid "Paragraph and heading style"
 msgstr "Paragraph and heading style"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Parsing the job description"
+msgstr "Parsing the job description"
 
 #. Label for passkey sign-in button
 #: src/features/auth/components/social-auth.tsx
@@ -2518,6 +2653,18 @@ msgstr "Password protection has been disabled."
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "Password protection has been enabled."
 msgstr "Password protection has been enabled."
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Paste a job description to get a detailed match analysis with a score, gaps, and tailored suggestions. To activate this feature, please update your AI settings."
+msgstr "Paste a job description to get a detailed match analysis with a score, gaps, and tailored suggestions. To activate this feature, please update your AI settings."
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Paste a job description to see how well your resume matches it, and get tailored suggestions to make it stand out."
+msgstr "Paste a job description to see how well your resume matches it, and get tailored suggestions to make it stand out."
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Paste the job description here…"
+msgstr "Paste the job description here…"
 
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Patch applied"
@@ -2567,6 +2714,7 @@ msgid "PDF"
 msgstr "PDF"
 
 #: src/routes/dashboard/account.tsx
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 #: src/routes/dashboard/admin/users.tsx
 msgid "Pending"
@@ -2616,9 +2764,17 @@ msgstr "Please enter the password shared with you by the owner of the resume to 
 msgid "Please enter the URL you want to link to:"
 msgstr "Please enter the URL you want to link to:"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Please enter your feedback."
+msgstr "Please enter your feedback."
+
 #: src/features/billing/recharge-dialog.tsx
 msgid "Please scan the code with WeChat to complete the payment."
 msgstr "Please scan the code with WeChat to complete the payment."
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Please sign in to submit feedback."
+msgstr "Please sign in to submit feedback."
 
 #: src/features/resume/export/use-resume-export.ts
 msgid "Please wait while your PDF is being generated..."
@@ -2628,16 +2784,21 @@ msgstr "Please wait while your PDF is being generated..."
 msgid "Please wait while your PDF is being generated…"
 msgstr "Please wait while your PDF is being generated…"
 
+#. Button label to apply an AI polish to a job-match suggestion
 #. Button label to apply an AI polish to a resume suggestion
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Polish"
 msgstr "Polish"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Polished! Keep the changes or restore the original."
 msgstr "Polished! Keep the changes or restore the original."
 
+#. Button label shown while polishing a job-match suggestion
 #. Button label shown while polishing a resume suggestion
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Polishing…"
 msgstr "Polishing…"
@@ -2673,6 +2834,7 @@ msgstr "Presets"
 msgid "Press <0>{RETURN_KEY}</0> or <1>{COMMA_KEY}</1> to add or save the current keyword."
 msgstr "Press <0>{RETURN_KEY}</0> or <1>{COMMA_KEY}</1> to add or save the current keyword."
 
+#: src/features/feedback/image-preview-dialog.tsx
 #: src/routes/builder/$resumeId/-components/mobile-builder-shell.tsx
 msgid "Preview"
 msgstr "Preview"
@@ -2680,6 +2842,15 @@ msgstr "Preview"
 #: src/features/resume/stylesheet/status.tsx
 msgid "Preview and export use the last valid version."
 msgstr "Preview and export use the last valid version."
+
+#: src/features/feedback/feedback-dialog.tsx
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Preview image"
+msgstr "Preview image"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Previous analyses"
+msgstr "Previous analyses"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/design.tsx
 msgid "Primary Color"
@@ -2860,6 +3031,10 @@ msgstr "Remove {chip}"
 msgid "Remove custom field"
 msgstr "Remove custom field"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Remove image"
+msgstr "Remove image"
+
 #: src/components/input/rich-input.tsx
 msgid "Remove link"
 msgstr "Remove link"
@@ -2892,6 +3067,10 @@ msgstr "Reorder custom field"
 msgid "Report an issue"
 msgstr "Report an issue"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Requirement Coverage"
+msgstr "Requirement Coverage"
+
 #. Destructive confirmation button label when resetting a resume section
 #: src/routes/builder/$resumeId/-sidebar/left/shared/section-menu.tsx
 msgid "Reset"
@@ -2915,6 +3094,11 @@ msgstr "Reset your password"
 msgid "Resetting your password..."
 msgstr "Resetting your password..."
 
+#: src/routes/dashboard/admin/feedback.tsx
+#: src/routes/dashboard/admin/users.tsx
+msgid "Resolved"
+msgstr "Resolved"
+
 #: src/routes/_home/-sections/footer.tsx
 msgid "Resources"
 msgstr "Resources"
@@ -2923,6 +3107,7 @@ msgstr "Resources"
 msgid "Restore"
 msgstr "Restore"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Restore original"
 msgstr "Restore original"
@@ -2970,6 +3155,7 @@ msgstr "Resume options"
 msgid "Resume patch"
 msgstr "Resume patch"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Resume polished."
 msgstr "Resume polished."
@@ -3025,6 +3211,10 @@ msgstr "Rotation"
 msgid "Run your first analysis to get a scorecard, strengths, and prioritized suggestions."
 msgstr "Run your first analysis to get a scorecard, strengths, and prioritized suggestions."
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Run your first analysis to see how well your resume matches this job."
+msgstr "Run your first analysis to see how well your resume matches this job."
+
 #: src/routes/dashboard/admin/users.tsx
 msgid "Save"
 msgstr "Save"
@@ -3076,6 +3266,10 @@ msgstr "Scan the code below with WeChat to pay, then upload your payment proof."
 msgid "Scan the QR code below with your preferred authenticator app. You can also copy the secret below and paste it into your app."
 msgstr "Scan the QR code below with your preferred authenticator app. You can also copy the secret below and paste it into your app."
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Scan the QR code to contact the administrator. Click the image to preview."
+msgstr "Scan the QR code to contact the administrator. Click the image to preview."
+
 #: src/dialogs/resume/sections/education.tsx
 msgid "School"
 msgstr "School"
@@ -3087,6 +3281,10 @@ msgstr "Score Distribution"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Scoring each dimension"
 msgstr "Scoring each dimension"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Scoring keyword coverage"
+msgstr "Scoring keyword coverage"
 
 #: src/routes/dashboard/admin/users.tsx
 msgid "Search"
@@ -3339,6 +3537,10 @@ msgstr "Single-column with uppercase section headings and a primary-color top ru
 msgid "Single-column; polished and serious for senior or enterprise-level positions."
 msgstr "Single-column; polished and serious for senior or enterprise-level positions."
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-dimensions.tsx
+msgid "Six-Dimension Analysis"
+msgstr "Six-Dimension Analysis"
+
 #: src/routes/builder/$resumeId/-sidebar/left/sections/picture.tsx
 msgid "Size"
 msgstr "Size"
@@ -3363,17 +3565,26 @@ msgstr "Slug"
 msgid "Something went wrong"
 msgstr "Something went wrong"
 
+#. Fallback error description when job-match analysis request fails
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Something went wrong while analyzing the job description."
+msgstr "Something went wrong while analyzing the job description."
+
 #. Fallback error description when resume analysis request fails
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Something went wrong while analyzing your resume."
 msgstr "Something went wrong while analyzing your resume."
 
+#. Fallback error description when polishing a job-match suggestion fails
 #. Fallback error description when polishing a resume suggestion fails
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Something went wrong while polishing your resume."
 msgstr "Something went wrong while polishing your resume."
 
+#. Fallback error description when restoring a polished job-match suggestion fails
 #. Fallback error description when restoring a polished resume suggestion fails
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Something went wrong while restoring your resume."
 msgstr "Something went wrong while restoring your resume."
@@ -3447,6 +3658,7 @@ msgid "Statistics"
 msgstr "Statistics"
 
 #: src/routes/dashboard/account.tsx
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 #: src/routes/dashboard/admin/users.tsx
 msgid "Status"
@@ -3480,6 +3692,10 @@ msgstr "Stylesheet editor"
 msgid "Stylesheet has errors"
 msgstr "Stylesheet has errors"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Submit Feedback"
+msgstr "Submit Feedback"
+
 #: src/features/billing/recharge-dialog.tsx
 msgid "Submit for Review"
 msgstr "Submit for Review"
@@ -3488,6 +3704,7 @@ msgstr "Submit for Review"
 msgid "Subreddit"
 msgstr "Subreddit"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Suggestions"
 msgstr "Suggestions"
@@ -3567,6 +3784,10 @@ msgstr "Text alignment"
 msgid "Text Color"
 msgstr "Text Color"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Thank you for your feedback!"
+msgstr "Thank you for your feedback!"
+
 #: src/routes/_home/-sections/sponsors.tsx
 msgid "Thank you to our sponsors"
 msgstr "Thank you to our sponsors"
@@ -3575,7 +3796,9 @@ msgstr "Thank you to our sponsors"
 msgid "The agent needs your input."
 msgstr "The agent needs your input."
 
+#. Error description when AI returns invalid job-match analysis format
 #. Error description when AI returns invalid resume analysis format
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "The AI returned an invalid analysis format. Please try again."
 msgstr "The AI returned an invalid analysis format. Please try again."
@@ -3750,6 +3973,10 @@ msgstr "Timelapse demonstration of building a resume with Reactive Resume"
 #: src/dialogs/api-key/create.tsx
 msgid "Tip: Give your API key a name, corresponding to the purpose of the key, to help you identify it later."
 msgstr "Tip: Give your API key a name, corresponding to the purpose of the key, to help you identify it later."
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Tip: Use the suggestions below to weave missing keywords into your existing experience and skills sections — never invent achievements."
+msgstr "Tip: Use the suggestions below to weave missing keywords into your existing experience and skills sections — never invent achievements."
 
 #: src/dialogs/resume/index.tsx
 msgid "Tip: You can name the resume referring to the position you are applying for."
@@ -4006,6 +4233,10 @@ msgstr "Updating your resume..."
 msgid "Upload attachments"
 msgstr "Upload attachments"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Upload image"
+msgstr "Upload image"
+
 #: src/routes/builder/$resumeId/-sidebar/left/sections/picture.tsx
 msgid "Upload picture"
 msgstr "Upload picture"
@@ -4037,6 +4268,7 @@ msgstr "Use"
 msgid "Use color {color}"
 msgstr "Use color {color}"
 
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 msgid "User"
 msgstr "User"
@@ -4045,6 +4277,10 @@ msgstr "User"
 #: src/routes/dashboard/account.tsx
 msgid "User Center"
 msgstr "User Center"
+
+#: src/routes/dashboard/admin/users.tsx
+msgid "User Feedback"
+msgstr "User Feedback"
 
 #: src/routes/dashboard/-components/sidebar.tsx
 #: src/routes/dashboard/admin/users.tsx
@@ -4104,6 +4340,10 @@ msgstr "Version history"
 msgid "View"
 msgstr "View"
 
+#: src/routes/dashboard/admin/users.tsx
+msgid "View Feedback"
+msgstr "View Feedback"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/statistics.tsx
 msgid "Views"
 msgstr "Views"
@@ -4139,6 +4379,10 @@ msgstr "We couldn't find that page"
 msgid "Website"
 msgstr "Website"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Welcome to share product suggestions or report issues. Rich text and images are supported."
+msgstr "Welcome to share product suggestions or report issues. Rich text and images are supported."
+
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "What do you want to do?"
 msgstr "What do you want to do?"
@@ -4150,6 +4394,10 @@ msgstr "What do you want to rename this section to?"
 #: src/routes/_home/-sections/faq.tsx
 msgid "What makes Reactive Resume different from other resume builders?"
 msgstr "What makes Reactive Resume different from other resume builders?"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-summary.tsx
+msgid "What will change"
+msgstr "What will change"
 
 #: src/routes/_home/-sections/hero.tsx
 msgid "What's new in the latest version?"
@@ -4200,7 +4448,13 @@ msgstr "You can also use your username to login."
 msgid "You can share your resume via a unique public URL, protect it with a password, or download it as a PDF to share directly. The choice is yours!"
 msgstr "You can share your resume via a unique public URL, protect it with a password, or download it as a PDF to share directly. The choice is yours!"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "You can upload up to 9 images."
+msgstr "You can upload up to 9 images."
+
 #. Error description when user has exceeded their resume analysis quota
+#. Error description when user has exceeded their resume analysis quota
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "You have exceeded your resume analysis quota."
 msgstr "You have exceeded your resume analysis quota."

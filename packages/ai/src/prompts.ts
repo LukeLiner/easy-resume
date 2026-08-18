@@ -42,11 +42,13 @@ const docxParserSystemPrompt = makeParserPrompt({
 });
 
 const analyzeResumeSystemPrompt = readPrompt("analyze-resume-system.md");
+const analyzeJobMatchSystemPrompt = readPrompt("analyze-job-match-system.md");
 const chatSystemPromptTemplate = readPrompt("chat-system.md");
 const docxParserUserPrompt = readPrompt("docx-parser-user.md");
 const pdfParserUserPrompt = readPrompt("pdf-parser-user.md");
 
 export {
+	analyzeJobMatchSystemPrompt,
 	analyzeResumeSystemPrompt,
 	chatSystemPromptTemplate,
 	docxParserSystemPrompt,

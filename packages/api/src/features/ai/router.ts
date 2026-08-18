@@ -5,6 +5,7 @@ import { type } from "@orpc/server";
 import { AISDKError } from "ai";
 import { flattenError, ZodError, z } from "zod";
 import { storedResumeAnalysisSchema } from "@reactive-resume/schema/resume/analysis";
+import { storedJobMatchAnalysisSchema } from "@reactive-resume/schema/resume/job-match";
 import { protectedProcedure } from "../../context";
 import { aiRequestRateLimit } from "../../middleware/rate-limit";
 import { aiProvidersService } from "../ai-providers/service";
@@ -246,5 +247,107 @@ export const aiRouter = {
 				}
 				throw error;
 			}
+		}),
+
+	analyzeJobMatch: protectedProcedure
+		.route({
+			method: "POST",
+			path: "/ai/analyze-job-match",
+			tags: ["AI"],
+			operationId: "analyzeJobMatch",
+			summary: "Analyze a job description against the resume",
+			description:
+				"Uses AI to compare a pasted job description against the current resume and returns a structured job-match analysis with a six-dimension scorecard, keyword coverage, gaps, and prioritized rewrite suggestions. Each analysis is persisted so the user can review history. Requires authentication and AI credentials.",
+			successDescription: "Structured job-match analysis returned and persisted successfully.",
+		})
+		.input(
+			z.object({
+				aiProviderId: z.string().optional(),
+				resumeId: z.string(),
+				jobDescription: z.string().min(1).max(20000),
+				locale: z.string().optional(),
+			}),
+		)
+		.use(aiRequestRateLimit)
+		.output(
+			z.object({
+				id: z.string(),
+				analysis: storedJobMatchAnalysisSchema,
+				createdAt: z.coerce.date(),
+			}),
+		)
+		.errors({
+			BAD_GATEWAY: { message: "The AI provider returned an error or is unreachable.", status: 502 },
+			BAD_REQUEST: { message: "The AI returned an improperly formatted structure.", status: 400 },
+			PRECONDITION_FAILED: { message: "You have exceeded your resume analysis quota.", status: 429 },
+		})
+		.handler(async ({ context, input }) => {
+			try {
+				await checkResumeAnalysisQuota(context.user.id);
+
+				const [provider, resume] = await Promise.all([
+					getRunnableProvider(input.aiProviderId),
+					resumeService.getById({ id: input.resumeId, userId: context.user.id }),
+				]);
+				const analysis = await aiService.analyzeJobMatch({
+					provider: provider.provider,
+					model: provider.model,
+					apiKey: provider.apiKey,
+					baseURL: provider.baseURL ?? "",
+					jobDescription: input.jobDescription,
+					resumeData: resume.data,
+					...(input.locale ? { locale: input.locale } : {}),
+				});
+
+				await consumeResumeAnalysisQuota(context.user.id);
+
+				return await resumeService.jobAnalysis.create({
+					resumeId: input.resumeId,
+					userId: context.user.id,
+					analysis: {
+						...analysis,
+						jdText: input.jobDescription,
+						updatedAt: new Date(),
+						modelMeta: { provider: provider.provider, model: provider.model },
+					},
+				});
+			} catch (error) {
+				if (isCredentialEncryptionUnavailable(error)) throwCredentialEncryptionUnavailable();
+				if (isInvalidAiBaseUrlError(error)) throwAiProviderConfigError();
+				if (isAiProviderGatewayError(error)) throwAiProviderGatewayError(error);
+				if (error instanceof ZodError) {
+					throw new ORPCError("BAD_REQUEST", {
+						message: "Invalid job-match analysis structure",
+						cause: flattenError(error),
+					});
+				}
+				throw error;
+			}
+		}),
+
+	listJobAnalysis: protectedProcedure
+		.route({
+			method: "GET",
+			path: "/ai/job-analysis/{resumeId}",
+			tags: ["AI"],
+			operationId: "listJobAnalysis",
+			summary: "List persisted job-match analyses for a resume",
+			description:
+				"Returns the most recent job-match analyses for the given resume, newest first. Each entry includes the stored analysis and its creation date. Requires authentication.",
+			successDescription: "Job-match analysis history returned successfully.",
+		})
+		.input(
+			z.object({
+				resumeId: z.string(),
+			}),
+		)
+		.errors({
+			BAD_REQUEST: { message: "Invalid resume id.", status: 400 },
+		})
+		.handler(async ({ context, input }) => {
+			return await resumeService.jobAnalysis.listByResumeId({
+				resumeId: input.resumeId,
+				userId: context.user.id,
+			});
 		}),
 };

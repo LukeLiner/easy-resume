@@ -13,23 +13,16 @@ import { useBuilderSidebar } from "../../-store/sidebar";
 const CustomStylesSectionBuilder = lazy(() =>
 	import("./sections/custom-styles").then((m) => ({ default: m.CustomStylesSectionBuilder })),
 );
-const DesignSectionBuilder = lazy(() =>
-	import("./sections/design").then((m) => ({ default: m.DesignSectionBuilder })),
-);
-const ExportSectionBuilder = lazy(() =>
-	import("./sections/export").then((m) => ({ default: m.ExportSectionBuilder })),
-);
-const LayoutSectionBuilder = lazy(() =>
-	import("./sections/layout").then((m) => ({ default: m.LayoutSectionBuilder })),
-);
-const NotesSectionBuilder = lazy(() =>
-	import("./sections/notes").then((m) => ({ default: m.NotesSectionBuilder })),
-);
-const PageSectionBuilder = lazy(() =>
-	import("./sections/page").then((m) => ({ default: m.PageSectionBuilder })),
-);
+const DesignSectionBuilder = lazy(() => import("./sections/design").then((m) => ({ default: m.DesignSectionBuilder })));
+const ExportSectionBuilder = lazy(() => import("./sections/export").then((m) => ({ default: m.ExportSectionBuilder })));
+const LayoutSectionBuilder = lazy(() => import("./sections/layout").then((m) => ({ default: m.LayoutSectionBuilder })));
+const NotesSectionBuilder = lazy(() => import("./sections/notes").then((m) => ({ default: m.NotesSectionBuilder })));
+const PageSectionBuilder = lazy(() => import("./sections/page").then((m) => ({ default: m.PageSectionBuilder })));
 const ResumeAnalysisSectionBuilder = lazy(() =>
 	import("./sections/resume-analysis").then((m) => ({ default: m.ResumeAnalysisSectionBuilder })),
+);
+const JobRadarSectionBuilder = lazy(() =>
+	import("./sections/job-radar").then((m) => ({ default: m.JobRadarSectionBuilder })),
 );
 const SharingSectionBuilder = lazy(() =>
 	import("./sections/sharing").then((m) => ({ default: m.SharingSectionBuilder })),
@@ -56,6 +49,7 @@ function getSectionComponent(type: RightSidebarSection) {
 		.with("sharing", () => <SharingSectionBuilder />)
 		.with("statistics", () => <StatisticsSectionBuilder />)
 		.with("analysis", () => <ResumeAnalysisSectionBuilder />)
+		.with("job-radar", () => <JobRadarSectionBuilder />)
 		.with("export", () => <ExportSectionBuilder />)
 		.exhaustive();
 }
@@ -86,9 +80,7 @@ export function BuilderSidebarRightContent({ sections = rightSidebarSections }: 
 		<div className="space-y-4 p-4">
 			{sections.map((section) => (
 				<Fragment key={section}>
-					<Suspense fallback={<SectionSkeleton />}>
-						{getSectionComponent(section)}
-					</Suspense>
+					<Suspense fallback={<SectionSkeleton />}>{getSectionComponent(section)}</Suspense>
 					<Separator />
 				</Fragment>
 			))}

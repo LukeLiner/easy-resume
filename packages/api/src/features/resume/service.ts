@@ -1,6 +1,7 @@
 import type { JsonPatchOperation } from "@reactive-resume/resume/patch";
 import type { StoredResumeAnalysis } from "@reactive-resume/schema/resume/analysis";
 import type { ResumeData } from "@reactive-resume/schema/resume/data";
+import type { StoredJobMatchAnalysis } from "@reactive-resume/schema/resume/job-match";
 import type { Locale } from "@reactive-resume/utils/locale";
 import type { ResumeUpdatedEvent } from "./events";
 import { ORPCError } from "@orpc/client";
@@ -395,6 +396,53 @@ const analysis = {
 	},
 };
 
+const jobAnalysis = {
+	create: async (input: { resumeId: string; userId: string; analysis: StoredJobMatchAnalysis }) => {
+		const [resume] = await db
+			.select({ id: schema.resume.id })
+			.from(schema.resume)
+			.where(and(eq(schema.resume.id, input.resumeId), eq(schema.resume.userId, input.userId)));
+
+		if (!resume) throw new ORPCError("NOT_FOUND");
+
+		const [result] = await db
+			.insert(schema.jobAnalysis)
+			.values({
+				resumeId: input.resumeId,
+				analysis: input.analysis,
+			})
+			.returning({
+				id: schema.jobAnalysis.id,
+				analysis: schema.jobAnalysis.analysis,
+				createdAt: schema.jobAnalysis.createdAt,
+			});
+
+		if (!result) throw new ORPCError("INTERNAL_SERVER_ERROR");
+
+		return result;
+	},
+
+	listByResumeId: async (input: { resumeId: string; userId: string }) => {
+		const [resume] = await db
+			.select({ id: schema.resume.id })
+			.from(schema.resume)
+			.where(and(eq(schema.resume.id, input.resumeId), eq(schema.resume.userId, input.userId)));
+
+		if (!resume) throw new ORPCError("NOT_FOUND");
+
+		return db
+			.select({
+				id: schema.jobAnalysis.id,
+				analysis: schema.jobAnalysis.analysis,
+				createdAt: schema.jobAnalysis.createdAt,
+			})
+			.from(schema.jobAnalysis)
+			.where(eq(schema.jobAnalysis.resumeId, input.resumeId))
+			.orderBy(desc(schema.jobAnalysis.createdAt))
+			.limit(20);
+	},
+};
+
 function toSharedResumeResponse(
 	resume: {
 		id: string;
@@ -433,6 +481,7 @@ export const resumeService = {
 	tags,
 	statistics,
 	analysis,
+	jobAnalysis,
 
 	versions: {
 		list: async (input: { resumeId: string; userId: string }) => {

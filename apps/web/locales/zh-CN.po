@@ -20,6 +20,11 @@ msgstr ""
 
 #. js-lingui-explicit-id
 #: src/routes/dashboard/admin/users.tsx
+msgid "Feedback status updated"
+msgstr ""
+
+#. js-lingui-explicit-id
+#: src/routes/dashboard/admin/users.tsx
 msgid "User deleted successfully"
 msgstr ""
 
@@ -131,7 +136,6 @@ msgstr "6 个月"
 msgid "A free and open-source resume builder that simplifies the process of creating, updating, and sharing your resume."
 msgstr "一款免费开源的简历生成器，可简化创建、更新和分享简历的过程。"
 
-#: src/routes/builder/$resumeId/-components/dock.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "A link to your resume has been copied to clipboard."
 msgstr "已将你的简历链接复制到剪贴板。"
@@ -165,6 +169,7 @@ msgstr ""
 msgid "Account menu"
 msgstr "帐户菜单"
 
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 #: src/routes/dashboard/admin/users.tsx
 #: src/routes/dashboard/resumes/-components/list-view.tsx
@@ -254,6 +259,10 @@ msgstr "添加新技能"
 msgid "Add a new volunteer experience"
 msgstr "添加新的志愿者经历"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Add Admin WeChat"
+msgstr "添加管理员微信"
+
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Add and test a provider before starting an agent thread."
 msgstr "开始对话之前，请先添加并测试提供商。"
@@ -291,9 +300,17 @@ msgstr "调整简历，使其更适合远程优先、重视异步沟通和自主
 msgid "Admin"
 msgstr ""
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Admin WeChat QR code"
+msgstr "管理员微信二维码"
+
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Advanced"
 msgstr "先进的"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-summary.tsx
+msgid "After"
+msgstr "优化后"
 
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Agent ready"
@@ -335,6 +352,10 @@ msgstr "人工智能提供商"
 msgid "AI providers require REDIS_URL and ENCRYPTION_SECRET to be configured."
 msgstr "AI 提供商需要配置 REDIS_URL 和 ENCRYPTION_SECRET。"
 
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "All"
+msgstr "全部"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "Allow Public Access"
 msgstr "允许公开访问"
@@ -362,10 +383,15 @@ msgstr "页面加载出现意外错误，您可以重试或返回。"
 msgid "An unknown error occurred while importing your resume."
 msgstr "导入你的简历时发生未知错误。"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Analyze Job Match"
+msgstr "分析职位匹配度"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Analyze Resume"
 msgstr "分析简历"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Analyzing…"
 msgstr "分析…"
@@ -555,6 +581,10 @@ msgstr "基础"
 #: src/routes/_home/-sections/features.tsx
 msgid "Beautiful templates to choose from, with more on the way."
 msgstr "提供多款精美模板供你选择，并且还会不断增加。"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-summary.tsx
+msgid "Before"
+msgstr "优化前"
 
 #: src/features/resume/export/download-dialog.tsx
 msgid "Best for applications, sharing, and printing."
@@ -752,6 +782,10 @@ msgstr "公司"
 msgid "Compare this resume against this role URL and update keywords while keeping the voice concise and credible."
 msgstr "将此简历与此职位网址进行比较，更新关键词，同时保持语言简洁可信。"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Comparing skills & experience"
+msgstr "对比技能与经验"
+
 #: src/routes/_home/-sections/features.tsx
 msgid "Completely free, forever, no hidden costs."
 msgstr "完全免费，永久免费，没有任何隐藏费用。"
@@ -781,6 +815,8 @@ msgstr "连接已验证——服务提供商已准备就绪。"
 
 #: src/dialogs/resume/sections/cover-letter.tsx
 #: src/dialogs/resume/sections/summary-item.tsx
+#: src/features/feedback/feedback-dialog.tsx
+#: src/routes/dashboard/admin/feedback.tsx
 msgid "Content"
 msgstr "内容"
 
@@ -841,14 +877,15 @@ msgstr "复制样式表"
 msgid "Copy this secret key and use it in your applications to access your data."
 msgstr "复制此密钥，并在你的应用程序中使用它来访问你的数据。"
 
-#: src/routes/builder/$resumeId/-components/dock.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "Copy URL"
 msgstr "复制 URL"
 
+#. Error description when AI provider cannot be reached during job-match analysis
 #. Error description when AI provider cannot be reached during resume analysis
 #. Error shown when AI provider is unreachable during PDF/DOCX resume import
 #: src/dialogs/resume/import.tsx
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Could not reach the AI provider. Please try again."
 msgstr "无法联系人工智能提供商。请重试。"
@@ -881,6 +918,10 @@ msgstr "求职信"
 #: src/routes/builder/$resumeId/-sidebar/left/sections/custom.tsx
 msgid "Cover Letter"
 msgstr "求职信"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Covered"
+msgstr "已覆盖"
 
 #. Create API key dialog submit action
 #: src/dialogs/api-key/create.tsx
@@ -1000,6 +1041,7 @@ msgstr "现在就创建一个"
 msgid "Create resume with options"
 msgstr "创建带有选项的简历"
 
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 #: src/routes/dashboard/admin/users.tsx
 #: src/routes/dashboard/resumes/-components/list-view.tsx
@@ -1412,6 +1454,10 @@ msgstr "立即将简历导出为PDF格式，无需等待或延迟。"
 msgid "Failed"
 msgstr ""
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Failed to analyze job description."
+msgstr "职位描述分析失败。"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Failed to analyze resume."
 msgstr "简历分析失败。"
@@ -1450,6 +1496,7 @@ msgstr "禁用双因素身份验证失败。请重试。"
 msgid "Failed to enable two-factor authentication. Please try again."
 msgstr "启用双因素身份验证失败。请重试。"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Failed to polish resume."
 msgstr "润色简历失败。"
@@ -1459,6 +1506,7 @@ msgstr "润色简历失败。"
 msgid "Failed to reset your password. Please try again."
 msgstr "重置密码失败。请重试。"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Failed to restore original content."
 msgstr "恢复原始内容失败。"
@@ -1535,6 +1583,23 @@ msgstr "验证您的代码失败。请重试。"
 msgid "Features"
 msgstr "功能"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Feedback"
+msgstr "反馈"
+
+#: src/routes/dashboard/-components/sidebar.tsx
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Feedback Records"
+msgstr "反馈记录"
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Feedback status updated."
+msgstr "反馈状态已更新。"
+
+#: src/routes/dashboard/admin/users.tsx
+msgid "Feedback submitted by <0>{userName}</0>."
+msgstr ""
+
 #: src/dialogs/resume/import.tsx
 msgid "File"
 msgstr "文件"
@@ -1543,6 +1608,7 @@ msgstr "文件"
 msgid "Filter by"
 msgstr "筛选条件"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Finalizing the report"
 msgstr "正在生成最终报告"
@@ -1642,6 +1708,10 @@ msgstr "全屏编辑器"
 #: src/dialogs/resume/index.tsx
 msgid "Generate a random name"
 msgstr "生成一个随机名称"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Generating rewrite suggestions"
+msgstr "生成改写建议"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Generating suggestions"
@@ -1813,7 +1883,10 @@ msgstr "隐藏版块图标"
 msgid "High"
 msgstr "高"
 
+#. Label for high-impact job-match suggestions
+#. Legend label for high-impact job-match suggestions
 #. Legend label for high-impact resume suggestions
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "High impact"
 msgstr "高影响"
@@ -1850,6 +1923,15 @@ msgstr "图标"
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Identify gaps for an applicant tracking system and apply only high-confidence keyword improvements."
 msgstr "找出应聘者追踪系统中的不足之处，并仅应用高置信度的关键词改进。"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Image uploaded successfully."
+msgstr "图片上传成功。"
+
+#: src/features/feedback/feedback-dialog.tsx
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Images"
+msgstr "图片"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Impact & Quantification"
@@ -1937,6 +2019,15 @@ msgstr "签发机构"
 msgid "Italic"
 msgstr "斜体"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Job match analysis complete."
+msgstr "职位匹配分析已完成。"
+
+#: src/libs/resume/section.tsx
+#: src/routes/builder/$resumeId/-components/combined-sidebar.tsx
+msgid "Job Radar"
+msgstr ""
+
 #. Example full name placeholder on registration form
 #: src/features/auth/pages/register.tsx
 msgid "John Doe"
@@ -1965,6 +2056,7 @@ msgstr "JSON 简历"
 msgid "Justify Align"
 msgstr "两端对齐"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Keep changes"
 msgstr "保留修改"
@@ -1977,6 +2069,10 @@ msgstr "保持团结"
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Key"
 msgstr "钥匙"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Keyword"
+msgstr "关键词"
 
 #: src/dialogs/resume/sections/interest.tsx
 #: src/dialogs/resume/sections/skill.tsx
@@ -2154,7 +2250,10 @@ msgstr "无法使用验证器应用？"
 msgid "Low"
 msgstr "低"
 
+#. Label for low-impact job-match suggestions
+#. Legend label for low-impact job-match suggestions
 #. Legend label for low-impact resume suggestions
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Low impact"
 msgstr "低影响"
@@ -2184,12 +2283,27 @@ msgstr "页边距（水平）"
 msgid "Margin (Vertical)"
 msgstr "页边距（垂直）"
 
+#: src/routes/dashboard/admin/users.tsx
+msgid "Mark as Resolved"
+msgstr ""
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-dimensions.tsx
+msgid "Match score"
+msgstr "匹配分数"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Matched"
+msgstr "已匹配"
+
 #. Impact severity label in resume analysis suggestion card
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Medium"
 msgstr "中"
 
+#. Label for medium-impact job-match suggestions
+#. Legend label for medium-impact job-match suggestions
 #. Legend label for medium-impact resume suggestions
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Medium impact"
 msgstr "中影响"
@@ -2199,6 +2313,10 @@ msgstr "中影响"
 #: src/dialogs/resume/import.tsx
 msgid "Microsoft Word"
 msgstr "Microsoft Word"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Missing or weak"
+msgstr "缺失或薄弱"
 
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "Missing working resume"
@@ -2280,6 +2398,7 @@ msgstr "新对话"
 msgid "No Advertising, No Tracking"
 msgstr "无广告，无跟踪"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "No changes were needed for this suggestion."
 msgstr "这条建议无需修改。"
@@ -2291,6 +2410,14 @@ msgstr "人工智能提供商没有返回任何数据。"
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "No exception logs found."
+msgstr ""
+
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "No feedback records found."
+msgstr "未找到反馈记录。"
+
+#: src/routes/dashboard/admin/users.tsx
+msgid "No feedback submitted by this user yet."
 msgstr ""
 
 #: src/routes/dashboard/admin/payments.tsx
@@ -2365,6 +2492,7 @@ msgstr "仅接受 ¥{minRechargeYuan} 的整数倍。"
 
 #. Resume card context menu action to open the resume editor
 #. Resume card dropdown action to open the resume editor
+#: src/routes/dashboard/admin/users.tsx
 #: src/routes/dashboard/resumes/-components/menus/context-menu.tsx
 #: src/routes/dashboard/resumes/-components/menus/dropdown-menu.tsx
 msgid "Open"
@@ -2391,6 +2519,7 @@ msgstr "打开对焦模式"
 msgid "Open in builder"
 msgstr "在简历编辑器中打开"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Open Integrations Settings"
 msgstr "打开集成设置"
@@ -2446,6 +2575,7 @@ msgstr ""
 msgid "Organization"
 msgstr "组织"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Original content restored."
 msgstr "已恢复原始内容。"
@@ -2471,6 +2601,7 @@ msgid "Page {0}"
 msgstr "第 {0} 页"
 
 #: src/routes/dashboard/account.tsx
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 #: src/routes/dashboard/admin/users.tsx
 msgid "Page {page} of {totalPages} ({total} total)"
@@ -2487,6 +2618,10 @@ msgstr "段落"
 #: src/components/input/rich-input.tsx
 msgid "Paragraph and heading style"
 msgstr "段落和标题样式"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Parsing the job description"
+msgstr "解析职位描述"
 
 #. Label for passkey sign-in button
 #: src/features/auth/components/social-auth.tsx
@@ -2523,6 +2658,18 @@ msgstr "密码保护已被禁用。"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "Password protection has been enabled."
 msgstr "密码保护已启用。"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Paste a job description to get a detailed match analysis with a score, gaps, and tailored suggestions. To activate this feature, please update your AI settings."
+msgstr "粘贴职位描述，即可获得包含评分、差距与定制化建议的详细匹配分析。如需启用该功能，请先更新你的 AI 设置。"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Paste a job description to see how well your resume matches it, and get tailored suggestions to make it stand out."
+msgstr "粘贴职位描述，查看你的简历与之匹配程度，并获得针对性建议，让你的简历脱颖而出。"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Paste the job description here…"
+msgstr "在此粘贴职位描述……"
 
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Patch applied"
@@ -2572,10 +2719,11 @@ msgid "PDF"
 msgstr "PDF"
 
 #: src/routes/dashboard/account.tsx
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 #: src/routes/dashboard/admin/users.tsx
 msgid "Pending"
-msgstr "待审核"
+msgstr "待处理"
 
 #: src/dialogs/resume/sections/education.tsx
 #: src/dialogs/resume/sections/experience.tsx
@@ -2621,9 +2769,17 @@ msgstr "请输入简历所有者与你共享的密码以继续。"
 msgid "Please enter the URL you want to link to:"
 msgstr "请输入你想要链接到的 URL："
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Please enter your feedback."
+msgstr "请输入反馈内容。"
+
 #: src/features/billing/recharge-dialog.tsx
 msgid "Please scan the code with WeChat to complete the payment."
 msgstr "请使用微信扫描二维码完成支付。"
+
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Please sign in to submit feedback."
+msgstr "请先登录后再提交反馈。"
 
 #: src/features/resume/export/use-resume-export.ts
 msgid "Please wait while your PDF is being generated..."
@@ -2633,19 +2789,24 @@ msgstr "正在生成 PDF，请稍候…"
 msgid "Please wait while your PDF is being generated…"
 msgstr "请稍候，您的PDF文件正在生成中…"
 
+#. Button label to apply an AI polish to a job-match suggestion
 #. Button label to apply an AI polish to a resume suggestion
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Polish"
 msgstr "一键润色"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Polished! Keep the changes or restore the original."
 msgstr "已润色！你可以保留修改，或恢复原始内容。"
 
+#. Button label shown while polishing a job-match suggestion
 #. Button label shown while polishing a resume suggestion
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Polishing…"
-msgstr ""
+msgstr "优化中……"
 
 #. Preset button for setting picture aspect ratio to portrait orientation
 #: src/routes/builder/$resumeId/-sidebar/left/sections/picture.tsx
@@ -2678,6 +2839,7 @@ msgstr "预设"
 msgid "Press <0>{RETURN_KEY}</0> or <1>{COMMA_KEY}</1> to add or save the current keyword."
 msgstr "按下<0>{RETURN_KEY}</0>或<1>{COMMA_KEY}</1>以添加或保存当前关键词。"
 
+#: src/features/feedback/image-preview-dialog.tsx
 #: src/routes/builder/$resumeId/-components/mobile-builder-shell.tsx
 msgid "Preview"
 msgstr "预览"
@@ -2685,6 +2847,15 @@ msgstr "预览"
 #: src/features/resume/stylesheet/status.tsx
 msgid "Preview and export use the last valid version."
 msgstr "预览和导出时请使用最新有效版本。"
+
+#: src/features/feedback/feedback-dialog.tsx
+#: src/routes/dashboard/admin/feedback.tsx
+msgid "Preview image"
+msgstr "预览图片"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Previous analyses"
+msgstr "历史分析"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/design.tsx
 msgid "Primary Color"
@@ -2865,6 +3036,10 @@ msgstr "移除 {chip}"
 msgid "Remove custom field"
 msgstr "移除自定义字段"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Remove image"
+msgstr "移除图片"
+
 #: src/components/input/rich-input.tsx
 msgid "Remove link"
 msgstr "移除链接"
@@ -2897,6 +3072,10 @@ msgstr "重新排序自定义字段"
 msgid "Report an issue"
 msgstr "报告问题"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Requirement Coverage"
+msgstr "要求覆盖情况"
+
 #. Destructive confirmation button label when resetting a resume section
 #: src/routes/builder/$resumeId/-sidebar/left/shared/section-menu.tsx
 msgid "Reset"
@@ -2920,6 +3099,11 @@ msgstr "重置密码"
 msgid "Resetting your password..."
 msgstr "正在重置你的密码…"
 
+#: src/routes/dashboard/admin/feedback.tsx
+#: src/routes/dashboard/admin/users.tsx
+msgid "Resolved"
+msgstr "已处理"
+
 #: src/routes/_home/-sections/footer.tsx
 msgid "Resources"
 msgstr "资源"
@@ -2928,6 +3112,7 @@ msgstr "资源"
 msgid "Restore"
 msgstr "恢复"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Restore original"
 msgstr "恢复原始内容"
@@ -2975,6 +3160,7 @@ msgstr "简历选项"
 msgid "Resume patch"
 msgstr "恢复补丁"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Resume polished."
 msgstr "简历已润色。"
@@ -3030,6 +3216,10 @@ msgstr "旋转"
 msgid "Run your first analysis to get a scorecard, strengths, and prioritized suggestions."
 msgstr "进行首次分析，以获得记分卡、优势和优先建议。"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Run your first analysis to see how well your resume matches this job."
+msgstr "运行首次分析，查看你的简历与该职位的匹配程度。"
+
 #: src/routes/dashboard/admin/users.tsx
 msgid "Save"
 msgstr "节省"
@@ -3081,6 +3271,10 @@ msgstr "请使用微信扫描下方二维码付款，然后上传付款凭证。
 msgid "Scan the QR code below with your preferred authenticator app. You can also copy the secret below and paste it into your app."
 msgstr "使用你偏好的验证器应用扫描下方二维码。你也可以复制下面的密钥并粘贴到应用中。"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Scan the QR code to contact the administrator. Click the image to preview."
+msgstr "扫码联系管理员，点击图片可预览。"
+
 #: src/dialogs/resume/sections/education.tsx
 msgid "School"
 msgstr "学校"
@@ -3092,6 +3286,10 @@ msgstr "分数分布"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Scoring each dimension"
 msgstr "正在对各维度评分"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Scoring keyword coverage"
+msgstr "评估关键词覆盖"
 
 #: src/routes/dashboard/admin/users.tsx
 msgid "Search"
@@ -3344,6 +3542,10 @@ msgstr "单栏格式，每页标题采用大写字母，顶部有主色线条；
 msgid "Single-column; polished and serious for senior or enterprise-level positions."
 msgstr "单栏布局；风格精致严肃，适合高级或企业级职位。"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-dimensions.tsx
+msgid "Six-Dimension Analysis"
+msgstr "六维分析"
+
 #: src/routes/builder/$resumeId/-sidebar/left/sections/picture.tsx
 msgid "Size"
 msgstr "大小"
@@ -3368,20 +3570,29 @@ msgstr "短链接"
 msgid "Something went wrong"
 msgstr "出问题了"
 
+#. Fallback error description when job-match analysis request fails
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Something went wrong while analyzing the job description."
+msgstr "分析职位描述时出错。"
+
 #. Fallback error description when resume analysis request fails
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Something went wrong while analyzing your resume."
 msgstr "在分析您的简历时出了问题。"
 
+#. Fallback error description when polishing a job-match suggestion fails
 #. Fallback error description when polishing a resume suggestion fails
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Something went wrong while polishing your resume."
 msgstr "润色简历时出错了。"
 
+#. Fallback error description when restoring a polished job-match suggestion fails
 #. Fallback error description when restoring a polished resume suggestion fails
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Something went wrong while restoring your resume."
-msgstr ""
+msgstr "恢复简历时出错。"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/sharing.tsx
 msgid "Something went wrong. Please try again."
@@ -3452,6 +3663,7 @@ msgid "Statistics"
 msgstr "统计数据"
 
 #: src/routes/dashboard/account.tsx
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 #: src/routes/dashboard/admin/users.tsx
 msgid "Status"
@@ -3485,6 +3697,10 @@ msgstr "样式表编辑器"
 msgid "Stylesheet has errors"
 msgstr "样式表存在错误"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Submit Feedback"
+msgstr "提交反馈"
+
 #: src/features/billing/recharge-dialog.tsx
 msgid "Submit for Review"
 msgstr "提交审核"
@@ -3493,6 +3709,7 @@ msgstr "提交审核"
 msgid "Subreddit"
 msgstr "Subreddit 论坛"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Suggestions"
 msgstr "建议"
@@ -3572,6 +3789,10 @@ msgstr "文本对齐"
 msgid "Text Color"
 msgstr "文本颜色"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Thank you for your feedback!"
+msgstr "感谢您的反馈！"
+
 #: src/routes/_home/-sections/sponsors.tsx
 msgid "Thank you to our sponsors"
 msgstr "感谢我们的赞助商"
@@ -3580,7 +3801,9 @@ msgstr "感谢我们的赞助商"
 msgid "The agent needs your input."
 msgstr "经纪人需要您的意见。"
 
+#. Error description when AI returns invalid job-match analysis format
 #. Error description when AI returns invalid resume analysis format
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "The AI returned an invalid analysis format. Please try again."
 msgstr "人工智能返回的分析格式无效。请重试。"
@@ -3755,6 +3978,10 @@ msgstr "使用 Reactive Resume 构建简历的延时演示"
 #: src/dialogs/api-key/create.tsx
 msgid "Tip: Give your API key a name, corresponding to the purpose of the key, to help you identify it later."
 msgstr "提示：请为你的 API key 取一个名称，与它的用途相对应，方便你以后识别。"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-gaps.tsx
+msgid "Tip: Use the suggestions below to weave missing keywords into your existing experience and skills sections — never invent achievements."
+msgstr "提示：使用下方建议，将缺失关键词融入你已有的经历与技能模块——切勿虚构成果。"
 
 #: src/dialogs/resume/index.tsx
 msgid "Tip: You can name the resume referring to the position you are applying for."
@@ -4011,6 +4238,10 @@ msgstr "正在更新你的简历…"
 msgid "Upload attachments"
 msgstr "上传附件"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Upload image"
+msgstr "上传图片"
+
 #: src/routes/builder/$resumeId/-sidebar/left/sections/picture.tsx
 msgid "Upload picture"
 msgstr "上传图片"
@@ -4042,6 +4273,7 @@ msgstr "使用"
 msgid "Use color {color}"
 msgstr "使用颜色 {color}"
 
+#: src/routes/dashboard/admin/feedback.tsx
 #: src/routes/dashboard/admin/payments.tsx
 msgid "User"
 msgstr ""
@@ -4050,6 +4282,10 @@ msgstr ""
 #: src/routes/dashboard/account.tsx
 msgid "User Center"
 msgstr "用户中心"
+
+#: src/routes/dashboard/admin/users.tsx
+msgid "User Feedback"
+msgstr ""
 
 #: src/routes/dashboard/-components/sidebar.tsx
 #: src/routes/dashboard/admin/users.tsx
@@ -4109,6 +4345,10 @@ msgstr "版本历史记录"
 msgid "View"
 msgstr ""
 
+#: src/routes/dashboard/admin/users.tsx
+msgid "View Feedback"
+msgstr ""
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/statistics.tsx
 msgid "Views"
 msgstr "查看"
@@ -4127,95 +4367,6 @@ msgstr "与前 30 天相比"
 msgid "We couldn't detect the format automatically — please choose it above."
 msgstr "我们无法自动检测格式——请在上方选择格式。"
 
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Add Admin WeChat"
-msgstr "添加管理员微信"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Admin WeChat QR code"
-msgstr "管理员微信二维码"
-
-#: src/routes/dashboard/admin/feedback.tsx
-msgid "All"
-msgstr "全部"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Feedback"
-msgstr "反馈"
-
-#: src/routes/dashboard/admin/feedback.tsx
-#: src/routes/dashboard/-components/sidebar.tsx
-msgid "Feedback Records"
-msgstr "反馈记录"
-
-#: src/routes/dashboard/admin/feedback.tsx
-msgid "Feedback status updated."
-msgstr "反馈状态已更新。"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Image uploaded successfully."
-msgstr "图片上传成功。"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Images"
-msgstr "图片"
-
-#: src/routes/dashboard/admin/feedback.tsx
-msgid "No feedback records found."
-msgstr "未找到反馈记录。"
-
-#: src/routes/dashboard/admin/feedback.tsx
-msgid "Page {page} of {totalPages} ({total} total)"
-msgstr "第 {page} 页，共 {totalPages} 页（共 {total} 条）"
-
-#: src/routes/dashboard/admin/feedback.tsx
-msgid "Pending"
-msgstr "待处理"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Please enter your feedback."
-msgstr "请输入反馈内容。"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Please sign in to submit feedback."
-msgstr "请先登录后再提交反馈。"
-
-#: src/routes/dashboard/admin/feedback.tsx
-msgid "Preview image"
-msgstr "预览图片"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Remove image"
-msgstr "移除图片"
-
-#: src/routes/dashboard/admin/feedback.tsx
-msgid "Resolved"
-msgstr "已处理"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Scan the QR code to contact the administrator. Click the image to preview."
-msgstr "扫码联系管理员，点击图片可预览。"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Submit Feedback"
-msgstr "提交反馈"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Thank you for your feedback!"
-msgstr "感谢您的反馈！"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Upload image"
-msgstr "上传图片"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "Welcome to share product suggestions or report issues. Rich text and images are supported."
-msgstr "欢迎分享产品建议或反馈问题，支持富文本和图片。"
-
-#: src/features/feedback/feedback-dialog.tsx
-msgid "You can upload up to 9 images."
-msgstr "最多可上传 9 张图片。"
-
 #: src/components/layout/not-found-screen.tsx
 msgid "We couldn't find that page"
 msgstr "我们找不到那一页"
@@ -4233,6 +4384,10 @@ msgstr "我们找不到那一页"
 msgid "Website"
 msgstr "网站"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "Welcome to share product suggestions or report issues. Rich text and images are supported."
+msgstr "欢迎分享产品建议或反馈问题，支持富文本和图片。"
+
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "What do you want to do?"
 msgstr "你想让我做什么？"
@@ -4244,6 +4399,10 @@ msgstr "你想把这个章节重命名为什么？"
 #: src/routes/_home/-sections/faq.tsx
 msgid "What makes Reactive Resume different from other resume builders?"
 msgstr "是什么让 Reactive Resume 与其他简历生成器与众不同？"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-summary.tsx
+msgid "What will change"
+msgstr "改动前后对比"
 
 #: src/routes/_home/-sections/hero.tsx
 msgid "What's new in the latest version?"
@@ -4294,10 +4453,16 @@ msgstr "你也可以使用用户名登录。"
 msgid "You can share your resume via a unique public URL, protect it with a password, or download it as a PDF to share directly. The choice is yours!"
 msgstr "你可以通过唯一的公共 URL 分享你的简历，用密码保护它，或者下载为 PDF 直接分享，一切由你决定！"
 
+#: src/features/feedback/feedback-dialog.tsx
+msgid "You can upload up to 9 images."
+msgstr "最多可上传 9 张图片。"
+
 #. Error description when user has exceeded their resume analysis quota
+#. Error description when user has exceeded their resume analysis quota
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "You have exceeded your resume analysis quota."
-msgstr ""
+msgstr "你的简历分析次数已用尽。"
 
 #: src/hooks/use-form-blocker.tsx
 msgid "You have unsaved changes that will be lost."

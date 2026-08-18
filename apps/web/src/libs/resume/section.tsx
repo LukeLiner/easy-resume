@@ -10,6 +10,7 @@ import {
 	ChartLineIcon,
 	CodeSimpleIcon,
 	CompassToolIcon,
+	CrosshairIcon,
 	DiamondsFourIcon,
 	DownloadIcon,
 	EnvelopeSimpleIcon,
@@ -52,6 +53,7 @@ export type RightSidebarSection =
 	| "sharing"
 	| "statistics"
 	| "analysis"
+	| "job-radar"
 	| "export";
 
 export type SidebarSection = LeftSidebarSection | RightSidebarSection;
@@ -84,6 +86,7 @@ export const rightSidebarSections: RightSidebarSection[] = [
 	"page",
 	"notes",
 	"analysis",
+	"job-radar",
 ] as const;
 
 export const getSectionTitle = (type: SidebarSection | CustomOnlyType): string => {
@@ -121,6 +124,7 @@ export const getSectionTitle = (type: SidebarSection | CustomOnlyType): string =
 			.with("sharing", () => t`Sharing`)
 			.with("statistics", () => t`Statistics`)
 			.with("analysis", () => t`Resume Analysis`)
+			.with("job-radar", () => t`Job Radar`)
 			.with("export", () => t`Export`)
 
 			.exhaustive()
@@ -164,6 +168,7 @@ export const getSectionIcon = (type: SidebarSection | CustomOnlyType, props?: Ic
 			.with("sharing", () => <ShareFatIcon {...iconProps} />)
 			.with("statistics", () => <ChartLineIcon {...iconProps} />)
 			.with("analysis", () => <BrainIcon {...iconProps} />)
+			.with("job-radar", () => <CrosshairIcon {...iconProps} />)
 			.with("export", () => <DownloadIcon {...iconProps} />)
 
 			.exhaustive()

@@ -19,10 +19,14 @@ import { BuilderSidebarRightContent } from "../-sidebar/right";
 import { useBuilderSidebar } from "../-store/sidebar";
 import { BuilderSidebarEdge } from "./edge";
 
-type BuilderSidebarTab = "content" | "design" | "analysis";
+type BuilderSidebarTab = "content" | "design" | "analysis" | "job-radar";
 
 const ResumeAnalysisSectionBuilder = lazy(() =>
 	import("../-sidebar/right/sections/resume-analysis").then((m) => ({ default: m.ResumeAnalysisSectionBuilder })),
+);
+
+const JobRadarSectionBuilder = lazy(() =>
+	import("../-sidebar/right/sections/job-radar").then((m) => ({ default: m.JobRadarSectionBuilder })),
 );
 
 const leftSectionSet = new Set<string>(leftSidebarSections);
@@ -74,7 +78,13 @@ export function BuilderSidebarCombined() {
 	const scrollToSection = useCallback(
 		(section: SidebarSection) => {
 			toggleSidebar("left", true);
-			setActiveTab(section === "analysis" ? "analysis" : leftSectionSet.has(section) ? "content" : "design");
+			setActiveTab(
+				section === "analysis" || section === "job-radar"
+					? section
+					: leftSectionSet.has(section)
+						? "content"
+						: "design",
+			);
 
 			// Section ids are globally unique; defer scrolling until the active tab has rendered.
 			requestAnimationFrame(() => {
@@ -130,7 +140,7 @@ export function BuilderSidebarCombined() {
 			<div className="flex h-[calc(100svh-3.5rem)] min-w-0 flex-col bg-background sm:ms-12">
 				<div className="border-b p-2">
 					<Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as BuilderSidebarTab)}>
-						<TabsList className="grid w-full grid-cols-3">
+						<TabsList className="grid w-full grid-cols-4">
 							<TabsTrigger value="content">
 								<Trans>Edit</Trans>
 							</TabsTrigger>
@@ -140,15 +150,20 @@ export function BuilderSidebarCombined() {
 							<TabsTrigger value="analysis">
 								<Trans>Resume Analysis</Trans>
 							</TabsTrigger>
+							<TabsTrigger value="job-radar">
+								<Trans>Job Radar</Trans>
+							</TabsTrigger>
 						</TabsList>
 					</Tabs>
 				</div>
 
 				{activeTab === "design" ? (
 					// Design 页由内层组件（如 CSS 编辑器）各自负责滚动，外层隐藏滚动条避免双滚动条。
-					<div className="@container min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+					<div className="@container min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 						<BuilderSidebarRightContent
-							sections={rightSidebarSections.filter((section: RightSidebarSection) => section !== "analysis")}
+							sections={rightSidebarSections.filter(
+								(section: RightSidebarSection) => section !== "analysis" && section !== "job-radar",
+							)}
 						/>
 					</div>
 				) : (
@@ -156,6 +171,10 @@ export function BuilderSidebarCombined() {
 						{activeTab === "analysis" ? (
 							<Suspense fallback={<Skeleton className="h-32 w-full" />}>
 								<ResumeAnalysisSectionBuilder />
+							</Suspense>
+						) : activeTab === "job-radar" ? (
+							<Suspense fallback={<Skeleton className="h-32 w-full" />}>
+								<JobRadarSectionBuilder />
 							</Suspense>
 						) : (
 							<PreviewRenderGate>

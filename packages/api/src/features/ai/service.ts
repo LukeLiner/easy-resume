@@ -1,6 +1,7 @@
 import type { AIProvider } from "@reactive-resume/ai/types";
 import type { ResumeAnalysis } from "@reactive-resume/schema/resume/analysis";
 import type { ResumeData } from "@reactive-resume/schema/resume/data";
+import type { JobMatchAnalysis } from "@reactive-resume/schema/resume/job-match";
 import type { ModelMessage, UIMessage } from "ai";
 import { inflateRawSync } from "node:zlib";
 import { createAnthropic } from "@ai-sdk/anthropic";
@@ -18,11 +19,11 @@ import { createTogetherAI } from "@ai-sdk/togetherai";
 import { createXai } from "@ai-sdk/xai";
 import { streamToEventIterator } from "@orpc/server";
 import { convertToModelMessages, createGateway, stepCountIs, tool } from "ai";
-import { generateText, streamText, wrapAISDKModel } from "./langsmith";
 import { createOllama } from "ollama-ai-provider-v2";
 import { match } from "ts-pattern";
 import { z } from "zod";
 import {
+	analyzeJobMatchSystemPrompt as analyzeJobMatchSystemPromptTemplate,
 	analyzeResumeSystemPrompt as analyzeResumeSystemPromptTemplate,
 	chatSystemPromptTemplate,
 	docxParserSystemPrompt,
@@ -40,7 +41,9 @@ import {
 import { aiProviderSchema } from "@reactive-resume/ai/types";
 import { applyResumePatches } from "@reactive-resume/resume/patch";
 import { resumeAnalysisSchema } from "@reactive-resume/schema/resume/analysis";
+import { jobMatchAnalysisSchema } from "@reactive-resume/schema/resume/job-match";
 import { supportsProviderNativeWebSearch } from "./capabilities";
+import { generateText, streamText, wrapAISDKModel } from "./langsmith";
 import { resolveAiBaseUrl } from "./url-policy";
 
 const aiExtractionTemplate = buildAiExtractionTemplate();
@@ -427,7 +430,54 @@ async function analyzeResume(input: AnalyzeResumeInput): Promise<ResumeAnalysis>
 	return resumeAnalysisSchema.parse(parsed);
 }
 
+type AnalyzeJobMatchInput = z.infer<typeof aiCredentialsSchema> & {
+	resumeData: ResumeData;
+	jobDescription: string;
+	locale?: string;
+};
+
+function buildAnalyzeJobMatchSystemPrompt(jobDescription: string, resumeData: ResumeData, locale?: string): string {
+	const language = locale?.trim() || "en";
+	const prompt = analyzeJobMatchSystemPromptTemplate.replace("{{LANGUAGE}}", () => language);
+	return `${prompt}\n\n## Job Description\n\n${jobDescription}\n\n## Resume Data\n\n${JSON.stringify(resumeData, null, 2)}`;
+}
+
+/** Sends the JD and resume data to the AI provider and returns a structured job-match analysis, parsing raw JSON from the response text. */
+async function analyzeJobMatch(input: AnalyzeJobMatchInput): Promise<JobMatchAnalysis> {
+	const model = getModel(input);
+	const systemPrompt = buildAnalyzeJobMatchSystemPrompt(input.jobDescription, input.resumeData, input.locale);
+
+	const result = await generateText({
+		model,
+		system: systemPrompt,
+		messages: [
+			{
+				role: "user",
+				content:
+					"Analyze this job description against the resume and return the structured job-match report. Return ONLY raw JSON, no markdown fences or explanations.",
+			},
+		],
+	});
+
+	const text = result.text;
+	const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+	const candidate = fenceMatch?.[1] ?? text;
+
+	const firstBrace = candidate.indexOf("{");
+	const lastBrace = candidate.lastIndexOf("}");
+
+	if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
+		throw new Error("AI returned no structured job-match analysis output.");
+	}
+
+	const jsonString = candidate.substring(firstBrace, lastBrace + 1);
+	const parsed = JSON.parse(jsonString);
+
+	return jobMatchAnalysisSchema.parse(parsed);
+}
+
 export const aiService = {
+	analyzeJobMatch,
 	analyzeResume,
 	chat,
 	parseDocx,
