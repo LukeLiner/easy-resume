@@ -20,11 +20,6 @@ msgstr ""
 
 #. js-lingui-explicit-id
 #: src/routes/dashboard/admin/users.tsx
-msgid "Feedback status updated"
-msgstr ""
-
-#. js-lingui-explicit-id
-#: src/routes/dashboard/admin/users.tsx
 msgid "User deleted successfully"
 msgstr ""
 
@@ -71,6 +66,11 @@ msgstr ""
 #. js-lingui-explicit-id
 #: src/routes/dashboard/admin/users.tsx
 msgid "Please enter a valid number"
+msgstr ""
+
+#. js-lingui-explicit-id
+#: src/routes/dashboard/admin/users.tsx
+msgid "Feedback status updated"
 msgstr ""
 
 #: src/routes/_home/-sections/footer.tsx
@@ -782,10 +782,6 @@ msgstr "公司"
 msgid "Compare this resume against this role URL and update keywords while keeping the voice concise and credible."
 msgstr "将此简历与此职位网址进行比较，更新关键词，同时保持语言简洁可信。"
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
-msgid "Comparing skills & experience"
-msgstr "对比技能与经验"
-
 #: src/routes/_home/-sections/features.tsx
 msgid "Completely free, forever, no hidden costs."
 msgstr "完全免费，永久免费，没有任何隐藏费用。"
@@ -881,7 +877,6 @@ msgstr "复制此密钥，并在你的应用程序中使用它来访问你的数
 msgid "Copy URL"
 msgstr "复制 URL"
 
-#. Error description when AI provider cannot be reached during job-match analysis
 #. Error description when AI provider cannot be reached during resume analysis
 #. Error shown when AI provider is unreachable during PDF/DOCX resume import
 #: src/dialogs/resume/import.tsx
@@ -1608,7 +1603,6 @@ msgstr "文件"
 msgid "Filter by"
 msgstr "筛选条件"
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Finalizing the report"
 msgstr "正在生成最终报告"
@@ -1709,13 +1703,13 @@ msgstr "全屏编辑器"
 msgid "Generate a random name"
 msgstr "生成一个随机名称"
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
-msgid "Generating rewrite suggestions"
-msgstr "生成改写建议"
-
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Generating suggestions"
 msgstr "正在生成建议"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Generating your report,don't switch the page…"
+msgstr "正在生成您的报告，请不要切换该页面……"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Get a review of your resume with an overall score, strengths, and actionable suggestions."
@@ -1933,6 +1927,11 @@ msgstr "图片上传成功。"
 msgid "Images"
 msgstr "图片"
 
+#. Label for unknown-impact job-match suggestions
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
+msgid "Impact"
+msgstr "影响力"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Impact & Quantification"
 msgstr "影响力与量化程度"
@@ -2026,7 +2025,7 @@ msgstr "职位匹配分析已完成。"
 #: src/libs/resume/section.tsx
 #: src/routes/builder/$resumeId/-components/combined-sidebar.tsx
 msgid "Job Radar"
-msgstr ""
+msgstr "求职雷达"
 
 #. Example full name placeholder on registration form
 #: src/features/auth/pages/register.tsx
@@ -2229,7 +2228,7 @@ msgstr "锁定"
 
 #: src/routes/builder/$resumeId/-components/header.tsx
 msgid "Locked"
-msgstr ""
+msgstr "锁定"
 
 #. User menu action to sign out of current account
 #: src/features/user/dropdown-menu.tsx
@@ -2273,7 +2272,7 @@ msgstr "让工作经历部分更注重结果导向，并删除模糊的职责描
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "Manual Review"
-msgstr ""
+msgstr "人工复查"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/page.tsx
 msgid "Margin (Horizontal)"
@@ -2285,7 +2284,7 @@ msgstr "页边距（垂直）"
 
 #: src/routes/dashboard/admin/users.tsx
 msgid "Mark as Resolved"
-msgstr ""
+msgstr "标记为已解决"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-dimensions.tsx
 msgid "Match score"
@@ -2410,7 +2409,7 @@ msgstr "人工智能提供商没有返回任何数据。"
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "No exception logs found."
-msgstr ""
+msgstr "没有异常日志记录。"
 
 #: src/routes/dashboard/admin/feedback.tsx
 msgid "No feedback records found."
@@ -2422,7 +2421,7 @@ msgstr ""
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "No payment records found."
-msgstr ""
+msgstr "没有支付记录"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/statistics.tsx
 msgid "No prior data"
@@ -2455,7 +2454,7 @@ msgstr "暂无使用明细"
 
 #: src/routes/dashboard/admin/users.tsx
 msgid "No users found."
-msgstr ""
+msgstr "找到0个用户"
 
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Not connected"
@@ -2561,7 +2560,7 @@ msgstr "或通过以下方式继续"
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "Order No."
-msgstr ""
+msgstr "订单编号"
 
 #: src/components/input/rich-input.tsx
 msgid "Ordered List"
@@ -2569,7 +2568,7 @@ msgstr "有序列表"
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "Orders"
-msgstr ""
+msgstr "订单"
 
 #: src/dialogs/resume/sections/volunteer.tsx
 msgid "Organization"
@@ -2586,7 +2585,7 @@ msgstr "总分"
 
 #: src/routes/dashboard/resumes/-components/list-view.tsx
 msgid "Owner"
-msgstr ""
+msgstr "创建人"
 
 #: src/libs/resume/section.tsx
 msgid "Page"
@@ -2609,7 +2608,7 @@ msgstr "第 {page} 页，共 {totalPages} 页（共 {total} 条）"
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "Paid"
-msgstr ""
+msgstr "已支付"
 
 #: src/components/input/rich-input.tsx
 msgid "Paragraph"
@@ -2618,10 +2617,6 @@ msgstr "段落"
 #: src/components/input/rich-input.tsx
 msgid "Paragraph and heading style"
 msgstr "段落和标题样式"
-
-#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
-msgid "Parsing the job description"
-msgstr "解析职位描述"
 
 #. Label for passkey sign-in button
 #: src/features/auth/components/social-auth.tsx
@@ -3001,7 +2996,7 @@ msgstr "推荐人"
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "Reject"
-msgstr ""
+msgstr "拒绝"
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "Reject this recharge?"
@@ -3009,7 +3004,7 @@ msgstr ""
 
 #: src/routes/dashboard/admin/payments.tsx
 msgid "Rejected"
-msgstr ""
+msgstr "已拒绝"
 
 #: src/routes/dashboard/account.tsx
 msgid "Remaining Balance"
@@ -3167,7 +3162,7 @@ msgstr "简历已润色。"
 
 #: src/routes/builder/$resumeId/-components/header.tsx
 msgid "Resume title"
-msgstr ""
+msgstr "简历标题"
 
 #: src/routes/_home/-sections/statistics.tsx
 #: src/routes/dashboard/-components/sidebar.tsx
@@ -3286,10 +3281,6 @@ msgstr "分数分布"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Scoring each dimension"
 msgstr "正在对各维度评分"
-
-#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
-msgid "Scoring keyword coverage"
-msgstr "评估关键词覆盖"
 
 #: src/routes/dashboard/admin/users.tsx
 msgid "Search"
@@ -3570,7 +3561,6 @@ msgstr "短链接"
 msgid "Something went wrong"
 msgstr "出问题了"
 
-#. Fallback error description when job-match analysis request fails
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 msgid "Something went wrong while analyzing the job description."
 msgstr "分析职位描述时出错。"
@@ -3801,7 +3791,6 @@ msgstr "感谢我们的赞助商"
 msgid "The agent needs your input."
 msgstr "经纪人需要您的意见。"
 
-#. Error description when AI returns invalid job-match analysis format
 #. Error description when AI returns invalid resume analysis format
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
@@ -4363,6 +4352,10 @@ msgstr "志愿者经历"
 msgid "vs previous 30 days"
 msgstr "与前 30 天相比"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Waiting for AI to start writing…"
+msgstr "等待 AI 开始撰写…"
+
 #: src/dialogs/resume/import.tsx
 msgid "We couldn't detect the format automatically — please choose it above."
 msgstr "我们无法自动检测格式——请在上方选择格式。"
@@ -4457,7 +4450,6 @@ msgstr "你可以通过唯一的公共 URL 分享你的简历，用密码保护�
 msgid "You can upload up to 9 images."
 msgstr "最多可上传 9 张图片。"
 
-#. Error description when user has exceeded their resume analysis quota
 #. Error description when user has exceeded their resume analysis quota
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx

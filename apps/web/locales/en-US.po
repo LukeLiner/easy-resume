@@ -15,11 +15,6 @@ msgstr ""
 
 #. js-lingui-explicit-id
 #: src/routes/dashboard/admin/users.tsx
-msgid "Feedback status updated"
-msgstr "Feedback status updated"
-
-#. js-lingui-explicit-id
-#: src/routes/dashboard/admin/users.tsx
 msgid "User deleted successfully"
 msgstr "User deleted successfully"
 
@@ -67,6 +62,11 @@ msgstr "Balance updated successfully"
 #: src/routes/dashboard/admin/users.tsx
 msgid "Please enter a valid number"
 msgstr "Please enter a valid number"
+
+#. js-lingui-explicit-id
+#: src/routes/dashboard/admin/users.tsx
+msgid "Feedback status updated"
+msgstr "Feedback status updated"
 
 #: src/routes/_home/-sections/footer.tsx
 #: src/routes/_home/-sections/hero.tsx
@@ -777,10 +777,6 @@ msgstr "Company"
 msgid "Compare this resume against this role URL and update keywords while keeping the voice concise and credible."
 msgstr "Compare this resume against this role URL and update keywords while keeping the voice concise and credible."
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
-msgid "Comparing skills & experience"
-msgstr "Comparing skills & experience"
-
 #: src/routes/_home/-sections/features.tsx
 msgid "Completely free, forever, no hidden costs."
 msgstr "Completely free, forever, no hidden costs."
@@ -876,7 +872,6 @@ msgstr "Copy this secret key and use it in your applications to access your data
 msgid "Copy URL"
 msgstr "Copy URL"
 
-#. Error description when AI provider cannot be reached during job-match analysis
 #. Error description when AI provider cannot be reached during resume analysis
 #. Error shown when AI provider is unreachable during PDF/DOCX resume import
 #: src/dialogs/resume/import.tsx
@@ -1603,7 +1598,6 @@ msgstr "File"
 msgid "Filter by"
 msgstr "Filter by"
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Finalizing the report"
 msgstr "Finalizing the report"
@@ -1704,13 +1698,13 @@ msgstr "Fullscreen Editor"
 msgid "Generate a random name"
 msgstr "Generate a random name"
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
-msgid "Generating rewrite suggestions"
-msgstr "Generating rewrite suggestions"
-
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Generating suggestions"
 msgstr "Generating suggestions"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Generating your report…"
+msgstr "Generating your report…"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Get a review of your resume with an overall score, strengths, and actionable suggestions."
@@ -1927,6 +1921,11 @@ msgstr "Image uploaded successfully."
 #: src/routes/dashboard/admin/feedback.tsx
 msgid "Images"
 msgstr "Images"
+
+#. Label for unknown-impact job-match suggestions
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar-suggestions.tsx
+msgid "Impact"
+msgstr "Impact"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Impact & Quantification"
@@ -2614,10 +2613,6 @@ msgstr "Paragraph"
 msgid "Paragraph and heading style"
 msgstr "Paragraph and heading style"
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
-msgid "Parsing the job description"
-msgstr "Parsing the job description"
-
 #. Label for passkey sign-in button
 #: src/features/auth/components/social-auth.tsx
 msgid "Passkey"
@@ -3282,10 +3277,6 @@ msgstr "Score Distribution"
 msgid "Scoring each dimension"
 msgstr "Scoring each dimension"
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
-msgid "Scoring keyword coverage"
-msgstr "Scoring keyword coverage"
-
 #: src/routes/dashboard/admin/users.tsx
 msgid "Search"
 msgstr "Search"
@@ -3565,7 +3556,6 @@ msgstr "Slug"
 msgid "Something went wrong"
 msgstr "Something went wrong"
 
-#. Fallback error description when job-match analysis request fails
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 msgid "Something went wrong while analyzing the job description."
 msgstr "Something went wrong while analyzing the job description."
@@ -3796,7 +3786,6 @@ msgstr "Thank you to our sponsors"
 msgid "The agent needs your input."
 msgstr "The agent needs your input."
 
-#. Error description when AI returns invalid job-match analysis format
 #. Error description when AI returns invalid resume analysis format
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
@@ -4358,6 +4347,10 @@ msgstr "Volunteer"
 msgid "vs previous 30 days"
 msgstr "vs previous 30 days"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
+msgid "Waiting for AI to start writing…"
+msgstr "Waiting for AI to start writing…"
+
 #: src/dialogs/resume/import.tsx
 msgid "We couldn't detect the format automatically — please choose it above."
 msgstr "We couldn't detect the format automatically — please choose it above."
@@ -4452,7 +4445,6 @@ msgstr "You can share your resume via a unique public URL, protect it with a pas
 msgid "You can upload up to 9 images."
 msgstr "You can upload up to 9 images."
 
-#. Error description when user has exceeded their resume analysis quota
 #. Error description when user has exceeded their resume analysis quota
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx

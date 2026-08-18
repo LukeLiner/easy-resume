@@ -62,3 +62,10 @@ export type JobMatchAnalysis = z.infer<typeof jobMatchAnalysisSchema>;
 export type JobMatchSuggestion = z.infer<typeof jobMatchSuggestionSchema>;
 
 export type StoredJobMatchAnalysis = z.infer<typeof storedJobMatchAnalysisSchema>;
+
+export type JobMatchStreamErrorCode = "BAD_REQUEST" | "BAD_GATEWAY" | "PRECONDITION_FAILED" | "INTERNAL_SERVER_ERROR";
+
+export type JobMatchStreamEvent =
+	| { type: "text"; text: string }
+	| { type: "complete"; id: string; analysis: JobMatchAnalysis; createdAt: string }
+	| { type: "error"; code: JobMatchStreamErrorCode; message: string };

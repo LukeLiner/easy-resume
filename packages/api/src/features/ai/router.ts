@@ -1,7 +1,8 @@
 import type { ResumeData } from "@reactive-resume/schema/resume/data";
+import type { JobMatchStreamEvent } from "@reactive-resume/schema/resume/job-match";
 import type { UIMessage } from "ai";
 import { ORPCError } from "@orpc/client";
-import { type } from "@orpc/server";
+import { eventIteratorToStream, streamToEventIterator, type } from "@orpc/server";
 import { AISDKError } from "ai";
 import { flattenError, ZodError, z } from "zod";
 import { storedResumeAnalysisSchema } from "@reactive-resume/schema/resume/analysis";
@@ -323,6 +324,101 @@ export const aiRouter = {
 				}
 				throw error;
 			}
+		}),
+
+	analyzeJobMatchStream: protectedProcedure
+		.route({
+			method: "POST",
+			path: "/ai/analyze-job-match-stream",
+			tags: ["AI"],
+			operationId: "analyzeJobMatchStream",
+			summary: "Stream a job description match analysis against the resume",
+			description:
+				"Streams a job-match analysis comparing a pasted job description against the current resume. Emits raw text chunks as the AI generates the report, then a complete event carrying the persisted structured analysis. Requires authentication and AI credentials.",
+		})
+		.input(
+			z.object({
+				aiProviderId: z.string().optional(),
+				resumeId: z.string(),
+				jobDescription: z.string().min(1).max(20000),
+				locale: z.string().optional(),
+			}),
+		)
+		.use(aiRequestRateLimit)
+		.errors({
+			BAD_GATEWAY: { message: "The AI provider returned an error or is unreachable.", status: 502 },
+			BAD_REQUEST: { message: "The AI returned an improperly formatted structure.", status: 400 },
+			PRECONDITION_FAILED: { message: "You have exceeded your resume analysis quota.", status: 429 },
+		})
+		.handler(async ({ context, input }) => {
+			await checkResumeAnalysisQuota(context.user.id);
+
+			const [provider, resume] = await Promise.all([
+				getRunnableProvider(input.aiProviderId),
+				resumeService.getById({ id: input.resumeId, userId: context.user.id }),
+			]);
+
+			return streamToEventIterator(
+				eventIteratorToStream(
+					(async function* streamJobMatchAnalysis(): AsyncGenerator<JobMatchStreamEvent, void, unknown> {
+						try {
+							for await (const event of aiService.analyzeJobMatchStream({
+								provider: provider.provider,
+								model: provider.model,
+								apiKey: provider.apiKey,
+								baseURL: provider.baseURL ?? "",
+								jobDescription: input.jobDescription,
+								resumeData: resume.data,
+								...(input.locale ? { locale: input.locale } : {}),
+							})) {
+								if (event.type === "complete") {
+									await consumeResumeAnalysisQuota(context.user.id);
+
+									const saved = await resumeService.jobAnalysis.create({
+										resumeId: input.resumeId,
+										userId: context.user.id,
+										analysis: {
+											...event.analysis,
+											jdText: input.jobDescription,
+											updatedAt: new Date(),
+											modelMeta: { provider: provider.provider, model: provider.model },
+										},
+									});
+
+									yield {
+										type: "complete",
+										id: saved.id,
+										analysis: saved.analysis,
+										createdAt: saved.createdAt.toISOString(),
+									};
+								} else {
+									yield event;
+								}
+							}
+						} catch (error) {
+							if (isCredentialEncryptionUnavailable(error)) {
+								yield {
+									type: "error",
+									code: "PRECONDITION_FAILED",
+									message: "AI providers are unavailable because ENCRYPTION_SECRET is not configured.",
+								};
+							} else if (isInvalidAiBaseUrlError(error)) {
+								yield { type: "error", code: "BAD_REQUEST", message: "Invalid AI provider configuration." };
+							} else if (isAiProviderGatewayError(error)) {
+								yield { type: "error", code: "BAD_GATEWAY", message: "Could not reach the AI provider." };
+							} else if (error instanceof ZodError) {
+								yield { type: "error", code: "BAD_REQUEST", message: "Invalid job-match analysis structure" };
+							} else {
+								yield {
+									type: "error",
+									code: "INTERNAL_SERVER_ERROR",
+									message: error instanceof Error ? error.message : "Unknown error.",
+								};
+							}
+						}
+					})(),
+				),
+			);
 		}),
 
 	listJobAnalysis: protectedProcedure

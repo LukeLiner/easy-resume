@@ -442,6 +442,23 @@ function buildAnalyzeJobMatchSystemPrompt(jobDescription: string, resumeData: Re
 	return `${prompt}\n\n## Job Description\n\n${jobDescription}\n\n## Resume Data\n\n${JSON.stringify(resumeData, null, 2)}`;
 }
 
+function parseJobMatchJson(text: string): JobMatchAnalysis {
+	const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+	const candidate = fenceMatch?.[1] ?? text;
+
+	const firstBrace = candidate.indexOf("{");
+	const lastBrace = candidate.lastIndexOf("}");
+
+	if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
+		throw new Error("AI returned no structured job-match analysis output.");
+	}
+
+	const jsonString = candidate.substring(firstBrace, lastBrace + 1);
+	const parsed = JSON.parse(jsonString);
+
+	return jobMatchAnalysisSchema.parse(parsed);
+}
+
 /** Sends the JD and resume data to the AI provider and returns a structured job-match analysis, parsing raw JSON from the response text. */
 async function analyzeJobMatch(input: AnalyzeJobMatchInput): Promise<JobMatchAnalysis> {
 	const model = getModel(input);
@@ -459,25 +476,43 @@ async function analyzeJobMatch(input: AnalyzeJobMatchInput): Promise<JobMatchAna
 		],
 	});
 
-	const text = result.text;
-	const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-	const candidate = fenceMatch?.[1] ?? text;
+	return parseJobMatchJson(result.text);
+}
 
-	const firstBrace = candidate.indexOf("{");
-	const lastBrace = candidate.lastIndexOf("}");
+type JobMatchStreamDraftEvent = { type: "text"; text: string } | { type: "complete"; analysis: JobMatchAnalysis };
 
-	if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
-		throw new Error("AI returned no structured job-match analysis output.");
+/** Streams the job-match analysis from the AI provider, emitting raw text chunks followed by the parsed structured report. */
+async function* analyzeJobMatchStream(
+	input: AnalyzeJobMatchInput,
+): AsyncGenerator<JobMatchStreamDraftEvent, void, unknown> {
+	const model = getModel(input);
+	const systemPrompt = buildAnalyzeJobMatchSystemPrompt(input.jobDescription, input.resumeData, input.locale);
+
+	const result = streamText({
+		model,
+		system: systemPrompt,
+		messages: [
+			{
+				role: "user",
+				content:
+					"Analyze this job description against the resume and return the structured job-match report. Return ONLY raw JSON, no markdown fences or explanations.",
+			},
+		],
+	});
+
+	const chunks: string[] = [];
+
+	for await (const chunk of result.textStream) {
+		chunks.push(chunk);
+		yield { type: "text", text: chunk };
 	}
 
-	const jsonString = candidate.substring(firstBrace, lastBrace + 1);
-	const parsed = JSON.parse(jsonString);
-
-	return jobMatchAnalysisSchema.parse(parsed);
+	yield { type: "complete", analysis: parseJobMatchJson(chunks.join("")) };
 }
 
 export const aiService = {
 	analyzeJobMatch,
+	analyzeJobMatchStream,
 	analyzeResume,
 	chat,
 	parseDocx,

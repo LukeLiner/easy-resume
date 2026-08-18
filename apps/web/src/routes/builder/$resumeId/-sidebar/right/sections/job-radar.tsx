@@ -1,11 +1,12 @@
-import type { JobMatchSuggestion } from "@reactive-resume/schema/resume/job-match";
+import type { JobMatchStreamErrorCode, JobMatchSuggestion } from "@reactive-resume/schema/resume/job-match";
 import { t } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
+import { eventIteratorToUnproxiedDataStream } from "@orpc/client";
 import { ArrowRightIcon, CrosshairIcon, InfoIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@reactive-resume/ui/components/alert";
 import { Button } from "@reactive-resume/ui/components/button";
@@ -13,20 +14,12 @@ import { Spinner } from "@reactive-resume/ui/components/spinner";
 import { Textarea } from "@reactive-resume/ui/components/textarea";
 import { useResume } from "@/features/resume/builder/draft";
 import { getOrpcErrorMessage } from "@/libs/error-message";
-import { orpc } from "@/libs/orpc/client";
+import { orpc, streamClient } from "@/libs/orpc/client";
 import { SectionBase } from "../shared/section-base";
 import { JobMatchDimensionsSection } from "./job-radar-dimensions";
 import { JobMatchGapsSection } from "./job-radar-gaps";
 import { JobMatchSuggestionsSection } from "./job-radar-suggestions";
 import { JobMatchSummarySection } from "./job-radar-summary";
-
-const analysisSteps = [
-	t`Parsing the job description`,
-	t`Scoring keyword coverage`,
-	t`Comparing skills & experience`,
-	t`Generating rewrite suggestions`,
-	t`Finalizing the report`,
-];
 
 export function JobRadarSectionBuilder() {
 	const queryClient = useQueryClient();
@@ -51,38 +44,79 @@ export function JobRadarSectionBuilder() {
 		[history, selectedAnalysisId],
 	);
 
-	const { mutate: analyzeJobMatch, isPending } = useMutation({
-		...orpc.ai.analyzeJobMatch.mutationOptions(),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: orpc.ai.listJobAnalysis.queryKey({ input: { resumeId } }) });
-			setSelectedAnalysisId(null);
-			toast.success(t`Job match analysis complete.`);
-		},
-		onError: (error) => {
+	const [isStreaming, setIsStreaming] = useState(false);
+	const [streamingText, setStreamingText] = useState("");
+	const streamingTextRef = useRef<HTMLPreElement>(null);
+
+	useEffect(() => {
+		if (streamingTextRef.current) {
+			streamingTextRef.current.scrollTop = streamingTextRef.current.scrollHeight;
+		}
+	}, [streamingText]);
+
+	const getStreamErrorDescription = (code: JobMatchStreamErrorCode): string => {
+		switch (code) {
+			case "BAD_REQUEST":
+				return t`The AI returned an invalid analysis format. Please try again.`;
+			case "BAD_GATEWAY":
+				return t`Could not reach the AI provider. Please try again.`;
+			case "PRECONDITION_FAILED":
+				return t`You have exceeded your resume analysis quota.`;
+			default:
+				return t`Something went wrong while analyzing the job description.`;
+		}
+	};
+
+	const onAnalyze = async () => {
+		if (!resume) return;
+
+		setStreamingText("");
+		setIsStreaming(true);
+		setSelectedAnalysisId(null);
+
+		try {
+			const stream = eventIteratorToUnproxiedDataStream(
+				await streamClient.ai.analyzeJobMatchStream({
+					resumeId: resume.id,
+					jobDescription,
+					locale: i18n.locale,
+				}),
+			);
+
+			const reader = stream.getReader();
+
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+
+				if (value.type === "text") {
+					setStreamingText((current) => current + value.text);
+				} else if (value.type === "complete") {
+					setStreamingText("");
+					await queryClient.invalidateQueries({ queryKey: orpc.ai.listJobAnalysis.queryKey({ input: { resumeId } }) });
+					setSelectedAnalysisId(null);
+					toast.success(t`Job match analysis complete.`);
+				} else if (value.type === "error") {
+					toast.error(t`Failed to analyze job description.`, {
+						description: getStreamErrorDescription(value.code),
+					});
+				}
+			}
+		} catch (error) {
 			const description = getOrpcErrorMessage(error, {
 				byCode: {
-					BAD_REQUEST: t({
-						comment: "Error description when AI returns invalid job-match analysis format",
-						message: "The AI returned an invalid analysis format. Please try again.",
-					}),
-					BAD_GATEWAY: t({
-						comment: "Error description when AI provider cannot be reached during job-match analysis",
-						message: "Could not reach the AI provider. Please try again.",
-					}),
-					PRECONDITION_FAILED: t({
-						comment: "Error description when user has exceeded their resume analysis quota",
-						message: "You have exceeded your resume analysis quota.",
-					}),
+					BAD_REQUEST: t`The AI returned an invalid analysis format. Please try again.`,
+					BAD_GATEWAY: t`Could not reach the AI provider. Please try again.`,
+					PRECONDITION_FAILED: t`You have exceeded your resume analysis quota.`,
 				},
-				fallback: t({
-					comment: "Fallback error description when job-match analysis request fails",
-					message: "Something went wrong while analyzing the job description.",
-				}),
+				fallback: t`Something went wrong while analyzing the job description.`,
 			});
 
 			toast.error(t`Failed to analyze job description.`, { description });
-		},
-	});
+		} finally {
+			setIsStreaming(false);
+		}
+	};
 
 	const [polishingTitle, setPolishingTitle] = useState<string | null>(null);
 	const [polishedAction, setPolishedAction] = useState<{ id: string; title: string } | null>(null);
@@ -150,31 +184,6 @@ export function JobRadarSectionBuilder() {
 		revertAction({ id: polishedAction.id });
 	};
 
-	const [stepIndex, setStepIndex] = useState(0);
-
-	useEffect(() => {
-		if (!isPending) {
-			setStepIndex(0);
-			return;
-		}
-
-		const interval = window.setInterval(() => {
-			setStepIndex((current) => Math.min(current + 1, analysisSteps.length - 1));
-		}, 3000);
-
-		return () => window.clearInterval(interval);
-	}, [isPending]);
-
-	const onAnalyze = () => {
-		if (!resume) return;
-
-		analyzeJobMatch({
-			resumeId: resume.id,
-			jobDescription,
-			locale: i18n.locale,
-		});
-	};
-
 	if (!resume) return null;
 
 	return (
@@ -199,23 +208,23 @@ export function JobRadarSectionBuilder() {
 							placeholder={t`Paste the job description here…`}
 						/>
 
-						<Button disabled={isPending || jobDescription.trim().length === 0} onClick={onAnalyze} className="w-fit">
-							{isPending ? <Spinner /> : <CrosshairIcon />}
-							{isPending ? t`Analyzing…` : t`Analyze Job Match`}
+						<Button disabled={isStreaming || jobDescription.trim().length === 0} onClick={onAnalyze} className="w-fit">
+							{isStreaming ? <Spinner /> : <CrosshairIcon />}
+							{isStreaming ? t`Analyzing…` : t`Analyze Job Match`}
 						</Button>
 
-						{isPending && (
-							<div className="space-y-1">
+						{isStreaming && (
+							<div className="space-y-2">
 								<div className="flex items-center justify-between text-base text-muted-foreground">
-									<span>{analysisSteps[stepIndex]}</span>
-									<span>{Math.round(((stepIndex + 1) / analysisSteps.length) * 100)}%</span>
+									<span>{t`Generating your report…`}</span>
+									<Spinner className="size-4" />
 								</div>
-								<div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-									<div
-										className="h-full rounded-full bg-primary transition-all duration-500"
-										style={{ width: `${((stepIndex + 1) / analysisSteps.length) * 100}%` }}
-									/>
-								</div>
+								<pre
+									ref={streamingTextRef}
+									className="max-h-64 overflow-auto whitespace-pre-wrap rounded-md border bg-muted p-3 font-mono text-muted-foreground text-xs"
+								>
+									{streamingText || t`Waiting for AI to start writing…`}
+								</pre>
 							</div>
 						)}
 					</div>
@@ -238,7 +247,7 @@ export function JobRadarSectionBuilder() {
 						</div>
 					)}
 
-					{!selectedAnalysis && !isPending && (
+					{!selectedAnalysis && !isStreaming && (
 						<div className="rounded-md border border-dashed p-3">
 							<p className="max-w-xs text-base text-muted-foreground">
 								<Trans>Run your first analysis to see how well your resume matches this job.</Trans>
