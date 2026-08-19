@@ -20,6 +20,7 @@ import { createXai } from "@ai-sdk/xai";
 import { streamToEventIterator } from "@orpc/server";
 import { convertToModelMessages, createGateway, stepCountIs, tool } from "ai";
 import { createOllama } from "ollama-ai-provider-v2";
+import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { match } from "ts-pattern";
 import { z } from "zod";
 import {
@@ -30,6 +31,7 @@ import {
 	docxParserUserPrompt,
 	pdfParserSystemPrompt,
 	pdfParserUserPrompt,
+	pdfParserUserPromptText,
 } from "@reactive-resume/ai/prompts";
 import { buildAiExtractionTemplate } from "@reactive-resume/ai/resume/extraction-template";
 import { sanitizeAndParseResumeJson } from "@reactive-resume/ai/resume/sanitize";
@@ -93,6 +95,7 @@ const ZIP_CENTRAL_DIRECTORY_SIGNATURE = 0x02014b50;
 const ZIP_END_OF_CENTRAL_DIRECTORY_SIGNATURE = 0x06054b50;
 const ZIP_STORED_METHOD = 0;
 const ZIP_DEFLATED_METHOD = 8;
+const PDF_MAX_PARSE_PAGES = 50;
 
 export function getModel(input: GetModelInput) {
 	const { provider, model, apiKey } = input;
@@ -200,24 +203,59 @@ function buildResumeParsingTextMessages({ userPrompt, text }: { userPrompt: stri
 			content: [
 				{
 					type: "text",
-					text: `${userPrompt}\n\nThe Microsoft Word file has been converted to plain text below.\n\n${text}`,
+					text: `${userPrompt}\n\nThe attached file has been converted to plain text below.\n\n${text}`,
 				},
 			],
 		},
 	];
 }
 
+async function extractPdfText(file: z.infer<typeof fileInputSchema>): Promise<string> {
+	const loadingTask = getDocument({ data: new Uint8Array(Buffer.from(file.data, "base64")) });
+	const document = await loadingTask.promise;
+
+	try {
+		const pages: string[] = [];
+		const pageCount = Math.min(document.numPages, PDF_MAX_PARSE_PAGES);
+
+		for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
+			const page = await document.getPage(pageNumber);
+			const content = await page.getTextContent();
+			const text = content.items.map((item) => ("str" in item ? item.str : "")).join(" ");
+			if (text.trim()) pages.push(text);
+		}
+
+		return pages
+			.join("\n\n")
+			.replace(/\r/g, "")
+			.replace(/[ \t]+\n/g, "\n")
+			.replace(/\n{3,}/g, "\n\n")
+			.trim();
+	} finally {
+		await loadingTask.destroy().catch(() => undefined);
+	}
+}
+
 async function parsePdf(input: ParsePdfInput): Promise<ResumeData> {
 	const model = getModel(input);
+
+	// Text extraction works for every provider; the file fallback is for scanned/image-only PDFs.
+	const extractedText = await extractPdfText(input.file).catch(() => null);
+
+	if (!extractedText) console.info("PDF text extraction returned empty content; falling back to file message.");
+
+	const messages = extractedText
+		? buildResumeParsingTextMessages({ userPrompt: pdfParserUserPromptText, text: extractedText })
+		: buildResumeParsingMessages({
+				userPrompt: pdfParserUserPrompt,
+				file: input.file,
+				mediaType: "application/pdf",
+			});
 
 	const result = await generateText({
 		model,
 		system: buildResumeParsingSystemPrompt(pdfParserSystemPrompt),
-		messages: buildResumeParsingMessages({
-			userPrompt: pdfParserUserPrompt,
-			file: input.file,
-			mediaType: "application/pdf",
-		}),
+		messages,
 	}).catch((error: unknown) => logAndRethrow("Failed to generate the text with the model", error));
 
 	return parseAndValidateResumeJson(result.text);
