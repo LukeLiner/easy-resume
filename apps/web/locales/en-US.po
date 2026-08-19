@@ -386,6 +386,10 @@ msgstr "Analyze Job Match"
 msgid "Analyze Resume"
 msgstr "Analyze Resume"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Analysis completed in {analysisDurationSeconds.toFixed(1)}s"
+msgstr "Analysis completed in {analysisDurationSeconds.toFixed(1)}s"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Analyzing…"
@@ -1313,6 +1317,10 @@ msgstr "Editing unlocks once the preview is ready."
 msgid "Education"
 msgstr "Education"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Elapsed: {elapsedSeconds.toFixed(1)}s"
+msgstr "Elapsed: {elapsedSeconds.toFixed(1)}s"
+
 #: src/features/billing/recharge-dialog.tsx
 #: src/routes/builder/$resumeId/-sidebar/left/sections/basics.tsx
 #: src/routes/dashboard/account.tsx
@@ -1701,6 +1709,10 @@ msgstr "Generate a random name"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Generating suggestions"
 msgstr "Generating suggestions"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Generating your analysis…"
+msgstr "Generating your analysis…"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 msgid "Generating your report…"

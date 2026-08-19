@@ -32,3 +32,14 @@ export const storedResumeAnalysisSchema = resumeAnalysisSchema.extend({
 export type ResumeAnalysis = z.infer<typeof resumeAnalysisSchema>;
 
 export type StoredResumeAnalysis = z.infer<typeof storedResumeAnalysisSchema>;
+
+export type ResumeAnalysisStreamErrorCode =
+	| "BAD_REQUEST"
+	| "BAD_GATEWAY"
+	| "PRECONDITION_FAILED"
+	| "INTERNAL_SERVER_ERROR";
+
+export type ResumeAnalysisStreamEvent =
+	| { type: "text"; text: string }
+	| { type: "complete"; analysis: StoredResumeAnalysis }
+	| { type: "error"; code: ResumeAnalysisStreamErrorCode; message: string };

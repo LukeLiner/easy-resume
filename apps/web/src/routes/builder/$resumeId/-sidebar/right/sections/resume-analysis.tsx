@@ -1,7 +1,8 @@
-import type { ResumeAnalysis } from "@reactive-resume/schema/resume/analysis";
+import type { ResumeAnalysis, ResumeAnalysisStreamErrorCode } from "@reactive-resume/schema/resume/analysis";
 import { t } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
+import { eventIteratorToUnproxiedDataStream } from "@orpc/client";
 import {
 	ArrowRightIcon,
 	ArrowsClockwiseIcon,
@@ -15,7 +16,7 @@ import {
 } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { Alert, AlertDescription } from "@reactive-resume/ui/components/alert";
@@ -24,7 +25,7 @@ import { Button } from "@reactive-resume/ui/components/button";
 import { Spinner } from "@reactive-resume/ui/components/spinner";
 import { useResume } from "@/features/resume/builder/draft";
 import { getOrpcErrorMessage } from "@/libs/error-message";
-import { orpc } from "@/libs/orpc/client";
+import { orpc, streamClient } from "@/libs/orpc/client";
 import { SectionBase } from "../shared/section-base";
 
 function impactCircleClass(impact: "high" | "medium" | "low") {
@@ -83,37 +84,55 @@ export function ResumeAnalysisSectionBuilder() {
 		enabled: !!resume,
 	});
 
-	const { mutate: analyzeResume, isPending } = useMutation({
-		...orpc.ai.analyzeResume.mutationOptions(),
-		onSuccess: (analysis) => {
-			queryClient.setQueryData(orpc.resume.analysis.getById.queryKey({ input: { id: resumeId } }), analysis);
-			toast.success(t`Resume analysis complete.`);
-		},
-		onError: (error) => {
-			const description = getOrpcErrorMessage(error, {
-				byCode: {
-					BAD_REQUEST: t({
-						comment: "Error description when AI returns invalid resume analysis format",
-						message: "The AI returned an invalid analysis format. Please try again.",
-					}),
-					BAD_GATEWAY: t({
-						comment: "Error description when AI provider cannot be reached during resume analysis",
-						message: "Could not reach the AI provider. Please try again.",
-					}),
-					PRECONDITION_FAILED: t({
-						comment: "Error description when user has exceeded their resume analysis quota",
-						message: "You have exceeded your resume analysis quota.",
-					}),
-				},
-				fallback: t({
+	const [isStreaming, setIsStreaming] = useState(false);
+	const [streamingText, setStreamingText] = useState("");
+	const streamingTextRef = useRef<HTMLPreElement>(null);
+	const [elapsedSeconds, setElapsedSeconds] = useState(0);
+	const [analysisDurationSeconds, setAnalysisDurationSeconds] = useState<number | null>(null);
+	const startedAtRef = useRef<number | null>(null);
+
+	useEffect(() => {
+		if (!isStreaming) return;
+
+		const interval = window.setInterval(() => {
+			if (startedAtRef.current !== null) {
+				setElapsedSeconds((performance.now() - startedAtRef.current) / 1000);
+			}
+		}, 100);
+
+		return () => window.clearInterval(interval);
+	}, [isStreaming]);
+
+	useEffect(() => {
+		if (streamingTextRef.current) {
+			streamingTextRef.current.scrollTop = streamingTextRef.current.scrollHeight;
+		}
+	}, [streamingText]);
+
+	const getStreamErrorDescription = (code: ResumeAnalysisStreamErrorCode): string => {
+		switch (code) {
+			case "BAD_REQUEST":
+				return t({
+					comment: "Error description when AI returns invalid resume analysis format",
+					message: "The AI returned an invalid analysis format. Please try again.",
+				});
+			case "BAD_GATEWAY":
+				return t({
+					comment: "Error description when AI provider cannot be reached during resume analysis",
+					message: "Could not reach the AI provider. Please try again.",
+				});
+			case "PRECONDITION_FAILED":
+				return t({
+					comment: "Error description when user has exceeded their resume analysis quota",
+					message: "You have exceeded your resume analysis quota.",
+				});
+			default:
+				return t({
 					comment: "Fallback error description when resume analysis request fails",
 					message: "Something went wrong while analyzing your resume.",
-				}),
-			});
-
-			toast.error(t`Failed to analyze resume.`, { description });
-		},
-	});
+				});
+		}
+	};
 
 	const [polishingTitle, setPolishingTitle] = useState<string | null>(null);
 	const [polishedAction, setPolishedAction] = useState<{ id: string; title: string } | null>(null);
@@ -186,38 +205,74 @@ export function ResumeAnalysisSectionBuilder() {
 	// Derived during render (not via state+effect): the analysis comes from a client-fetched query,
 	// so the server render has no date and there's no hydration mismatch to defer around.
 	const updatedAtLabel = updatedAt ? new Date(updatedAt).toLocaleString() : null;
-	const analyzeLabel = isPending ? t`Analyzing…` : t`Analyze Resume`;
-	const analysisSteps = [
-		t`Reading resume data`,
-		t`Scoring each dimension`,
-		t`Generating suggestions`,
-		t`Finalizing the report`,
-	];
-	const [stepIndex, setStepIndex] = useState(0);
-
-	useEffect(() => {
-		if (!isPending) {
-			setStepIndex(0);
-			return;
-		}
-
-		const interval = window.setInterval(() => {
-			setStepIndex((current) => Math.min(current + 1, analysisSteps.length - 1));
-		}, 3000);
-
-		return () => window.clearInterval(interval);
-	}, [isPending, analysisSteps.length]);
+	const analyzeLabel = isStreaming ? t`Analyzing…` : t`Analyze Resume`;
 
 	const scoreTone =
 		score == null ? "bg-muted" : score >= 80 ? "bg-emerald-600" : score >= 60 ? "bg-amber-600" : "bg-rose-600";
 
-	const onAnalyze = () => {
+	const onAnalyze = async () => {
 		if (!resume) return;
 
-		analyzeResume({
-			resumeId: resume.id,
-			locale: i18n.locale,
-		});
+		const startedAt = performance.now();
+
+		startedAtRef.current = startedAt;
+		setStreamingText("");
+		setAnalysisDurationSeconds(null);
+		setElapsedSeconds(0);
+		setIsStreaming(true);
+
+		try {
+			const stream = eventIteratorToUnproxiedDataStream(
+				await streamClient.ai.analyzeResumeStream({
+					resumeId: resume.id,
+					locale: i18n.locale,
+				}),
+			);
+
+			const reader = stream.getReader();
+
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+
+				if (value.type === "text") {
+					setStreamingText((current) => current + value.text);
+				} else if (value.type === "complete") {
+					setAnalysisDurationSeconds((performance.now() - startedAt) / 1000);
+					queryClient.setQueryData(orpc.resume.analysis.getById.queryKey({ input: { id: resumeId } }), value.analysis);
+					toast.success(t`Resume analysis complete.`);
+				} else if (value.type === "error") {
+					toast.error(t`Failed to analyze resume.`, {
+						description: getStreamErrorDescription(value.code),
+					});
+				}
+			}
+		} catch (error) {
+			const description = getOrpcErrorMessage(error, {
+				byCode: {
+					BAD_REQUEST: t({
+						comment: "Error description when AI returns invalid resume analysis format",
+						message: "The AI returned an invalid analysis format. Please try again.",
+					}),
+					BAD_GATEWAY: t({
+						comment: "Error description when AI provider cannot be reached during resume analysis",
+						message: "Could not reach the AI provider. Please try again.",
+					}),
+					PRECONDITION_FAILED: t({
+						comment: "Error description when user has exceeded their resume analysis quota",
+						message: "You have exceeded your resume analysis quota.",
+					}),
+				},
+				fallback: t({
+					comment: "Fallback error description when resume analysis request fails",
+					message: "Something went wrong while analyzing your resume.",
+				}),
+			});
+
+			toast.error(t`Failed to analyze resume.`, { description });
+		} finally {
+			setIsStreaming(false);
+		}
 	};
 
 	if (!resume) return null;
@@ -239,27 +294,29 @@ export function ResumeAnalysisSectionBuilder() {
 							</div>
 
 							<div className="space-y-2">
-								<Button disabled={isPending} onClick={onAnalyze} className="ml-auto w-fit">
-									{isPending ? <Spinner /> : <SparkleIcon />}
+								<Button disabled={isStreaming} onClick={onAnalyze} className="ml-auto w-fit">
+									{isStreaming ? <Spinner /> : <SparkleIcon />}
 									{analyzeLabel}
 								</Button>
-
-								{isPending && (
-									<div className="space-y-1">
-										<div className="flex items-center justify-between text-muted-foreground text-base">
-											<span>{analysisSteps[stepIndex]}</span>
-											<span>{Math.round(((stepIndex + 1) / analysisSteps.length) * 100)}%</span>
-										</div>
-										<div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-											<div
-												className="h-full rounded-full bg-primary transition-all duration-500"
-												style={{ width: `${((stepIndex + 1) / analysisSteps.length) * 100}%` }}
-											/>
-										</div>
-									</div>
-								)}
 							</div>
 						</div>
+
+						{isStreaming && (
+							<div className="space-y-2">
+								<div className="flex items-center justify-between text-base text-muted-foreground">
+									<span>{t`Generating your analysis…`}</span>
+									<span>
+										<Trans>Elapsed: {elapsedSeconds.toFixed(1)}s</Trans>
+									</span>
+								</div>
+								<pre
+									ref={streamingTextRef}
+									className="max-h-48 overflow-auto whitespace-pre-wrap rounded-md border bg-muted p-3 font-mono text-muted-foreground text-xs"
+								>
+									{streamingText || t`Waiting for AI to start writing…`}
+								</pre>
+							</div>
+						)}
 
 						<div className="grid grid-cols-[auto_1fr] items-center gap-3">
 							<div
@@ -288,11 +345,16 @@ export function ResumeAnalysisSectionBuilder() {
 										<Trans>Last analyzed on {updatedAtLabel}</Trans>
 									</p>
 								) : null}
+								{analysisDurationSeconds !== null && (
+									<p className="text-base text-muted-foreground leading-none">
+										<Trans>Analysis completed in {analysisDurationSeconds.toFixed(1)}s</Trans>
+									</p>
+								)}
 							</div>
 						</div>
 					</div>
 
-					{analysisFetched && !analysis && !isPending && (
+					{analysisFetched && !analysis && !isStreaming && (
 						<div className="rounded-md border border-dashed p-3">
 							<p className="max-w-xs text-muted-foreground text-base">
 								<Trans>Run your first analysis to get a scorecard, strengths, and prioritized suggestions.</Trans>

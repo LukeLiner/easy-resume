@@ -391,6 +391,10 @@ msgstr "分析职位匹配度"
 msgid "Analyze Resume"
 msgstr "分析简历"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Analysis completed in {analysisDurationSeconds.toFixed(1)}s"
+msgstr "分析完成，用时 {analysisDurationSeconds.toFixed(1)}s"
+
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Analyzing…"
@@ -1318,6 +1322,10 @@ msgstr "预览渲染完成后即可开始编辑。"
 msgid "Education"
 msgstr "教育经历"
 
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Elapsed: {elapsedSeconds.toFixed(1)}s"
+msgstr "已用时 {elapsedSeconds.toFixed(1)}s"
+
 #: src/features/billing/recharge-dialog.tsx
 #: src/routes/builder/$resumeId/-sidebar/left/sections/basics.tsx
 #: src/routes/dashboard/account.tsx
@@ -1706,6 +1714,10 @@ msgstr "生成一个随机名称"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
 msgid "Generating suggestions"
 msgstr "正在生成建议"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/resume-analysis.tsx
+msgid "Generating your analysis…"
+msgstr "正在生成你的分析…"
 
 #: src/routes/builder/$resumeId/-sidebar/right/sections/job-radar.tsx
 msgid "Generating your report,don't switch the page…"

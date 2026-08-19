@@ -1,3 +1,4 @@
+import type { ResumeAnalysisStreamEvent } from "@reactive-resume/schema/resume/analysis";
 import type { ResumeData } from "@reactive-resume/schema/resume/data";
 import type { JobMatchStreamEvent } from "@reactive-resume/schema/resume/job-match";
 import type { UIMessage } from "ai";
@@ -248,6 +249,93 @@ export const aiRouter = {
 				}
 				throw error;
 			}
+		}),
+
+	analyzeResumeStream: protectedProcedure
+		.route({
+			method: "POST",
+			path: "/ai/analyze-resume-stream",
+			tags: ["AI"],
+			operationId: "analyzeResumeStream",
+			summary: "Stream a resume analysis",
+			description:
+				"Streams a resume analysis with an overall score, scorecard, strengths, and suggestions. Emits raw text chunks as the AI generates the report, then a complete event carrying the persisted structured analysis. Requires authentication and AI credentials.",
+		})
+		.input(
+			z.object({
+				aiProviderId: z.string().optional(),
+				resumeId: z.string(),
+				locale: z.string().optional(),
+			}),
+		)
+		.use(aiRequestRateLimit)
+		.errors({
+			BAD_GATEWAY: { message: "The AI provider returned an error or is unreachable.", status: 502 },
+			BAD_REQUEST: { message: "The AI returned an improperly formatted structure.", status: 400 },
+			PRECONDITION_FAILED: { message: "You have exceeded your resume analysis quota.", status: 429 },
+		})
+		.handler(async ({ context, input }) => {
+			await checkResumeAnalysisQuota(context.user.id);
+
+			const [provider, resume] = await Promise.all([
+				getRunnableProvider(input.aiProviderId),
+				resumeService.getById({ id: input.resumeId, userId: context.user.id }),
+			]);
+
+			return streamToEventIterator(
+				eventIteratorToStream(
+					(async function* streamResumeAnalysis(): AsyncGenerator<ResumeAnalysisStreamEvent, void, unknown> {
+						try {
+							for await (const event of aiService.analyzeResumeStream({
+								provider: provider.provider,
+								model: provider.model,
+								apiKey: provider.apiKey,
+								baseURL: provider.baseURL ?? "",
+								resumeData: resume.data,
+								...(input.locale ? { locale: input.locale } : {}),
+							})) {
+								if (event.type === "complete") {
+									await consumeResumeAnalysisQuota(context.user.id);
+
+									const saved = await resumeService.analysis.upsert({
+										id: input.resumeId,
+										userId: context.user.id,
+										analysis: {
+											...event.analysis,
+											updatedAt: new Date(),
+											modelMeta: { provider: provider.provider, model: provider.model },
+										},
+									});
+
+									yield { type: "complete", analysis: saved };
+								} else {
+									yield event;
+								}
+							}
+						} catch (error) {
+							if (isCredentialEncryptionUnavailable(error)) {
+								yield {
+									type: "error",
+									code: "PRECONDITION_FAILED",
+									message: "AI providers are unavailable because ENCRYPTION_SECRET is not configured.",
+								};
+							} else if (isInvalidAiBaseUrlError(error)) {
+								yield { type: "error", code: "BAD_REQUEST", message: "Invalid AI provider configuration." };
+							} else if (isAiProviderGatewayError(error)) {
+								yield { type: "error", code: "BAD_GATEWAY", message: "Could not reach the AI provider." };
+							} else if (error instanceof ZodError) {
+								yield { type: "error", code: "BAD_REQUEST", message: "Invalid resume analysis structure" };
+							} else {
+								yield {
+									type: "error",
+									code: "INTERNAL_SERVER_ERROR",
+									message: error instanceof Error ? error.message : "Unknown error.",
+								};
+							}
+						}
+					})(),
+				),
+			);
 		}),
 
 	analyzeJobMatch: protectedProcedure

@@ -396,6 +396,23 @@ function buildAnalyzeResumeSystemPrompt(resumeData: ResumeData, locale?: string)
 	return `${prompt}\n\n## Resume Data\n\n${JSON.stringify(resumeData, null, 2)}`;
 }
 
+function parseResumeAnalysisJson(text: string): ResumeAnalysis {
+	const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+	const candidate = fenceMatch?.[1] ?? text;
+
+	const firstBrace = candidate.indexOf("{");
+	const lastBrace = candidate.lastIndexOf("}");
+
+	if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
+		throw new Error("AI returned no structured analysis output.");
+	}
+
+	const jsonString = candidate.substring(firstBrace, lastBrace + 1);
+	const parsed = JSON.parse(jsonString);
+
+	return resumeAnalysisSchema.parse(parsed);
+}
+
 /** Sends resume data to the AI provider and returns a structured analysis, parsing raw JSON from the response text. */
 async function analyzeResume(input: AnalyzeResumeInput): Promise<ResumeAnalysis> {
 	const model = getModel(input);
@@ -413,21 +430,38 @@ async function analyzeResume(input: AnalyzeResumeInput): Promise<ResumeAnalysis>
 		],
 	});
 
-	const text = result.text;
-	const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-	const candidate = fenceMatch?.[1] ?? text;
+	return parseResumeAnalysisJson(result.text);
+}
 
-	const firstBrace = candidate.indexOf("{");
-	const lastBrace = candidate.lastIndexOf("}");
+type ResumeAnalysisStreamDraftEvent = { type: "text"; text: string } | { type: "complete"; analysis: ResumeAnalysis };
 
-	if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
-		throw new Error("AI returned no structured analysis output.");
+/** Streams the resume analysis from the AI provider, emitting raw text chunks followed by the parsed structured report. */
+async function* analyzeResumeStream(
+	input: AnalyzeResumeInput,
+): AsyncGenerator<ResumeAnalysisStreamDraftEvent, void, unknown> {
+	const model = getModel(input);
+	const systemPrompt = buildAnalyzeResumeSystemPrompt(input.resumeData, input.locale);
+
+	const result = streamText({
+		model,
+		system: systemPrompt,
+		messages: [
+			{
+				role: "user",
+				content:
+					"Analyze this resume and return a structured report with scorecard, overall score, strengths, and actionable suggestions. Return ONLY raw JSON, no markdown fences or explanations.",
+			},
+		],
+	});
+
+	const chunks: string[] = [];
+
+	for await (const chunk of result.textStream) {
+		chunks.push(chunk);
+		yield { type: "text", text: chunk };
 	}
 
-	const jsonString = candidate.substring(firstBrace, lastBrace + 1);
-	const parsed = JSON.parse(jsonString);
-
-	return resumeAnalysisSchema.parse(parsed);
+	yield { type: "complete", analysis: parseResumeAnalysisJson(chunks.join("")) };
 }
 
 type AnalyzeJobMatchInput = z.infer<typeof aiCredentialsSchema> & {
@@ -514,6 +548,7 @@ export const aiService = {
 	analyzeJobMatch,
 	analyzeJobMatchStream,
 	analyzeResume,
+	analyzeResumeStream,
 	chat,
 	parseDocx,
 	parsePdf,
